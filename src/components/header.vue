@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 export default {
   name: 'Header',
   components: {},
@@ -53,7 +53,7 @@ export default {
     // this.isLogin();
   },
   methods: {
-    ...mapMutations(['isLogout', 'isLogin']),
+    ...mapActions(['login', 'logout']),
     mopen(id) {
       // this.mcancelclosetime();
       if (this.ddmenuitem) this.ddmenuitem.style.visibility = 'hidden';
