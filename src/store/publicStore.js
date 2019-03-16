@@ -1,15 +1,22 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import _ from 'lodash';
+import { Message } from 'element-ui';
 
 Vue.use(Vuex);
 
 const api = {
   login: '/akyl/user/login',
+  deptList: '/akyl/dept/dept_list?skip=0&limit=100',
+  postList: '/akyl/post/post_list?skip=0&limit=100',
 };
 
 export const state = () => ({
+  limit: 15,
   userInfo: {},
   userRoleList: [],
+  deptList: [],
+  postList: [],
 });
 
 export const mutations = {
@@ -29,6 +36,10 @@ export const mutations = {
     sessionStorage.removeItem('userInfo');
     sessionStorage.removeItem('userRoleList');
   },
+  //存列表数据
+  setList(state, { type, data }) {
+    _.set(state, type, data);
+  },
 };
 
 export const actions = {
@@ -44,16 +55,41 @@ export const actions = {
       const { data } = payload;
       try {
         let result = await this.$axios.post(api.login, { data: data });
-        if (result.data.rescode === '0') {
-          sessionStorage.setItem('userInfo', JSON.stringify(result.data.user));
-          sessionStorage.setItem('userRoleList', JSON.stringify(result.data.userRoleList));
+        if (result.rescode === '0') {
+          sessionStorage.setItem('userInfo', JSON.stringify(result.user));
+          sessionStorage.setItem('userRoleList', JSON.stringify(result.userRoleList));
+          Message.success(result.msg);
+        } else {
+          Message.error(result.msg);
         }
-        return result.data;
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     } else {
       return false;
+    }
+  },
+  //获取其他列表,type:什么列表
+  //可加载部门表,岗位表
+  async loadOtherList({ commit }, payload) {
+    const { type } = payload;
+    if (type !== undefined) {
+      try {
+        let result = await this.$axios.get(_.get(api, type));
+        if (result.rescode === '0') {
+          let list = _.get(result, `${type}`).map(item => {
+            let newObject = { text: item.dept_name, value: item.id };
+            return newObject;
+          });
+          let defalut = { text: '请选择部门', value: null, disabled: true };
+          list.unshift(defalut);
+          commit('setList', { type: type, data: list });
+        } else {
+          Message.error(`部门表数据错误`);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
   },
 };

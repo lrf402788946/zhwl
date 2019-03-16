@@ -49,10 +49,6 @@ export default {
     async toLogin() {
       if (this.form.login_id && this.form.password) {
         let result = await this.login({ data: this.form });
-        if (result.rescode === '0') {
-          this.$message.success('登录成功');
-        }
-        console.log(result);
       }
     },
   },

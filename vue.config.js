@@ -4,6 +4,7 @@ module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? '/zhwl/' : './',
   pages: {
     login: 'src/pages/login/main.js',
+    system: 'src/pages/system/main.js',
   },
   configureWebpack: config => {
     Object.assign(config, {
