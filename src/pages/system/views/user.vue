@@ -205,7 +205,7 @@ export default {
         dept_id: null,
       },
       operateId: {},
-      gender: [{ text: '请选择性别', value: null, disabled: true }, { text: '男', value: 1 }, { text: '女', value: 0 }],
+      gender: [{ text: '请选择性别', value: null, disabled: true }, { text: '男', value: '1' }, { text: '女', value: '0' }],
       currentPage: 1,
       totalRow: 0,
       addUserValidator: new Validator({
