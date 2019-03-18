@@ -144,7 +144,7 @@ export default {
     ...mapActions(['getRoleList', 'roleOperation']),
     async search() {
       //查询方法
-      await this.getRoleList();
+      await this.getRoleList({ type: 'list' });
       this.$set(this, 'list', this.roleList);
     },
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
