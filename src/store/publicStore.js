@@ -6,9 +6,9 @@ import { Message } from 'element-ui';
 Vue.use(Vuex);
 
 const api = {
-  login: '/akyl/user/login',
-  deptList: '/akyl/dept/dept_list?skip=0&limit=100',
-  postList: '/akyl/post/post_list?skip=0&limit=100',
+  login: '/zhwl/user/login',
+  deptList: '/zhwl/dept/dept_list?skip=0&limit=100',
+  postList: '/zhwl/post/post_list?skip=0&limit=100',
 };
 
 export const state = () => ({

@@ -4,7 +4,7 @@
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">角色列表</a>
+          <a class="base-margin-left-20">路线列表</a>
           <div class="button-table"></div>
         </div>
       </div>
@@ -18,19 +18,41 @@
             role="button"
             v-b-modal="'toAdd'"
           >
-            <i class="base-margin-right-5 fa fa-plus-square"></i>添加角色
+            <i class="base-margin-right-5 fa fa-plus-square"></i>添加路线
           </a>
         </div>
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
             <tr>
-              <th>角色代码</th>
-              <th>角色名称</th>
+              <th>路线名称</th>
+              <th>计费方式</th>
+              <th>起始地省份</th>
+              <th>起始地城市</th>
+              <th>目的地省份</th>
+              <th>目的地城市</th>
+              <th>运输内容</th>
+              <th>按重量的运输价格</th>
+              <th>按重量的运输标准</th>
+              <th>提送货费单价</th>
+              <th>提送货费计费标准</th>
+              <th>运输时限</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
-              <td>{{ item.role_code }}</td>
-              <td>{{ item.role_name }}</td>
+              <td>{{ item.name }}</td>
+              <td>
+                <b-form-select v-modal="item.type" :options="gender" />
+              </td>
+              <td>{{ item.start_province }}</td>
+              <td>{{ item.start_city }}</td>
+              <td>{{ item.end_province }}</td>
+              <td>{{ item.end_city }}</td>
+              <td>{{ item.content }}</td>
+              <td>{{ item.dwp }}</td>
+              <td>{{ item.dwp_criterion }}</td>
+              <td>{{ item.pgp }}</td>
+              <td>{{ item.pgp_criterion }}</td>
+              <td>{{ item.limit }}</td>
               <td>
                 <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">修&nbsp;&nbsp;改</b-button>
                 <b-button variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
@@ -43,11 +65,42 @@
             </tr>
           </tbody>
         </table>
-        <b-modal id="toAdd" title="添加角色" ref="toAdd" hide-footer>
-          <p class="marginBot5">角色代码</p>
-          <b-form-input v-model="form.role_code" class="marginBot8"></b-form-input>
-          <p class="marginBot5">角色名称</p>
-          <b-form-input v-model="form.role_name" class="marginBot20"></b-form-input>
+        <el-pagination
+          layout="total, prev, pager, next"
+          :background="true"
+          :page-size="15"
+          prev-text="上一页"
+          next-text="下一页"
+          :current-page="currentPage"
+          @current-change="toSearch"
+          :total="totalRow"
+        ></el-pagination>
+        <b-modal id="toAdd" title="添加路线" ref="toAdd" hide-footer>
+          <p class="marginBot5">路线名称</p>
+          <b-form-input v-model="form.name" class="marginBot20" placeholder="请填写路线名称"></b-form-input>
+          <p class="marginBot5">计算方式</p>
+          <b-form-select v-modal="form.type" :options="gender" placeholder="请选择计算方式" />
+          <p class="marginBot5">起始地省份</p>
+          <b-form-input v-model="form.start_province" class="marginBot20" placeholder="请填写起始地省份"></b-form-input>
+          <p class="marginBot5">起始地城市</p>
+          <b-form-input v-model="form.start_city" class="marginBot20" placeholder="起始地城市"></b-form-input>
+          <p class="marginBot5">目的地省份</p>
+          <b-form-input v-model="form.end_province" class="marginBot20" placeholder="请填写目的地省份"></b-form-input>
+          <p class="marginBot5">目的地城市</p>
+          <b-form-input v-model="form.end_city" class="marginBot20" placeholder="请填写目的地城市"></b-form-input>
+          <p class="marginBot5">运输内容</p>
+          <b-form-input v-model="form.content" class="marginBot20" placeholder="请填写运输内容"></b-form-input>
+          <p class="marginBot5">按重量的运输价格</p>
+          <b-form-input v-model="form.dwp" class="marginBot20" placeholder="请填写按重量的运输价格"></b-form-input>
+          <p class="marginBot5">按重量的运输标准</p>
+          <b-form-input v-model="form.dwp_criterion" class="marginBot20" placeholder="请填写按重量的运输标准"></b-form-input>
+          <p class="marginBot5">提送货费单价</p>
+          <b-form-input v-model="form.dwp_pgp" class="marginBot20" placeholder="请填写提送货费单价"></b-form-input>
+          <p class="marginBot5">提送货费计费标准</p>
+          <b-form-input v-model="form.dwp_pgp_criterion" class="marginBot20" placeholder="请填写提送货费计费标准"></b-form-input>
+          <p class="marginBot5">运输时限</p>
+          <b-form-input v-model="form.limit" class="marginBot20" placeholder="请填写运输时限"></b-form-input>
+
           <b-button
             variant="secondary"
             @click="form = { p_id: 0 }"
@@ -113,7 +166,7 @@
 import { mapActions, mapState } from 'vuex';
 import Validator from 'async-validator';
 export default {
-  name: 'role',
+  name: 'dly_way',
   metaInfo: {
     title: '角色管理',
   },
@@ -121,31 +174,73 @@ export default {
   data() {
     return {
       list: [],
+      gender: [{ text: '请选择计费方式', value: null, disabled: true }, { text: '重量计费', value: 0 }, { text: '体积计费', value: 1 }],
       form: {
         p_id: 0,
       },
+      currentPage: 1,
+      countNum: 0,
+      totalRow: 0,
       deleteItem: '',
       roleValidator: new Validator({
-        role_code: [{ type: 'string', required: true, message: '请填写角色代码' }],
-        role_name: { type: 'string', required: true, message: '请填写角色名称' },
+        type: [{ type: 'string', required: true, message: '请选择计费方式' }],
+        name: { type: 'string', required: true, message: '请填写路线名称' },
+        start_province: { type: 'string', required: true, message: '请填写起始地省份' },
+        start_city: { type: 'string', required: true, message: '请填写起始地城市' },
+        end_province: { type: 'string', required: true, message: '请填写目的地省份' },
+        end_city: { type: 'string', required: true, message: '请填写目的地城市' },
+        content: { type: 'string', required: true, message: '请填写运输内容' },
+        dwp: { type: 'string', required: true, message: '请填写按重量的运输价格' },
+        dwp_criterion: { type: 'string', required: true, message: '请填写按重量的运输标准' },
+        pgp: { type: 'string', required: true, message: '请填写提送货费单价' },
+        pgp_criterion: { type: 'string', required: true, message: '请填写提送货费计费标准' },
+        limit: { type: 'string', required: true, message: '请填写运输时间' },
       }),
     };
   },
   computed: {
     ...mapState({
+      skip: state => state.self.skip,
       limit: state => state.publics.limit,
-      roleList: state => state.self.roleList,
+      dly_wayList: state => state.self.dly_wayList,
     }),
   },
   async created() {
     await this.search();
   },
   methods: {
-    ...mapActions(['getRoleList', 'roleOperation']),
+    ...mapActions(['getdly_wayList', 'dlywayOperation']),
     async search() {
       //查询方法
-      await this.getRoleList({ type: 'list' });
-      this.$set(this, 'list', this.roleList);
+      let skip = (this.currentPage - 1) * this.limit;
+      await this.getdly_wayList({ skip: skip, limit: this.limit });
+      this.$set(this, 'list', this.dly_way_List);
+    },
+    toSearch(currentPage) {
+      this.currentPage = currentPage;
+      if (this.is_title_search) {
+        this.titlesearch();
+      } else {
+        this.search();
+      }
+    },
+    async titlesearch() {
+      if (!this.is_title_search) {
+        this.is_title_search = true;
+        return;
+      }
+      let skip = (this.currentPage - 1) * this.limit;
+      let result =  await this.getdly_wayList();
+      if (result.data.msg === '成功') {
+        this.$set(this, 'list', result.data.List);
+        this.$set(this, 'totalRow', result.data.totalRow);
+        this.$set(this, 'countNum', result.data.countNum);
+      }
+      if (result.data.msg === '没有数据') {
+        this.list = '';
+        this.totalRow = 0;
+        this.countNum = 0;
+      }
     },
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
     async toValidate(type) {
@@ -162,7 +257,7 @@ export default {
     },
     //添加
     async add() {
-      await this.roleOperation({ type: 'roleSave', data: this.form });
+      await this.dlywayOperation({ type: 'dlywaySave', data: this.form });
       this.form = {};
       this.$refs.toAdd.hide();
       this.search();
@@ -174,7 +269,7 @@ export default {
     },
     //删除
     async toDelete() {
-      await this.roleOperation({ type: 'roleDelete', data: this.deleteItem });
+      await this.dlywayOperation({ type: 'roleDelete', data: this.deleteItem });
       this.search();
       this.deleteItem = '';
       this.$refs.deleteAlert.hide();
@@ -186,7 +281,7 @@ export default {
     },
     //修改
     async update() {
-      await this.roleOperation({ type: 'roleEdit', data: this.form });
+      await this.dlywayOperation({ type: 'roleEdit', data: this.form });
       this.form = {};
       this.$refs.Edit.hide();
       this.search();
