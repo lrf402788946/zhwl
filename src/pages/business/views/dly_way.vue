@@ -230,7 +230,7 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result =  await this.getdly_wayList();
+      let result = await this.getdly_wayList();
       if (result.data.msg === '成功') {
         this.$set(this, 'list', result.data.List);
         this.$set(this, 'totalRow', result.data.totalRow);
