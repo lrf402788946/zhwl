@@ -121,7 +121,7 @@ export const actions = {
   async getOrderList({ commit }, { skip, limit, order_num, cus_id, start_time, end_time }) {
     try {
       let result = await this.$axios.get(
-        `${api.orderList}?skip=${skip}&limit=${limit}&order_num=${order_num}&cus_id=${cus_id}&start_time=${start_time}&end_time=${end_time}`
+        `${api.orderList}?skip=${skip}&limit=${limit}&order_no=${order_num}&cus_id=${cus_id}&start_time=${start_time}&end_time=${end_time}`
       );
       if (result.rescode === '0') {
         commit(types.ORDER_LIST, result.orderList);
