@@ -13,14 +13,14 @@ const api = {
   dly_wayEdit: '/zhwl/dlyway/dly_way_edit',
   dly_wayDelete: '/zhwl/dlyway/dly_way_delete',
 };
-
+//vuex 存放变量
 export const state = () => ({
-  dly_wayList: [],
+  dlyWayList: [],
 });
 
 export const mutations = {
   [types.DLY_WAY_LIST](state, payload) {
-    state.dly_wayList = payload;
+    state.dlyWayList = payload;
   },
 };
 
@@ -31,7 +31,7 @@ export const actions = {
     try {
       let result = await this.$axios.get(`${api.dly_wayList}?skip=${skip}&limit=${limit}`);
       if (result.rescode === '0') {
-        commit(types.DLY_WAY_LIST, result.dly_wayList);
+        commit(types.DLY_WAY_LIST, result.dlyWayList);
         return result.totalRow;
       }
     } catch (err) {
@@ -39,36 +39,30 @@ export const actions = {
       console.error(err);
     }
   },
-  //用户操作
-  async userOperation({ commit }, { type, data }) {
-    let result;
+  //模糊查询路线列表
+  async getdly_wayListlike({ commit }, payload) {
+    const { skip, limit, select_name, select_start_city, select_end_city } = payload;
     try {
-      if (type === 'userDelete') {
-        result = await this.$axios.post(_.get(api, type), {
-          data: { id: data },
-        });
-      } else {
-        result = await this.$axios.post(_.get(api, type), {
-          data: data,
-        });
-      }
+      let result = await this.$axios.get(
+        `${api.dly_wayList}?name=${select_name}&start_city=${select_start_city}&end_city=${select_end_city}&skip=${skip}&limit=${limit}`
+      );
       if (result.rescode === '0') {
-        Message.success('操作成功');
-      } else {
-        Message.error('操作失败');
-        console.warn(`error in:${type}`);
+        console.log(111)
+        console.log(result);
+        commit(types.DLY_WAY_LIST, result.dlyWayList);
+        return result.totalRow;
       }
     } catch (err) {
-      Message.error('操作失败');
+      Message.error('接口加载失败');
       console.error(err);
     }
   },
-  //权限管理
-  async getRoleList({ commit }) {
+  //添加路线
+  async adddly_wayList({ commit }, { type, data }) {
     try {
-      let result = await this.$axios.get(`${api.roleList}`);
+      let result = await this.$axios.post(`/zhwl/dlyway/dly_way_save`, { data: data });
       if (result.rescode === '0') {
-        commit(types.ROLE_LIST, result.roleList);
+        commit(types.DLY_WAY_LIST, result.dlyWayList);
         return result.totalRow;
       }
     } catch (err) {
@@ -80,14 +74,10 @@ export const actions = {
   async dlywayOperation({ commit }, { type, data }) {
     let result;
     try {
-      if (type === 'roleDelete') {
-        result = await this.$axios.post(_.get(api, type), {
-          data: { id: data },
-        });
+      if (type === 'dlywayDelete') {
+        result = await this.$axios.post('/zhwl/dlyway/dly_way_delete', { data: { id: data } });
       } else {
-        result = await this.$axios.post(_.get(api, type), {
-          data: data,
-        });
+        result = await this.$axios.post('/zhwl/dlyway/dly_way_edit', { data: data });
       }
       if (result.rescode === '0') {
         Message.success('操作成功');

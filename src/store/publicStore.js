@@ -17,6 +17,11 @@ export const state = () => ({
   userRoleList: [],
   deptList: [],
   postList: [],
+  dlyWayList: [],
+  goodsList: [],
+  select_name: '',
+  select_start_city: '',
+  select_end_city: '',
 });
 
 export const mutations = {
