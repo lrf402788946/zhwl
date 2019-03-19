@@ -17,12 +17,17 @@ const api = {
   roleSave: '/akyl/role/role_save',
   roleEdit: '/akyl/role/role_edit',
   roleDelete: '/akyl/role/role_delete',
-  //权限分配
+  //客户
+  clientList: '/zhwl/client/client_list',
+  clientEdit: '/zhwl/client/client_edit',
+  clientDelete: '/zhwl/client/client_delete',
+  clientSave: '/zhwl/client/client_save',
 };
 
 export const state = () => ({
   userList: [],
   roleList: [],
+  clientList:[],
 });
 
 export const mutations = {
@@ -31,6 +36,9 @@ export const mutations = {
   },
   [types.ROLE_LIST](state, payload) {
     state.roleList = payload;
+  },
+  [types.CLIENT_LIST](state, payload) {
+    state.clientList = payload;
   },
 };
 
@@ -107,6 +115,34 @@ export const actions = {
       }
     } catch (err) {
       Message.error('操作失败');
+      console.error(err);
+    }
+  },
+  //查询客户列表
+  async getClientList({ commit }, payload) {
+    const { skip, limit } = payload;
+    try {
+      let result = await this.$axios.get(`${api.clientList}?skip=${skip}&limit=${limit}`);
+      if (result.rescode === '0') {
+        commit(types.CLIENT_LIST, result.clientList);
+        return result.totalRow;
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
+      console.error(err);
+    }
+  },
+  //模糊查询客户列表方法
+  async getClientListLike({ commit }, payload) {
+    const { skip, limit } = payload;
+    try {
+      let result = await this.$axios.get(`${api.clientList}?skip=${skip}&limit=${limit}`);
+      if (result.rescode === '0') {
+        commit(types.CLIENT_LIST, result.clientList);
+        return result.totalRow;
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
       console.error(err);
     }
   },

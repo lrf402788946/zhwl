@@ -171,7 +171,6 @@ export default {
       is_title_search:false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
       currentPage: 1,
       countNum: 0,
-      skip:0,
       totalRow: 0,
       deleteItem: '',
       select_name: '',
@@ -218,19 +217,17 @@ export default {
     },
     //模糊查询的方法
     async titlesearch() {
-      if (this.select_name === null) this.select_name = '';
       if(!this.is_title_search){
         this.is_title_search = true;
         return;
       }
       if (this.select_name === null) this.select_name = '';
       let skip = (this.currentPage - 1) * this.limit;
-      await this.getGoodslistlike({
+      let totalRow = await this.getGoodslistlike({
         skip: skip,
         limit: this.limit,
         select_name: this.select_name,
       });
-      let totalRow = await this.getGoodslist({ skip: skip, limit: this.limit });
       this.$set(this, 'list', this.goodsList);
       this.$set(this, 'totalRow', totalRow);
     },
