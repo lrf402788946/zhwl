@@ -5,6 +5,7 @@ module.exports = {
   pages: {
     login: 'src/pages/login/main.js',
     system: 'src/pages/system/main.js',
+    personnel: 'src/pages/personnel/main.js',
     business: 'src/pages/business/main.js',
     goods: 'src/pages/goods/main.js',
   },
