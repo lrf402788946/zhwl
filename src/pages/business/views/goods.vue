@@ -168,8 +168,10 @@ export default {
         weight: '',
         volume: '',
       },
+      is_title_search:false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
       currentPage: 1,
       countNum: 0,
+      skip:0,
       totalRow: 0,
       deleteItem: '',
       select_name: '',
@@ -189,17 +191,12 @@ export default {
       goodsList: state => state.self.goodsList,
     }),
   },
-  async created() {
-    await this.search();
+  created() {
+    this.search();
   },
   methods: {
     ...mapActions(['getGoodslist', 'goodsOperation', 'addGoodslist', 'getGoodslistlike']),
-    async search() {
-      //查询方法
-      let skip = (this.currentPage - 1) * this.limit;
-      await this.getGoodslist({ skip: skip, limit: this.limit });
-      this.$set(this, 'list', this.goodsList);
-    },
+    //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
       if (this.is_title_search) {
@@ -208,27 +205,24 @@ export default {
         this.search();
       }
     },
-    async titlesearch() {
-      if (!this.is_title_search) {
-        this.is_title_search = true;
+    //查询
+    async search() {
+      if (this.is_title_search) {
+        this.is_title_search = false;
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.getGoodslist();
-      if (result.data.msg === '成功') {
-        this.$set(this, 'list', result.data.List);
-        this.$set(this, 'totalRow', result.data.totalRow);
-        this.$set(this, 'countNum', result.data.countNum);
-      }
-      if (result.data.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-        this.countNum = 0;
-      }
+      let totalRow = await this.getGoodslist({ skip: skip, limit: this.limit });
+      this.$set(this, 'list', this.goodsList);
+      this.$set(this, 'totalRow', totalRow);
     },
-    //模糊查询按钮
-    async searchButton() {
-      this.currentPage = 1;
+    //模糊查询的方法
+    async titlesearch() {
+      if (this.select_name === null) this.select_name = '';
+      if(!this.is_title_search){
+        this.is_title_search = true;
+        return;
+      }
       if (this.select_name === null) this.select_name = '';
       let skip = (this.currentPage - 1) * this.limit;
       await this.getGoodslistlike({
@@ -236,7 +230,26 @@ export default {
         limit: this.limit,
         select_name: this.select_name,
       });
+      let totalRow = await this.getGoodslist({ skip: skip, limit: this.limit });
       this.$set(this, 'list', this.goodsList);
+      this.$set(this, 'totalRow', totalRow);
+    },
+    //模糊查询按钮
+    async searchButton() {
+      this.currentPage = 1;
+      if (this.select_name === null) this.select_name = '';
+      if(!this.is_title_search){
+        this.is_title_search = true;
+        return;
+      } 
+      let skip = 0;
+      let totalRow = await this.getGoodslistlike({
+        skip: skip,
+        limit: this.limit,
+        select_name: this.select_name,
+      });
+      this.$set(this, 'list', this.goodsList);
+      this.$set(this, 'totalRow', totalRow);
     },
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
     async toValidate(type) {
