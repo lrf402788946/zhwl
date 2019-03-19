@@ -9,6 +9,29 @@
         </div>
       </div>
       <div class="base-padding-20 base-bg-fff">
+        <table>
+          <tr>
+            <td>路线名称查询</td>
+            <td>起始地城市查询</td>
+            <td>目的地城市查询</td>
+          </tr>
+          <tr>
+            <td><b-form-input v-model="select_name" placeholder="输入路线名称"></b-form-input></td>
+            <td><b-form-input v-model="select_start_city" placeholder="输入起始地城市"></b-form-input></td>
+            <td><b-form-input v-model="select_end_city" placeholder="输入目的地城市"></b-form-input></td>
+          </tr>
+          <tr>
+            <td>
+              <b-button
+                variant="primary"
+                style="font-size: 14px !important; color: rgb(255, 255, 255) !important; width: 60% !important; padding: 5px 10px !important; margin-top:28px; margin-right: 0px !important;"
+                @click="searchButton()"
+                >点击查询</b-button
+              >
+            </td>
+          </tr>
+        </table>
+
         <div class="base-align-right" style="margin-bottom:20px;">
           <a
             class="btn btn-info base-margin-bottom"
@@ -41,7 +64,7 @@
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.name }}</td>
               <td>
-                <b-form-select v-modal="item.type" :options="gender" />
+                <b-form-select v-model="item.type" :options="gender" />
               </td>
               <td>{{ item.start_province }}</td>
               <td>{{ item.start_city }}</td>
@@ -52,7 +75,7 @@
               <td>{{ item.dwp_criterion }}</td>
               <td>{{ item.pgp }}</td>
               <td>{{ item.pgp_criterion }}</td>
-              <td>{{ item.limit }}</td>
+              <td>{{ item.ys_limit }}</td>
               <td>
                 <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">修&nbsp;&nbsp;改</b-button>
                 <b-button variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
@@ -79,11 +102,18 @@
           <p class="marginBot5">路线名称</p>
           <b-form-input v-model="form.name" class="marginBot20" placeholder="请填写路线名称"></b-form-input>
           <p class="marginBot5">计算方式</p>
-          <b-form-select v-modal="form.type" :options="gender" placeholder="请选择计算方式" />
+          <b-form-radio-group
+            id="btnradios1"
+            buttons
+            button-variant="outline-primary"
+            v-model="form.type"
+            :options="[{ text: '重量计费', value: '0' }, { text: '体积计费', value: '1' }]"
+            name="radiosBtnDefault"
+          />
           <p class="marginBot5">起始地省份</p>
           <b-form-input v-model="form.start_province" class="marginBot20" placeholder="请填写起始地省份"></b-form-input>
           <p class="marginBot5">起始地城市</p>
-          <b-form-input v-model="form.start_city" class="marginBot20" placeholder="起始地城市"></b-form-input>
+          <b-form-input v-model="form.start_city" class="marginBot20" placeholder="请填写起始地城市"></b-form-input>
           <p class="marginBot5">目的地省份</p>
           <b-form-input v-model="form.end_province" class="marginBot20" placeholder="请填写目的地省份"></b-form-input>
           <p class="marginBot5">目的地城市</p>
@@ -95,11 +125,11 @@
           <p class="marginBot5">按重量的运输标准</p>
           <b-form-input v-model="form.dwp_criterion" class="marginBot20" placeholder="请填写按重量的运输标准"></b-form-input>
           <p class="marginBot5">提送货费单价</p>
-          <b-form-input v-model="form.dwp_pgp" class="marginBot20" placeholder="请填写提送货费单价"></b-form-input>
+          <b-form-input v-model="form.pgp" class="marginBot20" placeholder="请填写提送货费单价"></b-form-input>
           <p class="marginBot5">提送货费计费标准</p>
-          <b-form-input v-model="form.dwp_pgp_criterion" class="marginBot20" placeholder="请填写提送货费计费标准"></b-form-input>
+          <b-form-input v-model="form.pgp_criterion" class="marginBot20" placeholder="请填写提送货费计费标准"></b-form-input>
           <p class="marginBot5">运输时限</p>
-          <b-form-input v-model="form.limit" class="marginBot20" placeholder="请填写运输时限"></b-form-input>
+          <b-form-input v-model="form.ys_limit" class="marginBot20" placeholder="请填写运输时限"></b-form-input>
 
           <b-button
             variant="secondary"
@@ -117,11 +147,38 @@
           </b-button>
         </b-modal>
 
-        <b-modal id="Edit" title="修改角色" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
-          <p class="marginBot5">角色代码</p>
-          <b-form-input v-model="form.role_code" class="marginBot8"></b-form-input>
-          <p class="marginBot5">角色名称</p>
-          <b-form-input v-model="form.role_name" class="marginBot20"></b-form-input>
+        <b-modal id="Edit" title="修改路线" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+          <p class="marginBot5">路线名称</p>
+          <b-form-input v-model="form.name" class="marginBot20" placeholder="请填写路线名称"></b-form-input>
+          <p class="marginBot5">计算方式</p>
+          <b-form-radio-group
+            id="btnradios1"
+            buttons
+            button-variant="outline-primary"
+            v-model="form.type"
+            :options="[{ text: '重量计费', value: '0' }, { text: '体积计费', value: '1' }]"
+            name="radiosBtnDefault"
+          />
+          <p class="marginBot5">起始地省份</p>
+          <b-form-input v-model="form.start_province" class="marginBot20" placeholder="请填写起始地省份"></b-form-input>
+          <p class="marginBot5">起始地城市</p>
+          <b-form-input v-model="form.start_city" class="marginBot20" placeholder="请填写起始地城市"></b-form-input>
+          <p class="marginBot5">目的地省份</p>
+          <b-form-input v-model="form.end_province" class="marginBot20" placeholder="请填写目的地省份"></b-form-input>
+          <p class="marginBot5">目的地城市</p>
+          <b-form-input v-model="form.end_city" class="marginBot20" placeholder="请填写目的地城市"></b-form-input>
+          <p class="marginBot5">运输内容</p>
+          <b-form-input v-model="form.content" class="marginBot20" placeholder="请填写运输内容"></b-form-input>
+          <p class="marginBot5">按重量的运输价格</p>
+          <b-form-input v-model="form.dwp" class="marginBot20" placeholder="请填写按重量的运输价格"></b-form-input>
+          <p class="marginBot5">按重量的运输标准</p>
+          <b-form-input v-model="form.dwp_criterion" class="marginBot20" placeholder="请填写按重量的运输标准"></b-form-input>
+          <p class="marginBot5">提送货费单价</p>
+          <b-form-input v-model="form.pgp" class="marginBot20" placeholder="请填写提送货费单价"></b-form-input>
+          <p class="marginBot5">提送货费计费标准</p>
+          <b-form-input v-model="form.pgp_criterion" class="marginBot20" placeholder="请填写提送货费计费标准"></b-form-input>
+          <p class="marginBot5">运输时限</p>
+          <b-form-input v-model="form.ys_limit" class="marginBot20" placeholder="请填写运输时限"></b-form-input>
           <b-button
             variant="secondary"
             @click="closeAlert()"
@@ -140,7 +197,7 @@
 
         <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
           <div class="d-block text-center">
-            <b-alert variant="danger" show>确定删除该角色?</b-alert>
+            <b-alert variant="danger" show>确定删除该路线?</b-alert>
           </div>
           <b-button
             variant="danger"
@@ -176,25 +233,40 @@ export default {
       list: [],
       gender: [{ text: '请选择计费方式', value: null, disabled: true }, { text: '重量计费', value: 0 }, { text: '体积计费', value: 1 }],
       form: {
-        p_id: 0,
+        type: '0',
+        start_province: '',
+        start_city: '',
+        end_province: '',
+        end_city: '',
+        content: '',
+        dwp: '',
+        dwp_criterion: '',
+        pgp: '',
+        pgp_criterion: '',
+        ys_limit: '',
       },
+      type: '',
       currentPage: 1,
       countNum: 0,
       totalRow: 0,
       deleteItem: '',
+      select_name: '',
+      select_order_no: '',
+      select_start_city: '',
+      select_end_city: '',
       roleValidator: new Validator({
-        type: [{ type: 'string', required: true, message: '请选择计费方式' }],
-        name: { type: 'string', required: true, message: '请填写路线名称' },
-        start_province: { type: 'string', required: true, message: '请填写起始地省份' },
-        start_city: { type: 'string', required: true, message: '请填写起始地城市' },
-        end_province: { type: 'string', required: true, message: '请填写目的地省份' },
-        end_city: { type: 'string', required: true, message: '请填写目的地城市' },
-        content: { type: 'string', required: true, message: '请填写运输内容' },
-        dwp: { type: 'string', required: true, message: '请填写按重量的运输价格' },
-        dwp_criterion: { type: 'string', required: true, message: '请填写按重量的运输标准' },
-        pgp: { type: 'string', required: true, message: '请填写提送货费单价' },
-        pgp_criterion: { type: 'string', required: true, message: '请填写提送货费计费标准' },
-        limit: { type: 'string', required: true, message: '请填写运输时间' },
+        type: [{ required: true, message: '请选择计费方式' }],
+        name: { required: true, message: '请填写路线名称' },
+        start_province: { required: true, message: '请填写起始地省份' },
+        start_city: { required: true, message: '请填写起始地城市' },
+        end_province: { required: true, message: '请填写目的地省份' },
+        end_city: { required: true, message: '请填写目的地城市' },
+        content: { required: true, message: '请填写运输内容' },
+        dwp: { required: true, message: '请填写按重量的运输价格' },
+        dwp_criterion: { required: true, message: '请填写按重量的运输标准' },
+        pgp: { required: true, message: '请请填写提送货费单价' },
+        pgp_criterion: { required: true, message: '请填写提送货费计费标准' },
+        ys_limit: { required: true, message: '请填写运输时间' },
       }),
     };
   },
@@ -202,19 +274,20 @@ export default {
     ...mapState({
       skip: state => state.self.skip,
       limit: state => state.publics.limit,
-      dly_wayList: state => state.self.dly_wayList,
+      dlyWayList: state => state.self.dlyWayList,
     }),
   },
   async created() {
     await this.search();
   },
   methods: {
-    ...mapActions(['getdly_wayList', 'dlywayOperation']),
+    ...mapActions(['getdly_wayList', 'dlywayOperation', 'adddly_wayList', 'getdly_wayListlike']),
     async search() {
       //查询方法
       let skip = (this.currentPage - 1) * this.limit;
       await this.getdly_wayList({ skip: skip, limit: this.limit });
-      this.$set(this, 'list', this.dly_way_List);
+      console.log(this.dlyWayList);
+      this.$set(this, 'list', this.dlyWayList);
     },
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -242,6 +315,25 @@ export default {
         this.countNum = 0;
       }
     },
+    //模糊查询按钮
+    async searchButton() {
+      this.currentPage = 1;
+      if (this.select_name === null) this.select_name = '';
+      if (this.select_start_city === null) this.select_start_city = '';
+      if (this.select_end_city === null) this.select_end_city = '';
+      let skip = (this.currentPage - 1) * this.limit;
+      console.log(222);
+      await this.getdly_wayListlike({
+        skip: skip,
+        limit: this.limit,
+        select_name: this.select_name,
+        select_start_city: this.select_start_city,
+        select_end_city: this.select_end_city,
+      });
+      console.log(333);
+      console.log(this.dlyWayList);
+      this.$set(this, 'list', this.dlyWayList);
+    },
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
     async toValidate(type) {
       this.roleValidator.validate(this.form, (errors, fields) => {
@@ -257,7 +349,8 @@ export default {
     },
     //添加
     async add() {
-      await this.dlywayOperation({ type: 'dlywaySave', data: this.form });
+      console.log(this.form);
+      await this.adddly_wayList({ type: 'dlywaySave', data: this.form });
       this.form = {};
       this.$refs.toAdd.hide();
       this.search();
@@ -269,7 +362,7 @@ export default {
     },
     //删除
     async toDelete() {
-      await this.dlywayOperation({ type: 'roleDelete', data: this.deleteItem });
+      await this.dlywayOperation({ type: 'dlywayDelete', data: this.deleteItem });
       this.search();
       this.deleteItem = '';
       this.$refs.deleteAlert.hide();
@@ -281,7 +374,7 @@ export default {
     },
     //修改
     async update() {
-      await this.dlywayOperation({ type: 'roleEdit', data: this.form });
+      await this.dlywayOperation({ type: 'dlywayEdit', data: this.form });
       this.form = {};
       this.$refs.Edit.hide();
       this.search();

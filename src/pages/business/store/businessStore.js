@@ -25,14 +25,14 @@ const api = {
 };
 
 export const state = () => ({
-  dly_wayList: [],
+  dlyWayList: [],
   orderList: [],
   orderSubList: [],
 });
 
 export const mutations = {
   [types.DLY_WAY_LIST](state, payload) {
-    state.dly_wayList = payload;
+    state.dlyWayList = payload;
   },
   [types.ORDER_LIST](state, payload) {
     state.orderlist = payload;
@@ -49,12 +49,63 @@ export const actions = {
     try {
       let result = await this.$axios.get(`${api.dly_wayList}?skip=${skip}&limit=${limit}`);
       if (result.rescode === '0') {
-        commit(types.DLY_WAY_LIST, result.dly_wayList);
+        commit(types.DLY_WAY_LIST, result.dlyWayList);
         return result.totalRow;
       }
-    } catch (error) {
+    } catch (err) {
       Message.error('接口加载失败');
-      console.error(error);
+      console.error(err);
+    }
+  },
+  //模糊查询路线列表
+  async getdly_wayListlike({ commit }, payload) {
+    const { skip, limit, select_name, select_start_city, select_end_city } = payload;
+    try {
+      let result = await this.$axios.get(
+        `${api.dly_wayList}?name=${select_name}&start_city=${select_start_city}&end_city=${select_end_city}&skip=${skip}&limit=${limit}`
+      );
+      if (result.rescode === '0') {
+        console.log(111);
+        console.log(result);
+        commit(types.DLY_WAY_LIST, result.dlyWayList);
+        return result.totalRow;
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
+      console.error(err);
+    }
+  },
+  //添加路线
+  async adddly_wayList({ commit }, { type, data }) {
+    try {
+      let result = await this.$axios.post(`/zhwl/dlyway/dly_way_save`, { data: data });
+      if (result.rescode === '0') {
+        commit(types.DLY_WAY_LIST, result.dlyWayList);
+        return result.totalRow;
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
+      console.error(err);
+    }
+  },
+  //路线操作
+  async dlywayOperation({ commit }, { type, data }) {
+    let result;
+    try {
+      if (type === 'dlywayDelete') {
+        result = await this.$axios.post('/zhwl/dlyway/dly_way_delete', { data: { id: data } });
+      } else {
+        result = await this.$axios.post('/zhwl/dlyway/dly_way_edit', { data: data });
+      }
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+        console.warn(`error in:${type}`);
+      }
+    } catch (err) {
+      Message.error('操作失败');
+      console.error(err);
     }
   },
   //路线操作
@@ -121,10 +172,14 @@ export const actions = {
   //订单创建
   async orderSave({ commit }, { form, subForm }) {
     try {
-      let result = this.$axios.post(api.orderMainSave, { data: form });
+      let result = this.$axios.post(api.orderMainSave, {
+        data: form,
+      });
       if (result.rescode === '0') {
         let id = result.id;
-        result = this.$axios.post(api.orderSubSave, { data: { subForm: subForm, id: id } });
+        result = this.$axios.post(api.orderSubSave, {
+          data: { subForm: subForm, id: id },
+        });
         if (result.rescode === '0') {
           Message.success('操作成功');
         } else {
@@ -141,10 +196,14 @@ export const actions = {
   //订单修改
   async orderEdit({ commit }, { form, subForm }) {
     try {
-      let result = this.$axios.post(api.orderEdit, { data: form });
+      let result = this.$axios.post(api.orderEdit, {
+        data: form,
+      });
       if (result.rescode === '0') {
         let id = form.id;
-        result = this.$axios.post(api.orderSubEdit, { data: { subForm: subForm, id: id } });
+        result = this.$axios.post(api.orderSubEdit, {
+          data: { subForm: subForm, id: id },
+        });
         if (result.rescode === '0') {
           Message.success('操作成功');
         } else {
@@ -161,7 +220,9 @@ export const actions = {
   //订单删除
   async orderDelete({ commit }, { id }) {
     try {
-      let result = this.$axios.post(api.orderDelete, { data: { id: id } });
+      let result = this.$axios.post(api.orderDelete, {
+        data: { id: id },
+      });
       if (result.rescode === '0') {
         Message.success('操作成功');
       } else {
