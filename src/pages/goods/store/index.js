@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import * as publics from '@/store/publicStore';
-import * as self from './businessStore';
+import * as self from './systemStore';
 
 Vue.use(Vuex);
 
