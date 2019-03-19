@@ -21,7 +21,7 @@
               <!-- <b-form-input v-model="select_cus_id" placeholder="输入订单人"></b-form-input> -->
               <el-select class="marginBot" style="height:40px !important" v-model="select_cus_id" filterable placeholder="输入订单人">
                 <el-option value="" label="全部客户">全部客户</el-option>
-                <el-option v-for="item in customerName" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                <!-- <el-option v-for="item in customerName" :key="item.value" :label="item.text" :value="item.value"></el-option> -->
               </el-select>
             </div>
             <div class="col-lg-4 marginBot4">
@@ -42,7 +42,7 @@
               <b-button
                 variant="primary"
                 style="font-size: 14px !important; color: rgb(255, 255, 255) !important; width: 60% !important; padding: 5px 10px !important; margin-top:28px; margin-right: 0px !important;"
-                @click="searchButton()"
+                @click="search('vague')"
                 >点击查询</b-button
               >
             </div>
@@ -108,12 +108,12 @@
         <div class="row">
           <div class="col-lg-4 mb25">
             <div class="lh44">操作人：</div>
-            <b-form-input v-model="form.op" :disabled="is_update" placeholder="操作人"></b-form-input>
+            <b-form-input v-model="form.op" placeholder="操作人"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">客户：</div>
             <el-select class="marginBot" style="height:40px !important" v-model="form.c_id" filterable placeholder="请选择客户">
-              <el-option v-for="item2 in customerName" :key="item2.value" :label="item2.text" :value="item2.value"></el-option>
+              <!-- <el-option v-for="item2 in customerName" :key="item2.value" :label="item2.text" :value="item2.value"></el-option> -->
             </el-select>
           </div>
           <div class="col-lg-4 mb25">
@@ -128,8 +128,8 @@
           <div class="col-lg-4 mb25">
             <div class="lh44">物流方式：</div>
             <el-select class="marginBot" style="height:40px !important" v-model="form.dly_type" filterable placeholder="请选择物流方式">
-              <el-option value="0">自运</el-option>
-              <el-option value="1">他运</el-option>
+              <el-option value="0" label="自运"></el-option>
+              <el-option value="1" label="他运"></el-option>
             </el-select>
           </div>
           <div class="col-lg-4 mb25">
@@ -137,24 +137,24 @@
             <b-form-select v-model="form.status" :options="chooseStatus" filterable placeholder="请选择物流状态" />
           </div>
           <div class="col-lg-4 mb25">
-            <div class="lh44">备注：</div>
-            <b-form-input v-model="form.remark" placeholder="备注"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
             <div class="lh44">应收运费：</div>
-            <b-form-input v-model="form.s_dp" :disabled="is_update" type="number"></b-form-input>
+            <b-form-input v-model="form.s_dp" type="number"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">实收运费：</div>
-            <b-form-input v-model="form.op" :disabled="is_update" type="number"></b-form-input>
+            <b-form-input v-model="form.r_dp" type="number"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">应付合计：</div>
-            <b-form-input v-model="form.op" :disabled="is_update" type="number"></b-form-input>
+            <b-form-input v-model="form.s_pay" type="number"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">实收合计：</div>
-            <b-form-input v-model="form.op" :disabled="is_update" type="number"></b-form-input>
+            <b-form-input v-model="form.r_pay" type="number"></b-form-input>
+          </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">备注：</div>
+            <b-form-input v-model="form.remark" placeholder="备注"></b-form-input>
           </div>
           <br />
           <table class="table table-bordered table-striped ">
@@ -225,7 +225,7 @@
           <div class="col-lg-4 mb25">
             <div class="lh44">客户：</div>
             <el-select class="marginBot" style="height:40px !important" v-model="form.c_id" filterable placeholder="请选择客户">
-              <el-option v-for="item2 in customerName" :key="item2.value" :label="item2.text" :value="item2.value"></el-option>
+              <!-- <el-option v-for="item2 in customerName" :key="item2.value" :label="item2.text" :value="item2.value"></el-option> -->
             </el-select>
           </div>
           <div class="col-lg-4 mb25">
@@ -378,7 +378,6 @@ export default {
     return {
       updateForm: new Array(),
       list: [],
-      customerName: [],
       subForm: [],
       is_update: true,
       operateId: '',
@@ -405,7 +404,7 @@ export default {
         { text: '支付完成', value: '3' },
         { text: '收款完成', value: '4' },
       ],
-      is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
+      is_vague_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
       skip: 0,
     };
   },
@@ -421,39 +420,26 @@ export default {
     this.search();
     // this.searchName();
   },
-  watch: {
-    is_title_search: {
-      handler(nV, oV) {
-        this.$set(this, 'currentPage', 1);
-        if (nV) {
-          this.titlesearch();
-        } else {
-          this.search();
-        }
-      },
-    },
-  },
   methods: {
     ...mapActions(['getOrderList', 'getOrderSubList', 'getOrderNo', 'orderSave', 'orderEdit', 'orderDelete']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
-      if (this.is_title_search) {
-        this.titlesearch();
-      } else {
-        this.search();
-      }
+      this.search();
     },
     //查询
-    async search() {
+    async search(type) {
+      if (type === 'vague') {
+        this.currentPage = 1;
+      }
       let skip = (this.currentPage - 1) * this.limit;
       let totalRow = await this.getOrderList({
         skip: skip,
         limit: this.limit,
         order_num: this.select_order_no,
         cus_id: this.select_cus_id,
-        start_time: this.select_in_date[0],
-        end_time: this.select_in_date[1],
+        start_time: this.select_in_date > 0 ? this.select_in_date[0] : '',
+        end_time: this.select_in_date > 0 ? this.select_in_date[1] : '',
       });
       this.$set(this, 'totalRow', totalRow);
     },
@@ -504,19 +490,24 @@ export default {
     async update() {
       try {
         await this.orderEdit({ form: this.form, subForm: this.subForm });
-      } catch (error) {
         this.closeAlert('update');
         this.updateForm = new Array();
         this.orderSubList = [];
         this.is_update = true;
         this.search();
+      } catch (error) {
+        console.error('error in line 504');
       }
     },
     //删除
     async toDelete() {
-      let result = await this.$axios.post('/akyl/order/order_delete', { data: { id: this.operateId } });
-      this.closeAlert('delete');
-      this.search();
+      try {
+        let result = await this.$axios.post('/akyl/order/order_delete', { data: { id: this.operateId } });
+        this.closeAlert('delete');
+        this.search();
+      } catch (error) {
+        console.error('error in line 517');
+      }
     },
     //打开与关闭修改和删除的弹框
     async openAlert(type, id) {
@@ -525,13 +516,7 @@ export default {
       if (type === 'update') {
         this.$refs.updateAlert.show();
         this.updateForm = JSON.parse(JSON.stringify(this.list[id]));
-        let result = await this.$axios.get(`/akyl/order/order_info?skip=0&limit=10000&order_id=${this.updateForm.id}`);
-        if (result.data.msg === '成功') {
-          let newArray = result.data.orderSubList.map(item => {
-            item.kind = item.kind * 1;
-          });
-          this.$set(this, 'orderSubList', result.data.orderSubList);
-        }
+        await this.getOrderSubList({ id: this.updateForm.id });
       } else if (type === 'delete') {
         this.$refs.deleteAlert.show();
         this.operateId = id;
@@ -571,7 +556,6 @@ export default {
     addSubForm(type) {
       if (type === 'add') {
         this.subForm.push(JSON.parse(JSON.stringify(this.subFormContent)));
-        this.selectKindList.push(JSON.parse(JSON.stringify(this.selectKindListContent)));
       }
       if (type === 'update') {
         this.orderSubList.push(JSON.parse(JSON.stringify(this.orderSubListContent)));
