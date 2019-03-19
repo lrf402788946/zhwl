@@ -12,10 +12,14 @@
         <table>
           <tr>
             <td>驾驶员姓名查询:</td>
+            <td>驾驶员身份证号查询:</td>
           </tr>
           <tr>
             <td>
-              <b-form-input v-model="select_client_name" placeholder="输入驾驶员姓名" style="width:200px,margin-left:50px"></b-form-input>
+              <b-form-input v-model="select_driver_name" placeholder="输入驾驶员姓名" style="width:200px,margin-left:50px"></b-form-input>
+            </td>
+            <td>
+              <b-form-input v-model="select_driver_id_card" placeholder="输入驾驶员身份证号" style="width:200px,margin-left:50px"></b-form-input>
             </td>
             <td style="padding-left:60px">
               <b-button
@@ -117,7 +121,7 @@
       <div style="margin-bottom: 7px;">驾驶证有效日期:</div>
       <el-date-picker
         style="width:100%; height: 34px !important; line-height: 34px !important;"
-        v-model="timeValue"
+        v-model="timeValues"
         value-format="yyyy-MM-dd"
         format="yyyy-MM-dd"
         type="daterange"
@@ -147,6 +151,7 @@
       <b-button
         variant="secondary"
         style="font-size:16px !important; margin-top:35px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+        @click="form = {}"
       >
         重&nbsp;&nbsp;置</b-button
       >
@@ -302,7 +307,8 @@ export default {
       limit: 15,
       totalRow: 0,
       value1: '',
-      select_client_name: '', 
+      select_driver_name: '',
+      select_driver_id_card: '', 
       lzValidator: new Validator({
         // type: { type: 'string', required: true, message: '请填写型号' },
         // num: { required: true, message: '请填写数量' },
@@ -314,6 +320,7 @@ export default {
       skip:0,
       countNum:0,
       timeValue:[{},{}],
+      timeValues:'',
     };
   },
   computed: {},
@@ -370,7 +377,7 @@ export default {
       } 
       let skip = (this.currentPage - 1) * this.limit;
       let result = await this.$axios.get(
-        `/zhwl/driver/driver_list?skip=${skip}&limit=${this.limit}`
+        `/zhwl/driver/driver_list?skip=${skip}&limit=${this.limit}&name=${this.select_driver_name}&id_card=${this.select_driver_id_card}`
       );
       if (result.msg === '成功') {
         this.$set(this, 'list', result.driverList);
@@ -390,7 +397,7 @@ export default {
       } 
       let skip = 0;
       let result = await this.$axios.get(
-        `/zhwl/driver/driver_list?skip=${skip}&limit=${this.limit}`
+        `/zhwl/driver/driver_list?skip=${skip}&limit=${this.limit}&name=${this.select_driver_name}&id_card=${this.select_driver_id_card}`
       );
       if (result.msg === '成功') {
         this.$set(this, 'list', result.driverList);
@@ -402,8 +409,7 @@ export default {
       }
     },
     async toUpdate() {
-      let date=this.timeValue[0]+'至'+this.timeValue[1];
-      this.updateForm.ccu_time=date;
+      this.updateForm.ccu_time=this.updateForm.ccu_time[0]+'至'+this.updateForm.ccu_time[1];
       let result = await this.$axios.post(`/zhwl/driver/driver_edit`, { data: this.updateForm });
       if (result.rescode === '0') {
         this.$message.success('修改' + result.msg);
@@ -412,7 +418,7 @@ export default {
         this.search();
       } else {
         this.$message.error(result.msg);
-      }this.timeValue='';
+      }
     },
     //打印
     doPrint() {
@@ -445,7 +451,7 @@ export default {
     },
     //添加
     async toAdd() {
-      let date=this.timeValue[0]+'至'+this.timeValue[1];
+      let date=this.timeValues[0]+'至'+this.timeValues[1];
       this.form.ccu_time=date;
       let result = await this.$axios.post(`/zhwl/driver/driver_save`, { data: this.form });
       if (result.rescode === '0') {
@@ -457,7 +463,7 @@ export default {
       } else {
         this.$message.error(result.msg);
       }
-      this.timeValue='';
+      this.timeValues='';
     },
     openAlert(type, id) {
       if (type === 'update') {
@@ -466,11 +472,10 @@ export default {
         this.timeValue[1]=this.list[id].ccu_time.substring(11,22);
         this.updateForm = JSON.parse(JSON.stringify(this.list[id]));
         this.updateForm.ccu_time=this.timeValue;
-        console.log(this.updateForm)
       } else if (type === 'delete') {
         this.$refs.deleteAlert.show();
         this.operateId = id;
-      }
+      }this.timeValue=[{},{}];
     },
     closeAlert(type) {
       if (type === 'update') {
