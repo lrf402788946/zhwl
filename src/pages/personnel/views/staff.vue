@@ -31,6 +31,7 @@
             </td>
           </tr>
         </table>
+
         <div class="base-align-right" style="margin-bottom:20px;">
           <a
             class="btn btn-info base-margin-bottom"
@@ -273,7 +274,7 @@ export default {
       limit: 15,
       totalRow: 0,
       value1: '',
-      select_staff_name: '', 
+      select_staff_name: '',
       select_staff_job_num: '',
       lzValidator: new Validator({
         // type: { type: 'string', required: true, message: '请填写型号' },
@@ -282,9 +283,9 @@ export default {
       }),
       th: ['员工名称', '地址', '法人', '手机/固话(0431-8xxxxxxx)', '传真', '税号', '银行卡号', '银行账号'],
       filterVal: ['name', 'address', 'legal_person', 'tel', 'fex', 'taxes_no', 'card_no', 'card_account'],
-      is_title_search:false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
-      skip:0,
-      countNum:0,
+      is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
+      skip: 0,
+      countNum: 0,
     };
   },
   computed: {},
@@ -292,7 +293,7 @@ export default {
     this.search();
     this.getOtherList();
   },
-  watch:{
+  watch: {
     is_title_search: {
       handler(nV, oV) {
         this.$set(this, 'currentPage', 1);
@@ -301,7 +302,7 @@ export default {
         } else {
           this.search();
         }
-      }
+      },
     },
   },
   methods: {
@@ -311,7 +312,7 @@ export default {
       this.currentPage = currentPage;
       if (this.is_title_search) {
         this.titlesearch();
-      }else{
+      } else {
         this.search();
       }
     },
@@ -322,9 +323,7 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(
-        `/zhwl/staff/staff_list?skip=${skip}&limit=${this.limit}`
-      );
+      let result = await this.$axios.get(`/zhwl/staff/staff_list?skip=${skip}&limit=${this.limit}`);
       if (result.msg === '成功') {
         this.$set(this, 'list', result.staffList);
         this.$set(this, 'totalRow', result.totalRow);
@@ -336,10 +335,10 @@ export default {
     },
     //模糊查询的方法
     async titlesearch() {
-      if(!this.is_title_search){
+      if (!this.is_title_search) {
         this.is_title_search = true;
         return;
-      } 
+      }
       let skip = (this.currentPage - 1) * this.limit;
       let result = await this.$axios.get(
         `/zhwl/staff/staff_list?skip=${skip}&limit=${this.limit}&name=${this.select_staff_name}&job_num=${this.select_staff_job_num}`
@@ -356,10 +355,10 @@ export default {
     //模糊查询按钮
     async searchButton() {
       this.currentPage = 1;
-      if(!this.is_title_search){
+      if (!this.is_title_search) {
         this.is_title_search = true;
         return;
-      } 
+      }
       let skip = 0;
       let result = await this.$axios.get(
         `/zhwl/staff/staff_list?skip=${skip}&limit=${this.limit}&name=${this.select_staff_name}&job_num=${this.select_staff_job_num}`

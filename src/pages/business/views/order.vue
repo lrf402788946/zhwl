@@ -215,78 +215,83 @@
     </b-modal>
 
     <!--详情-->
-    <!-- <b-modal id="updateAlert" title="订单详情" ref="updateAlert" size="xl" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+    <b-modal id="updateAlert" title="订单详情" ref="updateAlert" size="xl" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block text-center">
         <div class="row">
           <div class="col-lg-4 mb25">
-            <div class="lh44">订单号：</div>
-            <b-form-input
-              v-model="updateForm.order_num"
-              :disabled="true"
-              placeholder="订单号"
-              onkeypress="return (/[0-9a-zA-Z]/.test(String.fromCharCode(event.keyCode)))"
-            ></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
             <div class="lh44">操作人：</div>
-            <b-form-input
-              v-model="updateForm.user_name"
-              :disabled="true"
-              placeholder="操作人"
-              onkeypress="return (/[0-9a-zA-Z]/.test(String.fromCharCode(event.keyCode)))"
-            ></b-form-input>
+            <b-form-input v-model="form.op" :disabled="is_update" placeholder="操作人"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">客户：</div>
-            <b-form-input :value="getName(updateForm.cus_id)" :disabled="true" placeholder="客户"></b-form-input>
+            <el-select class="marginBot" style="height:40px !important" v-model="form.c_id" filterable placeholder="请选择客户">
+              <el-option v-for="item2 in customerName" :key="item2.value" :label="item2.text" :value="item2.value"></el-option>
+            </el-select>
           </div>
           <div class="col-lg-4 mb25">
-            <div class="lh44">订单日期：</div>
-            <b-form-input v-model="updateForm.in_date" :disabled="true" placeholder="订单日期"></b-form-input>
+            <div class="lh44">订单号：</div>
+            <b-form-input :disabled="true" v-model="form.order_no" placeholder="订单号"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
-            <div class="lh44">操作时间：</div>
-            <b-form-input v-model="updateForm.create_time" :disabled="true" placeholder="操作时间"></b-form-input>
+            <div class="lh44">发货日期：</div>
+            <el-date-picker style="width: 100%;" v-model="form.send_time" placeholder="发货日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd" type="date">
+            </el-date-picker>
+          </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">物流方式：</div>
+            <el-select class="marginBot" style="height:40px !important" v-model="form.dly_type" filterable placeholder="请选择物流方式">
+              <el-option value="0">自运</el-option>
+              <el-option value="1">他运</el-option>
+            </el-select>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">状态：</div>
-            <b-form-select v-model="updateForm.status" :options="chooseStatus" :disabled="is_update" />
+            <b-form-select v-model="form.status" :options="chooseStatus" filterable placeholder="请选择物流状态" />
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">备注：</div>
-            <b-form-input
-              v-model="updateForm.remark"
-              :disabled="is_update"
-              placeholder="备注"
-              onkeypress="return (/[0-9a-zA-Z]/.test(String.fromCharCode(event.keyCode)))"
-            ></b-form-input>
+            <b-form-input v-model="form.remark" placeholder="备注"></b-form-input>
+          </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">应收运费：</div>
+            <b-form-input v-model="form.s_dp" :disabled="is_update" type="number"></b-form-input>
+          </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">实收运费：</div>
+            <b-form-input v-model="form.op" :disabled="is_update" type="number"></b-form-input>
+          </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">应付合计：</div>
+            <b-form-input v-model="form.op" :disabled="is_update" type="number"></b-form-input>
+          </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">实收合计：</div>
+            <b-form-input v-model="form.op" :disabled="is_update" type="number"></b-form-input>
           </div>
           <br />
           <table class="table table-bordered table-striped ">
             <tbody>
               <tr>
-                <td>型号</td>
+                <td>货物名称</td>
                 <td>数量</td>
+                <td>重量</td>
+                <td>线路</td>
+                <td>运输内容</td>
                 <td>操作</td>
               </tr>
-              <tr v-for="(item, index) in orderSubList" :key="index">
+              <tr v-for="(item, index) in subForm" :key="index">
+                <td><b-form-input v-model="item.goods_name"></b-form-input></td>
+                <td><b-form-input v-model="item.goods_nums" type="number"></b-form-input></td>
+                <td><b-form-input v-model="item.goods_weight" type="number"></b-form-input></td>
                 <td>
-                  <el-select class="marginBot" style="height:40px !important" :disabled="is_update" v-model="item.kind" filterable placeholder="请选择型号">
-                    <el-option v-for="item2 in kindList" :key="item2.id" :label="item2.code" :value="item2.id"></el-option>
+                  <el-select class="marginBot8" style="height:40px !important" v-model="item.dly_way_id" filterable placeholder="请选择线路">
+                    <el-option v-for="item1 in dlyWayList" :key="item1.value" :label="item1.text" :value="item1.value"> </el-option>
                   </el-select>
                 </td>
-                <td>
-                  <b-form-input
-                    v-model="item.num"
-                    :disabled="is_update"
-                    type="number"
-                    onkeypress="return (/[0-9.]/.test(String.fromCharCode(event.keyCode)))"
-                  ></b-form-input>
-                </td>
+                <td><b-form-input v-model="item.content"></b-form-input></td>
                 <td>
                   <b-button
                     variant="danger"
-                    :disabled="is_update"
                     @click="closeSubForm(index)"
                     class="resetButton"
                     style="margin-top: 23px; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
@@ -314,13 +319,13 @@
         style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
         >修&nbsp;&nbsp;改</b-button
       >
-      <b-button
+      <!-- <b-button
         variant="primary"
         @click="exportExcel()"
         class="resetButton"
         style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
         >导&nbsp;&nbsp;出</b-button
-      >
+      > -->
       <b-button
         v-if="!is_update"
         variant="primary"
@@ -336,9 +341,9 @@
         style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #ccc !important;  width:30% !important; padding:6px 80px !important;"
         >返&nbsp;&nbsp;回</b-button
       >
-    </b-modal> -->
+    </b-modal>
     <!--删除弹框-->
-    <!-- <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+    <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block text-center">
         <b-alert variant="danger" show>删除订单可能会有严重影响,确认删除吗?</b-alert>
       </div>
@@ -355,13 +360,13 @@
         @click="closeAlert('delete')"
         >返&nbsp;&nbsp;回</b-button
       >
-    </b-modal> -->
+    </b-modal>
   </div>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
 import Validator from 'async-validator';
-import { mapState } from 'vuex';
 import { log } from 'util';
 //import exportExcel from '@/components/exportExcel.vue';
 export default {
@@ -380,12 +385,12 @@ export default {
       currentPage: 1,
       totalRow: 0,
       form: {},
-      start: '',
-      end: '',
       mainValidator: new Validator({
-        cus_id: [{ required: true, message: '请选择客户' }],
-        in_date: [{ required: true, message: '请选择订单日期' }],
-        status: [{ required: true, message: '请选择是否出库' }],
+        op: [{ required: true, message: '请填写操作人' }],
+        c_id: [{ required: true, message: '请选择客户' }],
+        send_time: [{ required: true, message: '请选择发货日期' }],
+        dly_type: [{ required: true, message: '请选择物流方式' }],
+        status: [{ required: true, message: '请选择订单状态' }],
       }),
       th: ['订单号', '订单人', '订单日期', '备注'],
       filterVal: ['order_no', 'user_name', 'in_date', 'remark'],
@@ -406,14 +411,15 @@ export default {
   },
   computed: {
     ...mapState({
-      userInfo: state => state.userInfo,
+      limit: state => state.publics.limit,
+      userInfo: state => state.publics.userInfo,
+      orderList: state => state.self.orderList,
+      orderSubList: state => state.self.orderSubList,
     }),
   },
   created() {
     this.search();
-    this.searchWork();
-    this.getKindList('');
-    this.searchName();
+    // this.searchName();
   },
   watch: {
     is_title_search: {
@@ -428,6 +434,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['getOrderList', 'getOrderSubList', 'getOrderNo', 'orderSave', 'orderEdit', 'orderDelete']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -439,122 +446,26 @@ export default {
     },
     //查询
     async search() {
-      if (this.is_title_search) {
-        this.is_title_search = false;
-        return;
-      }
-      if (this.select_order_no === null) this.select_order_no = '';
-      if (this.select_cus_id === null) this.select_cus_id = '';
-      if (this.select_in_date.length == 0) this.select_in_date = '';
-      if (typeof this.select_in_date[0] != 'undefined') {
-        this.start = this.select_in_date[0];
-      } else {
-        this.start = '';
-      }
-      if (typeof this.select_in_date[1] != 'undefined') {
-        this.end = this.select_in_date[1];
-      } else {
-        this.end = '';
-      }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(
-        `/akyl/order/order_list?skip=${skip}&limit=${this.limit}&order_num=${this.select_order_no}&cus_id=${this.select_cus_id}&start_time=${
-          this.start
-        }&end_time=${this.end}`
-      );
-      if (result.data.msg === '成功') {
-        this.$set(this, 'list', result.data.orderList);
-        this.$set(this, 'totalRow', result.data.totalRow);
-      }
-      if (result.data.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-      }
-    },
-    //分页查询
-    async titlesearch() {
-      if (this.is_title_search) {
-        this.is_title_search = true;
-        return;
-      }
-      if (this.select_order_no === null) this.select_order_no = '';
-      if (this.select_cus_id === null) this.select_cus_id = '';
-      if (this.select_in_date === null) this.select_in_date = '';
-      if (typeof this.select_in_date[0] != 'undefined') {
-        this.start = this.select_in_date[0];
-      } else {
-        this.start = '';
-      }
-      if (typeof this.select_in_date[1] != 'undefined') {
-        this.end = this.select_in_date[1];
-      } else {
-        this.end = '';
-      }
-      let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(
-        `/akyl/order/order_list?skip=${skip}&limit=${this.limit}&order_num=${this.select_order_no}&cus_id=${this.select_cus_id}&start_time=${
-          this.start
-        }&end_time=${this.end}`
-      );
-      if (result.data.msg === '成功') {
-        this.$set(this, 'list', result.data.orderList);
-        this.$set(this, 'totalRow', result.data.totalRow);
-      }
-      if (result.data.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-      }
-    },
-    //模糊查询按钮
-    async searchButton() {
-      this.currentPage = 1;
-      if (this.is_title_search) {
-        this.is_title_search = true;
-        return;
-      }
-      if (this.select_order_no === null) this.select_order_no = '';
-      if (this.select_cus_id === null) this.select_cus_id = '';
-      if (this.select_in_date === null) this.select_in_date = '';
-      if (typeof this.select_in_date[0] != 'undefined') {
-        this.start = this.select_in_date[0];
-      } else {
-        this.start = '';
-      }
-      if (typeof this.select_in_date[1] != 'undefined') {
-        this.end = this.select_in_date[1];
-      } else {
-        this.end = '';
-      }
-      let skip = 0;
-      let result = await this.$axios.get(
-        `/akyl/order/order_list?skip=${skip}&limit=${this.limit}&order_num=${this.select_order_no}&cus_id=${this.select_cus_id}&start_time=${
-          this.start
-        }&end_time=${this.end}`
-      );
-      if (result.data.msg === '成功') {
-        this.$set(this, 'list', result.data.orderList);
-        this.$set(this, 'totalRow', result.data.totalRow);
-      }
-      if (result.data.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-      }
+      let totalRow = await this.getOrderList({
+        skip: skip,
+        limit: this.limit,
+        order_num: this.select_order_no,
+        cus_id: this.select_cus_id,
+        start_time: this.select_in_date[0],
+        end_time: this.select_in_date[1],
+      });
+      this.$set(this, 'totalRow', totalRow);
     },
     //获取订单号
     async getOrderNum() {
-      let result = await this.$axios.get(`/akyl/order/order_num?cus_id=${this.form.cus_id}`);
-      this.$set(this.form, 'order_num', result.data.order_num);
+      let result = await this.getOrderNo({ cus_id: this.form.cus_id });
+      this.$set(this.form, 'order_no', result);
     },
     //查询客户姓名(铭远的接口)
-    async searchName() {
+    async customerList() {
       let skip = (this.currentPage - 1) * this.limit;
       let result = await this.$axios.get(`/akyl/customer/customer_list?skip=${skip}&limit=${this.limit}`);
-      if (result.data.msg === '成功') {
-        this.customerName = result.data.customerList.map(item => {
-          let newObject = { text: item.name, value: item.id };
-          return newObject;
-        });
-      }
     },
     //显示客户姓名
     getName(id) {
@@ -579,35 +490,26 @@ export default {
     },
     //添加
     async add() {
-      let result = await this.$axios.post('/akyl/order/order_save', { data: this.form });
-      if (result.data.msg === '成功') {
-        let id = result.data.id;
-        result = await this.$axios.post('/akyl/order/order_sub_save', { data: { subForm: this.subForm, id: id } });
-        if (result.data.msg === '成功') {
-          this.$refs.addAlert.hide();
-          this.form = {};
-          this.subForm = [];
-          this.search();
-        }
+      try {
+        await this.orderSave({ form: this.form, subForm: this.subForm });
+        this.$refs.addAlert.hide();
+        this.form = {};
+        this.subForm = [];
+        this.search();
+      } catch (error) {
+        console.error('error in line 489');
       }
     },
     //修改
     async update() {
-      let result = await this.$axios.post('/akyl/order/order_edit', { data: this.updateForm });
-      let id = this.updateForm.id;
-      console.log(this.orderSubList);
-      if (result.data.msg === '成功') {
-        for (let index = 0; index < this.orderSubList.length; index++) {
-          delete this.orderSubList[index].kind_name;
-        }
-        result = await this.$axios.post('/akyl/order/order_sub_edit', { data: { subForm: this.orderSubList, id: id } });
-        if (result.data.msg === '成功') {
-          this.closeAlert('update');
-          this.updateForm = new Array();
-          this.orderSubList = [];
-          this.is_update = true;
-          this.search();
-        }
+      try {
+        await this.orderEdit({ form: this.form, subForm: this.subForm });
+      } catch (error) {
+        this.closeAlert('update');
+        this.updateForm = new Array();
+        this.orderSubList = [];
+        this.is_update = true;
+        this.search();
       }
     },
     //删除

@@ -27,6 +27,7 @@
             </td>
           </tr>
         </table>
+
         <div class="base-align-right" style="margin-bottom:20px;">
           <a
             class="btn btn-info base-margin-bottom"
@@ -235,7 +236,7 @@ export default {
       limit: 15,
       totalRow: 0,
       value1: '',
-      select_client_name: '', 
+      select_client_name: '',
       lzValidator: new Validator({
         // type: { type: 'string', required: true, message: '请填写型号' },
         // num: { required: true, message: '请填写数量' },
@@ -243,9 +244,9 @@ export default {
       }),
       th: ['客户名称', '地址', '法人', '手机/固话(0431-8xxxxxxx)', '传真', '税号', '银行卡号', '银行账号'],
       filterVal: ['name', 'address', 'legal_person', 'tel', 'fex', 'taxes_no', 'card_no', 'card_account'],
-      is_title_search:false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
-      skip:0,
-      countNum:0,
+      is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
+      skip: 0,
+      countNum: 0,
     };
   },
   computed: {
@@ -258,7 +259,7 @@ export default {
   created() {
     this.search();
   },
-  watch:{
+  watch: {
     is_title_search: {
       handler(nV, oV) {
         this.$set(this, 'currentPage', 1);
@@ -267,7 +268,7 @@ export default {
         } else {
           this.search();
         }
-      }
+      },
     },
   },
   methods: {
@@ -277,7 +278,7 @@ export default {
       this.currentPage = currentPage;
       if (this.is_title_search) {
         this.titlesearch();
-      }else{
+      } else {
         this.search();
       }
     },
@@ -294,7 +295,7 @@ export default {
     },
     //模糊查询的方法
     async titlesearch() {
-      if(!this.is_title_search){
+      if (!this.is_title_search) {
         this.is_title_search = true;
         return;
       }
@@ -310,10 +311,10 @@ export default {
     //模糊查询按钮
     async searchButton() {
       this.currentPage = 1;
-      if(!this.is_title_search){
+      if (!this.is_title_search) {
         this.is_title_search = true;
         return;
-      } 
+      }
       let skip = 0;
       let totalRow = await this.getClientListLike({
         skip: skip,
