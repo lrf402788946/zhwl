@@ -300,12 +300,10 @@ export default {
   data() {
     return {
       list: [],
-      create_date_today: new Date().getYear() + 1900 + '-' + new Date().getMonth() + 1 + '-' + new Date().getDate(),
       form: {},
       deleteItem: '',
       updateForm: {},
       currentPage: 1,
-      limit: 15,
       totalRow: 0,
       value1: '',
       select_driver_name: '',
@@ -318,13 +316,18 @@ export default {
       th: ['驾驶员名称', '电话/固话', '身份证', '驾驶证号', '初次领证时间', '准驾车型', '驾驶证有效日期', '驾驶证年检日期', '资格证年检日期'],
       filterVal: ['name', 'tel', 'id_card', 'drive_card', 'fhc_time', 'car_type', 'ccu_time', 'cc_time', 'qc_time'],
       is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
-      skip: 0,
       countNum: 0,
       timeValue: [{}, {}],
       timeValues: '',
     };
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      skip: state => state.self.skip,
+      limit: state => state.publics.limit,
+      driverList: state => state.self.driverList,
+    }),
+  },
   created() {
     this.search();
   },
@@ -341,7 +344,7 @@ export default {
     },
   },
   methods: {
-    //整体逻辑:已有数据的修改直接=>提交=>请求=>刷新视图;添加数据则弹出框添加
+    ...mapActions(['getDriverList','getDriverListLike', 'addDriverlist', 'driverOperation']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -358,15 +361,9 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(`/zhwl/driver/driver_list?skip=${skip}&limit=${this.limit}`);
-      if (result.msg === '成功') {
-        this.$set(this, 'list', result.driverList);
-        this.$set(this, 'totalRow', result.totalRow);
-      }
-      if (result.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-      }
+      let totalRow = await this.getDriverList({ skip: skip, limit: this.limit });
+      this.$set(this, 'list', this.driverList);
+      this.$set(this, 'totalRow', totalRow);
     },
     //模糊查询的方法
     async titlesearch() {
@@ -375,17 +372,14 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(
-        `/zhwl/driver/driver_list?skip=${skip}&limit=${this.limit}&name=${this.select_driver_name}&id_card=${this.select_driver_id_card}`
-      );
-      if (result.msg === '成功') {
-        this.$set(this, 'list', result.driverList);
-        this.$set(this, 'totalRow', result.totalRow);
-      }
-      if (result.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-      }
+      let totalRow = await this.getDriverListLike({
+        skip: skip,
+        limit: this.limit,
+        select_driver_name: this.select_driver_name,
+        select_driver_id_card: this.select_driver_id_card,
+      });
+      this.$set(this, 'list', this.driverList);
+      this.$set(this, 'totalRow', totalRow);
     },
     //模糊查询按钮
     async searchButton() {
@@ -395,29 +389,39 @@ export default {
         return;
       }
       let skip = 0;
-      let result = await this.$axios.get(
-        `/zhwl/driver/driver_list?skip=${skip}&limit=${this.limit}&name=${this.select_driver_name}&id_card=${this.select_driver_id_card}`
-      );
-      if (result.msg === '成功') {
-        this.$set(this, 'list', result.driverList);
-        this.$set(this, 'totalRow', result.totalRow);
-      }
-      if (result.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-      }
+      let totalRow = await this.getDriverListLike({
+        skip: skip,
+        limit: this.limit,
+        select_driver_name: this.select_driver_name,
+        select_driver_id_card: this.select_driver_id_card,
+      });
+      this.$set(this, 'list', this.driverList);
+      this.$set(this, 'totalRow', totalRow);
     },
-    async toUpdate() {
+    //修改
+    async update() {
       this.updateForm.ccu_time = this.updateForm.ccu_time[0] + '至' + this.updateForm.ccu_time[1];
-      let result = await this.$axios.post(`/zhwl/driver/driver_edit`, { data: this.updateForm });
-      if (result.rescode === '0') {
-        this.$message.success('修改' + result.msg);
-        this.closeAlert('update');
-        this.updateForm = {};
-        this.search();
-      } else {
-        this.$message.error(result.msg);
-      }
+      await this.driverOperation({type:'update',data: this.updateForm });
+      this.updateForm = {};
+      this.$refs.updateAlert.hide();
+      this.search();
+    },
+    //删除
+    async toDelete() {
+      await this.driverOperation({ type: 'delete', data: this.deleteItem });
+      this.search();
+      this.deleteItem = '';
+      this.$refs.deleteAlert.hide();
+    },
+    //添加
+    async add() {
+      let date = this.timeValues[0] + '至' + this.timeValues[1];
+      this.form.ccu_time = date;
+      await this.addDriverlist({data: this.form });
+      this.form = {};
+      this.$refs.toAdd.hide();
+      this.search();
+      this.timeValues = '';
     },
     //打印
     doPrint() {
@@ -435,34 +439,6 @@ export default {
     openDeleteAlert(id) {
       this.$refs.deleteAlert.show();
       this.deleteItem = id;
-    },
-    //删除
-    async toDelete() {
-      let result = await this.$axios.post(`/zhwl/driver/driver_delete`, { data: { id: this.deleteItem } });
-      if (result.rescode === '0') {
-        this.$message.success('删除' + result.msg);
-        this.search();
-        this.deleteItem = '';
-        this.$refs.deleteAlert.hide();
-      } else {
-        this.$message.error(result.msg);
-      }
-    },
-    //添加
-    async toAdd() {
-      let date = this.timeValues[0] + '至' + this.timeValues[1];
-      this.form.ccu_time = date;
-      let result = await this.$axios.post(`/zhwl/driver/driver_save`, { data: this.form });
-      if (result.rescode === '0') {
-        this.$message.success('添加' + result.msg);
-        this.currentPage = 1;
-        this.form = { create_date: this.create_date_today };
-        this.search();
-        this.$refs.toAdd.hide();
-      } else {
-        this.$message.error(result.msg);
-      }
-      this.timeValues = '';
     },
     openAlert(type, id) {
       if (type === 'update') {
@@ -493,14 +469,14 @@ export default {
           if (errors) {
             return this.handleErrors(errors, fields);
           }
-          return this.toAdd();
+          return this.add();
         });
       } else {
         this.lzValidator.validate(this.updateForm, (errors, fields) => {
           if (errors) {
             return this.handleErrors(errors, fields);
           }
-          return this.toUpdate();
+          return this.update();
         });
       }
     },
