@@ -4,6 +4,7 @@ import index from './index.vue';
 import index_contant from './views/index_contant.vue';
 import user from './views/user.vue';
 import role from './views/role.vue';
+import user_role from './views/user_role.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -27,6 +28,11 @@ export default new Router({
           path: '/role',
           name: 'role',
           component: role,
+        },
+        {
+          path: '/user_role',
+          name: 'user_role',
+          component: user_role,
         },
       ],
     },

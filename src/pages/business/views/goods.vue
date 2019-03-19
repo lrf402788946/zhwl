@@ -4,11 +4,30 @@
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">角色列表</a>
+          <a class="base-margin-left-20">货物列表</a>
           <div class="button-table"></div>
         </div>
       </div>
       <div class="base-padding-20 base-bg-fff">
+        <table>
+          <tr>
+            <td>货物名称查询</td>
+          </tr>
+          <tr>
+            <td><b-form-input v-model="select_name" placeholder="输入货物名称"></b-form-input></td>
+          </tr>
+          <tr>
+            <td>
+              <b-button
+                variant="primary"
+                style="font-size: 14px !important; color: rgb(255, 255, 255) !important; width: 60% !important; padding: 5px 10px !important; margin-top:28px; margin-right: 0px !important;"
+                @click="searchButton()"
+                >点击查询</b-button
+              >
+            </td>
+          </tr>
+        </table>
+
         <div class="base-align-right" style="margin-bottom:20px;">
           <a
             class="btn btn-info base-margin-bottom"
@@ -18,19 +37,23 @@
             role="button"
             v-b-modal="'toAdd'"
           >
-            <i class="base-margin-right-5 fa fa-plus-square"></i>添加角色
+            <i class="base-margin-right-5 fa fa-plus-square"></i>添加货物
           </a>
         </div>
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
             <tr>
-              <th>角色代码</th>
-              <th>角色名称</th>
+              <th>货物名称</th>
+              <th>数量</th>
+              <th>重量</th>
+              <th>体积</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
-              <td>{{ item.role_code }}</td>
-              <td>{{ item.role_name }}</td>
+              <td>{{ item.goods_name }}</td>
+              <td>{{ item.num }}</td>
+              <td>{{ item.weight }}</td>
+              <td>{{ item.volume }}</td>
               <td>
                 <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">修&nbsp;&nbsp;改</b-button>
                 <b-button variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
@@ -43,11 +66,25 @@
             </tr>
           </tbody>
         </table>
-        <b-modal id="toAdd" title="添加角色" ref="toAdd" hide-footer>
-          <p class="marginBot5">角色代码</p>
-          <b-form-input v-model="form.role_code" class="marginBot8"></b-form-input>
-          <p class="marginBot5">角色名称</p>
-          <b-form-input v-model="form.role_name" class="marginBot20"></b-form-input>
+        <el-pagination
+          layout="total, prev, pager, next"
+          :background="true"
+          :page-size="15"
+          prev-text="上一页"
+          next-text="下一页"
+          :current-page="currentPage"
+          @current-change="toSearch"
+          :total="totalRow"
+        ></el-pagination>
+        <b-modal id="toAdd" title="添加货物" ref="toAdd" hide-footer>
+          <p class="marginBot5">货物名称</p>
+          <b-form-input v-model="form.goods_name" class="marginBot20" placeholder="请填写货物名称"></b-form-input>
+          <p class="marginBot5">数量</p>
+          <b-form-input v-model="form.num" class="marginBot20" placeholder="请填写货物数量"></b-form-input>
+          <p class="marginBot5">重量</p>
+          <b-form-input v-model="form.weight" class="marginBot20" placeholder="请填写货物重量"></b-form-input>
+          <p class="marginBot5">体积</p>
+          <b-form-input v-model="form.volume" class="marginBot20" placeholder="请填写货物体积"></b-form-input>
           <b-button
             variant="secondary"
             @click="form = { p_id: 0 }"
@@ -64,11 +101,15 @@
           </b-button>
         </b-modal>
 
-        <b-modal id="Edit" title="修改角色" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
-          <p class="marginBot5">角色代码</p>
-          <b-form-input v-model="form.role_code" class="marginBot8"></b-form-input>
-          <p class="marginBot5">角色名称</p>
-          <b-form-input v-model="form.role_name" class="marginBot20"></b-form-input>
+        <b-modal id="Edit" title="修改货物" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+          <p class="marginBot5">货物名称</p>
+          <b-form-input v-model="form.goods_name" class="marginBot20" placeholder="请填写货物名称"></b-form-input>
+          <p class="marginBot5">数量</p>
+          <b-form-input v-model="form.num" class="marginBot20" placeholder="请填写货物数量"></b-form-input>
+          <p class="marginBot5">重量</p>
+          <b-form-input v-model="form.weight" class="marginBot20" placeholder="请填写货物重量"></b-form-input>
+          <p class="marginBot5">体积</p>
+          <b-form-input v-model="form.volume" class="marginBot20" placeholder="请填写货物体积"></b-form-input>
           <b-button
             variant="secondary"
             @click="closeAlert()"
@@ -87,7 +128,7 @@
 
         <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
           <div class="d-block text-center">
-            <b-alert variant="danger" show>确定删除该角色?</b-alert>
+            <b-alert variant="danger" show>确定删除该货物?</b-alert>
           </div>
           <b-button
             variant="danger"
@@ -113,39 +154,99 @@
 import { mapActions, mapState } from 'vuex';
 import Validator from 'async-validator';
 export default {
-  name: 'role',
+  name: 'goods',
   metaInfo: {
-    title: '角色管理',
+    title: '货物管理',
   },
   components: {},
   data() {
     return {
       list: [],
       form: {
-        p_id: 0,
+        goods_name: '',
+        num: '',
+        weight: '',
+        volume: '',
       },
+      is_title_search:false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
+      currentPage: 1,
+      countNum: 0,
+      totalRow: 0,
       deleteItem: '',
+      select_name: '',
+      select_order_no: '',
       roleValidator: new Validator({
-        role_code: [{ type: 'string', required: true, message: '请填写角色代码' }],
-        role_name: { type: 'string', required: true, message: '请填写角色名称' },
+        goods_name: [{ required: true, message: '请选择货物名称' }],
+        num: { required: true, message: '请填写货物数量' },
+        weight: { required: true, message: '请填写货物重量' },
+        volume: { required: true, message: '请填写货物体积' },
       }),
     };
   },
   computed: {
     ...mapState({
+      skip: state => state.self.skip,
       limit: state => state.publics.limit,
-      roleList: state => state.self.roleList,
+      goodsList: state => state.self.goodsList,
     }),
   },
-  async created() {
-    await this.search();
+  created() {
+    this.search();
   },
   methods: {
-    ...mapActions(['getRoleList', 'roleOperation']),
+    ...mapActions(['getGoodslist', 'goodsOperation', 'addGoodslist', 'getGoodslistlike']),
+    //分页
+    toSearch(currentPage) {
+      this.currentPage = currentPage;
+      if (this.is_title_search) {
+        this.titlesearch();
+      } else {
+        this.search();
+      }
+    },
+    //查询
     async search() {
-      //查询方法
-      await this.getRoleList({ type: 'list' });
-      this.$set(this, 'list', this.roleList);
+      if (this.is_title_search) {
+        this.is_title_search = false;
+        return;
+      }
+      let skip = (this.currentPage - 1) * this.limit;
+      let totalRow = await this.getGoodslist({ skip: skip, limit: this.limit });
+      this.$set(this, 'list', this.goodsList);
+      this.$set(this, 'totalRow', totalRow);
+    },
+    //模糊查询的方法
+    async titlesearch() {
+      if(!this.is_title_search){
+        this.is_title_search = true;
+        return;
+      }
+      if (this.select_name === null) this.select_name = '';
+      let skip = (this.currentPage - 1) * this.limit;
+      let totalRow = await this.getGoodslistlike({
+        skip: skip,
+        limit: this.limit,
+        select_name: this.select_name,
+      });
+      this.$set(this, 'list', this.goodsList);
+      this.$set(this, 'totalRow', totalRow);
+    },
+    //模糊查询按钮
+    async searchButton() {
+      this.currentPage = 1;
+      if (this.select_name === null) this.select_name = '';
+      if(!this.is_title_search){
+        this.is_title_search = true;
+        return;
+      } 
+      let skip = 0;
+      let totalRow = await this.getGoodslistlike({
+        skip: skip,
+        limit: this.limit,
+        select_name: this.select_name,
+      });
+      this.$set(this, 'list', this.goodsList);
+      this.$set(this, 'totalRow', totalRow);
     },
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
     async toValidate(type) {
@@ -162,7 +263,7 @@ export default {
     },
     //添加
     async add() {
-      await this.roleOperation({ type: 'roleSave', data: this.form });
+      await this.addGoodslist({ type: 'goodsSave', data: this.form });
       this.form = {};
       this.$refs.toAdd.hide();
       this.search();
@@ -174,7 +275,7 @@ export default {
     },
     //删除
     async toDelete() {
-      await this.roleOperation({ type: 'roleDelete', data: this.deleteItem });
+      await this.goodsOperation({ type: 'goodsDelete', data: this.deleteItem });
       this.search();
       this.deleteItem = '';
       this.$refs.deleteAlert.hide();
@@ -186,7 +287,7 @@ export default {
     },
     //修改
     async update() {
-      await this.roleOperation({ type: 'roleEdit', data: this.form });
+      await this.goodsOperation({ type: 'goodsEdit', data: this.form });
       this.form = {};
       this.$refs.Edit.hide();
       this.search();
