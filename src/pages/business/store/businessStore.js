@@ -117,30 +117,6 @@ export const actions = {
       console.error(err);
     }
   },
-  //路线操作
-  async dlywayOperation({ commit }, { type, data }) {
-    let result;
-    try {
-      if (type === 'roleDelete') {
-        result = await this.$axios.post(_.get(api, type), {
-          data: { id: data },
-        });
-      } else {
-        result = await this.$axios.post(_.get(api, type), {
-          data: data,
-        });
-      }
-      if (result.rescode === '0') {
-        Message.success('操作成功');
-      } else {
-        Message.error('操作失败');
-        console.warn(`error in:${type}`);
-      }
-    } catch (err) {
-      Message.error('操作失败');
-      console.error(err);
-    }
-  },
   //订单查询
   async getOrderList({ commit }, { skip, limit, order_num, cus_id, start_time, end_time }) {
     try {
