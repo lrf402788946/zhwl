@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import index from './index.vue';
 import dly_way from './views/dly_way.vue';
 import order from './views/order.vue';
+import goods from './views/goods.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -21,6 +22,11 @@ export default new Router({
           path: '/order',
           name: 'order',
           component: order,
+        },
+        {
+          path: '/goods',
+          name: 'goods',
+          component: goods,
         },
       ],
     },
