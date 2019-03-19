@@ -117,6 +117,8 @@ export const actions = {
       if (result.rescode === '0') {
         commit(types.ORDER_LIST, result.orderList);
         return result.totalRow;
+      } else {
+        Message.error(result.msg);
       }
     } catch (error) {
       Message.error('接口加载失败');
@@ -136,7 +138,7 @@ export const actions = {
     }
   },
   //获取订单号
-  async getOrderNum({ commit }, { cus_id }) {
+  async getOrderNo({ commit }, { cus_id }) {
     try {
       let result = this.$axios.get(`${api.orderNum}?cus_id=${cus_id}`);
       return result.order_num;

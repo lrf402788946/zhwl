@@ -27,6 +27,7 @@
             </td>
           </tr>
         </table>
+
         <div class="base-align-right" style="margin-bottom:20px;">
           <a
             class="btn btn-info base-margin-bottom"
@@ -203,7 +204,7 @@ export default {
       limit: 15,
       totalRow: 0,
       value1: '',
-      select_dept_name: '', 
+      select_dept_name: '',
       lzValidator: new Validator({
         // type: { type: 'string', required: true, message: '请填写型号' },
         // num: { required: true, message: '请填写数量' },
@@ -211,16 +212,16 @@ export default {
       }),
       th: ['部门名称', '所属单位id', '部门职责', '部门电话'],
       filterVal: ['dept_name', 'unit_id', 'dept_duty', 'dept_tell'],
-      is_title_search:false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
-      skip:0,
-      countNum:0,
+      is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
+      skip: 0,
+      countNum: 0,
     };
   },
   computed: {},
   created() {
     this.search();
   },
-  watch:{
+  watch: {
     is_title_search: {
       handler(nV, oV) {
         this.$set(this, 'currentPage', 1);
@@ -229,7 +230,7 @@ export default {
         } else {
           this.search();
         }
-      }
+      },
     },
   },
   methods: {
@@ -239,7 +240,7 @@ export default {
       this.currentPage = currentPage;
       if (this.is_title_search) {
         this.titlesearch();
-      }else{
+      } else {
         this.search();
       }
     },
@@ -250,9 +251,7 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(
-        `/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}`
-      );
+      let result = await this.$axios.get(`/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}`);
       if (result.msg === '成功') {
         this.$set(this, 'list', result.deptList);
         this.$set(this, 'totalRow', result.totalRow);
@@ -264,14 +263,12 @@ export default {
     },
     //模糊查询的方法
     async titlesearch() {
-      if(!this.is_title_search){
+      if (!this.is_title_search) {
         this.is_title_search = true;
         return;
-      } 
+      }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(
-        `/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}&name=${this.select_dept_name}`
-      );
+      let result = await this.$axios.get(`/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}&name=${this.select_dept_name}`);
       if (result.msg === '成功') {
         this.$set(this, 'list', result.deptList);
         this.$set(this, 'totalRow', result.totalRow);
@@ -284,14 +281,12 @@ export default {
     //模糊查询按钮
     async searchButton() {
       this.currentPage = 1;
-      if(!this.is_title_search){
+      if (!this.is_title_search) {
         this.is_title_search = true;
         return;
-      } 
+      }
       let skip = 0;
-      let result = await this.$axios.get(
-        `/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}&name=${this.select_dept_name}`
-      );
+      let result = await this.$axios.get(`/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}&name=${this.select_dept_name}`);
       if (result.msg === '成功') {
         this.$set(this, 'list', result.deptList);
         this.$set(this, 'totalRow', result.totalRow);

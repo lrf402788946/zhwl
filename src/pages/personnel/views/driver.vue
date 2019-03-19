@@ -31,6 +31,7 @@
             </td>
           </tr>
         </table>
+
         <div class="base-align-right" style="margin-bottom:20px;">
           <a
             class="btn btn-info base-margin-bottom"
@@ -308,7 +309,7 @@ export default {
       totalRow: 0,
       value1: '',
       select_driver_name: '',
-      select_driver_id_card: '', 
+      select_driver_id_card: '',
       lzValidator: new Validator({
         // type: { type: 'string', required: true, message: '请填写型号' },
         // num: { required: true, message: '请填写数量' },
@@ -316,18 +317,18 @@ export default {
       }),
       th: ['驾驶员名称', '电话/固话', '身份证', '驾驶证号', '初次领证时间', '准驾车型', '驾驶证有效日期', '驾驶证年检日期', '资格证年检日期'],
       filterVal: ['name', 'tel', 'id_card', 'drive_card', 'fhc_time', 'car_type', 'ccu_time', 'cc_time', 'qc_time'],
-      is_title_search:false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
-      skip:0,
-      countNum:0,
-      timeValue:[{},{}],
-      timeValues:'',
+      is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
+      skip: 0,
+      countNum: 0,
+      timeValue: [{}, {}],
+      timeValues: '',
     };
   },
   computed: {},
   created() {
     this.search();
   },
-  watch:{
+  watch: {
     is_title_search: {
       handler(nV, oV) {
         this.$set(this, 'currentPage', 1);
@@ -336,7 +337,7 @@ export default {
         } else {
           this.search();
         }
-      }
+      },
     },
   },
   methods: {
@@ -346,7 +347,7 @@ export default {
       this.currentPage = currentPage;
       if (this.is_title_search) {
         this.titlesearch();
-      }else{
+      } else {
         this.search();
       }
     },
@@ -357,9 +358,7 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(
-        `/zhwl/driver/driver_list?skip=${skip}&limit=${this.limit}`
-      );
+      let result = await this.$axios.get(`/zhwl/driver/driver_list?skip=${skip}&limit=${this.limit}`);
       if (result.msg === '成功') {
         this.$set(this, 'list', result.driverList);
         this.$set(this, 'totalRow', result.totalRow);
@@ -371,10 +370,10 @@ export default {
     },
     //模糊查询的方法
     async titlesearch() {
-      if(!this.is_title_search){
+      if (!this.is_title_search) {
         this.is_title_search = true;
         return;
-      } 
+      }
       let skip = (this.currentPage - 1) * this.limit;
       let result = await this.$axios.get(
         `/zhwl/driver/driver_list?skip=${skip}&limit=${this.limit}&name=${this.select_driver_name}&id_card=${this.select_driver_id_card}`
@@ -391,10 +390,10 @@ export default {
     //模糊查询按钮
     async searchButton() {
       this.currentPage = 1;
-      if(!this.is_title_search){
+      if (!this.is_title_search) {
         this.is_title_search = true;
         return;
-      } 
+      }
       let skip = 0;
       let result = await this.$axios.get(
         `/zhwl/driver/driver_list?skip=${skip}&limit=${this.limit}&name=${this.select_driver_name}&id_card=${this.select_driver_id_card}`
@@ -409,7 +408,7 @@ export default {
       }
     },
     async toUpdate() {
-      this.updateForm.ccu_time=this.updateForm.ccu_time[0]+'至'+this.updateForm.ccu_time[1];
+      this.updateForm.ccu_time = this.updateForm.ccu_time[0] + '至' + this.updateForm.ccu_time[1];
       let result = await this.$axios.post(`/zhwl/driver/driver_edit`, { data: this.updateForm });
       if (result.rescode === '0') {
         this.$message.success('修改' + result.msg);
@@ -451,8 +450,8 @@ export default {
     },
     //添加
     async toAdd() {
-      let date=this.timeValues[0]+'至'+this.timeValues[1];
-      this.form.ccu_time=date;
+      let date = this.timeValues[0] + '至' + this.timeValues[1];
+      this.form.ccu_time = date;
       let result = await this.$axios.post(`/zhwl/driver/driver_save`, { data: this.form });
       if (result.rescode === '0') {
         this.$message.success('添加' + result.msg);
@@ -463,19 +462,20 @@ export default {
       } else {
         this.$message.error(result.msg);
       }
-      this.timeValues='';
+      this.timeValues = '';
     },
     openAlert(type, id) {
       if (type === 'update') {
         this.$refs.updateAlert.show();
-        this.timeValue[0]=this.list[id].ccu_time.substring(0,10);
-        this.timeValue[1]=this.list[id].ccu_time.substring(11,22);
+        this.timeValue[0] = this.list[id].ccu_time.substring(0, 10);
+        this.timeValue[1] = this.list[id].ccu_time.substring(11, 22);
         this.updateForm = JSON.parse(JSON.stringify(this.list[id]));
-        this.updateForm.ccu_time=this.timeValue;
+        this.updateForm.ccu_time = this.timeValue;
       } else if (type === 'delete') {
         this.$refs.deleteAlert.show();
         this.operateId = id;
-      }this.timeValue=[{},{}];
+      }
+      this.timeValue = [{}, {}];
     },
     closeAlert(type) {
       if (type === 'update') {
