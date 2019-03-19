@@ -299,7 +299,7 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let totalRow = await this.getClientList({
+      let totalRow = await this.getClientListLike({
         skip: skip,
         limit: this.limit,
         select_client_name: this.select_client_name,
@@ -315,7 +315,7 @@ export default {
         return;
       } 
       let skip = 0;
-      let totalRow = await this.getClientList({
+      let totalRow = await this.getClientListLike({
         skip: skip,
         limit: this.limit,
         select_client_name: this.select_client_name,

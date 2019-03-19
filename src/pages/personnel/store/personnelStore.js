@@ -132,4 +132,18 @@ export const actions = {
       console.error(err);
     }
   },
+  //模糊查询客户列表方法
+  async getClientListLike({ commit }, payload) {
+    const { skip, limit } = payload;
+    try {
+      let result = await this.$axios.get(`${api.clientList}?skip=${skip}&limit=${limit}`);
+      if (result.rescode === '0') {
+        commit(types.CLIENT_LIST, result.clientList);
+        return result.totalRow;
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
+      console.error(err);
+    }
+  },
 };
