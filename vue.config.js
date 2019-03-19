@@ -5,6 +5,7 @@ module.exports = {
   pages: {
     login: 'src/pages/login/main.js',
     system: 'src/pages/system/main.js',
+    car: 'src/pages/car/main.js',
   },
   configureWebpack: config => {
     Object.assign(config, {
@@ -22,12 +23,12 @@ module.exports = {
     port: '8001',
     //api地址前缀
     proxy: {
-      '/akyl': {
+      '/zhwl': {
         target: 'http://10.16.11.186:80',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
-          '/akyl': '',
+          '/zhwl': '',
         },
       },
     },
