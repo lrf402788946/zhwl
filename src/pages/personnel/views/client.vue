@@ -248,7 +248,13 @@ export default {
       countNum:0,
     };
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      skip: state => state.self.skip,
+      limit: state => state.publics.limit,
+      clientList: state => state.self.clientList,
+    }),
+  },
   created() {
     this.search();
   },
@@ -265,7 +271,7 @@ export default {
     },
   },
   methods: {
-    //整体逻辑:已有数据的修改直接=>提交=>请求=>刷新视图;添加数据则弹出框添加
+    ...mapActions(['getClientList', 'goodsOperation', 'addGoodslist', 'getGoodslistlike']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -282,36 +288,24 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(
-        `/zhwl/client/client_list?skip=${skip}&limit=${this.limit}`
-      );
-      if (result.msg === '成功') {
-        this.$set(this, 'list', result.clientList);
-        this.$set(this, 'totalRow', result.totalRow);
-      }
-      if (result.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-      }
+      let totalRow = await this.getClientList({ skip: skip, limit: this.limit });
+      this.$set(this, 'list', this.clientList);
+      this.$set(this, 'totalRow', totalRow);
     },
     //模糊查询的方法
     async titlesearch() {
       if(!this.is_title_search){
         this.is_title_search = true;
         return;
-      } 
+      }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(
-        `/zhwl/client/client_list?skip=${skip}&limit=${this.limit}&name=${this.select_client_name}`
-      );
-      if (result.msg === '成功') {
-        this.$set(this, 'list', result.clientList);
-        this.$set(this, 'totalRow', result.totalRow);
-      }
-      if (result.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-      }
+      let totalRow = await this.getClientList({
+        skip: skip,
+        limit: this.limit,
+        select_client_name: this.select_client_name,
+      });
+      this.$set(this, 'list', this.clientList);
+      this.$set(this, 'totalRow', totalRow);
     },
     //模糊查询按钮
     async searchButton() {
@@ -321,18 +315,15 @@ export default {
         return;
       } 
       let skip = 0;
-      let result = await this.$axios.get(
-        `/zhwl/client/client_list?skip=${skip}&limit=${this.limit}&name=${this.select_client_name}`
-      );
-      if (result.msg === '成功') {
-        this.$set(this, 'list', result.clientList);
-        this.$set(this, 'totalRow', result.totalRow);
-      }
-      if (result.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-      }
+      let totalRow = await this.getClientList({
+        skip: skip,
+        limit: this.limit,
+        select_client_name: this.select_client_name,
+      });
+      this.$set(this, 'list', this.clientList);
+      this.$set(this, 'totalRow', totalRow);
     },
+    //修改
     async toUpdate() {
       let result = await this.$axios.post(`/zhwl/client/client_edit`, { data: this.updateForm });
       if (result.rescode === '0') {

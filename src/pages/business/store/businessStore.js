@@ -223,7 +223,6 @@ export const actions = {
     const { skip, limit } = payload;
     try {
       let result = await this.$axios.get(`${api.goodsList}?skip=${skip}&limit=${limit}`);
-      console.log(this.goodsList);
       if (result.rescode === '0') {
         commit(types.GOODS_LIST, result.goodsList);
         return result.totalRow;
