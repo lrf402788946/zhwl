@@ -111,7 +111,7 @@
       <b-button
         variant="secondary"
         style="font-size:16px !important; margin-top:35px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-        @click="form = { create_date: create_date_today }"
+        @click="form = {}"
       >
         重&nbsp;&nbsp;置</b-button
       >
@@ -225,9 +225,7 @@ export default {
     return {
       list: [],
       create_date_today: new Date().getYear() + 1900 + '-' + new Date().getMonth() + 1 + '-' + new Date().getDate(),
-      form: {
-        create_date: new Date().getYear() + 1900 + '-' + new Date().getMonth() + 1 + '-' + new Date().getDate(),
-      },
+      form: {},
       deleteItem: '',
       updateForm: {
         gender: -1,
@@ -304,7 +302,7 @@ export default {
       } 
       let skip = (this.currentPage - 1) * this.limit;
       let result = await this.$axios.get(
-        `/zhwl/client/client_list?skip=${skip}&limit=${this.limit}`
+        `/zhwl/client/client_list?skip=${skip}&limit=${this.limit}&name=${this.select_client_name}`
       );
       if (result.msg === '成功') {
         this.$set(this, 'list', result.clientList);
@@ -324,7 +322,7 @@ export default {
       } 
       let skip = 0;
       let result = await this.$axios.get(
-        `/zhwl/client/client_list?skip=${skip}&limit=${this.limit}`
+        `/zhwl/client/client_list?skip=${skip}&limit=${this.limit}&name=${this.select_client_name}`
       );
       if (result.msg === '成功') {
         this.$set(this, 'list', result.clientList);

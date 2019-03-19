@@ -1,21 +1,25 @@
 <template lang="html">
-  <div id="client">
+  <div id="staff">
     <!-- 表格 begin -->
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">客户列表</a>
+          <a class="base-margin-left-20">员工列表</a>
           <div class="button-table"></div>
         </div>
       </div>
       <div class="base-padding-20 base-bg-fff">
         <table>
           <tr>
-            <td>客户姓名查询:</td>
+            <td>员工姓名查询:</td>
+            <td>员工工号查询:</td>
           </tr>
           <tr>
             <td>
-              <b-form-input v-model="select_client_name" placeholder="输入客户姓名" style="width:200px,margin-left:50px"></b-form-input>
+              <b-form-input v-model="select_staff_name" placeholder="输入员工姓名" style="width:200px,margin-left:50px"></b-form-input>
+            </td>
+            <td>
+              <b-form-input v-model="select_staff_job_num" placeholder="输入员工工号" style="width:200px,margin-left:50px"></b-form-input>
             </td>
             <td style="padding-left:60px">
               <b-button
@@ -36,37 +40,41 @@
             role="button"
             v-b-modal="'toAdd'"
           >
-            <i class="base-margin-right-5 fa fa-plus-square" style=" color:#fff !important;"></i>添加客户
+            <i class="base-margin-right-5 fa fa-plus-square" style=" color:#fff !important;"></i>添加员工
           </a>
           <!-- 导入表格 -->
           <entrance @research="search"></entrance>
         </div>
         <div style="margin:10px 0;">
           <!-- 导出表格 -->
-          <exportExcel :exportTitle="th" :db_nameList="filterVal" dataName="list" fileName="客户表"></exportExcel>
+          <exportExcel :exportTitle="th" :db_nameList="filterVal" dataName="list" fileName="员工表"></exportExcel>
         </div>
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
             <tr>
-              <th>客户名称</th>
-              <th>客户地址</th>
-              <th>法人</th>
-              <th>手机/固话（0431-8xxxxxxx）</th>
-              <th>传真</th>
-              <th>税号</th>
-              <th>银行卡号</th>
-              <th>银行账号</th>
+              <th>工号</th>
+              <th>员工姓名</th>
+              <th>性别</th>
+              <th>电话</th>
+              <th>家庭住址</th>
+              <th>出生日期</th>
+              <th>身份证号</th>
+              <th>部门</th>
+              <th>岗位</th>
+              <th>在职状态:0 在职;1 离职;2 退休</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
+              <td>{{ item.job_num }}</td>
               <td>{{ item.name }}</td>
-              <td>{{ item.address }}</td>
-              <td>{{ item.legal_person }}</td>
-              <td>{{ item.tel }}</td>
-              <td>{{ item.fex }}</td>
-              <td>{{ item.taxes_no }}</td>
-              <td>{{ item.card_no }}</td>
-              <td>{{ item.card_account }}</td>
+              <td>{{ item.gender === 1 ? '男' : '女' }}</td>
+              <td>{{ item.phone_no }}</td>
+              <td>{{ item.home_address }}</td>
+              <td>{{ item.birthday }}</td>
+              <td>{{ item.id_number }}</td>
+              <td>{{ { data: deptList, searchItem: 'value', value: item.dept_id, label: 'text' } | getName }}</td>
+              <td>{{ { data: postList, searchItem: 'value', value: item.post_id, label: 'text' } | getName }}</td>
+              <td>{{ item.status === 0 ? '在职' : item.status === 1 ? '离职' : '退休' }}</td>
               <td>
                 <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">修&nbsp;&nbsp;改</b-button>
                 <b-button variant="danger" style="color:white;" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
@@ -91,27 +99,38 @@
         ></el-pagination>
       </div>
     </div>
-    <b-modal id="toAdd" title="添加客户" ref="toAdd" hide-footer>
-      <div style="margin-bottom: 7px;">客户名称:</div>
+    <b-modal id="toAdd" title="添加员工" ref="toAdd" hide-footer>
+      <div style="margin-bottom: 7px;">工号:</div>
+      <b-form-input v-model="form.job_num"></b-form-input>
+      <div style="margin-bottom: 7px;">姓名:</div>
       <b-form-input v-model="form.name"></b-form-input>
-      <div style="margin-bottom: 7px;">地址:</div>
-      <b-form-input v-model="form.address"></b-form-input>
-      <div style="margin-bottom: 7px;">法人:</div>
-      <b-form-input v-model="form.legal_person"></b-form-input>
-      <div style="margin-bottom: 7px;">手机/固话(0431-8xxxxxxx):</div>
-      <b-form-input v-model="form.tel"></b-form-input>
-      <div style="margin-bottom: 7px;">传真:</div>
-      <b-form-input v-model="form.fex"></b-form-input>
-      <div style="margin-bottom: 7px;">税号:</div>
-      <b-form-input v-model="form.taxes_no"></b-form-input>
-      <div style="margin-bottom: 7px;">银行卡号:</div>
-      <b-form-input v-model="form.card_no"></b-form-input>
-      <div style="margin-bottom: 7px;">银行账号:</div>
-      <b-form-input v-model="form.card_account"></b-form-input>
+      <div style="margin-bottom: 7px;">性别:</div>
+      <b-form-select v-model="form.gender" :options="gender" class="marginBot" />
+      <div style="margin-bottom: 7px;">电话:</div>
+      <b-form-input v-model="form.phone_no"></b-form-input>
+      <div style="margin-bottom: 7px;">家庭住址:</div>
+      <b-form-input v-model="form.home_address"></b-form-input>
+      <div style="margin-bottom: 7px;">出生日期:</div>
+      <el-date-picker
+        style="width:100%;"
+        v-model="form.birthday"
+        type="date"
+        placeholder="出生日期"
+        value-format="yyyy-MM-dd"
+        format="yyyy-MM-dd"
+      ></el-date-picker>
+      <div style="margin-bottom: 7px;">身份证号:</div>
+      <b-form-input v-model="form.id_number"></b-form-input>
+      <div style="margin-bottom: 7px;">部门 id:</div>
+      <b-form-select v-model="form.dept_id" :options="deptList" class="marginBot" />
+      <div style="margin-bottom: 7px;">岗位 id:</div>
+      <b-form-select v-model="form.post_id" placeholder="岗位" :options="postList" class="marginBot" />
+      <div style="margin-bottom: 7px;">在职状态:0 在职;1 离职;2 退休:</div>
+      <b-form-select v-model="form.status" :options="status" class="marginBot" />
       <b-button
         variant="secondary"
         style="font-size:16px !important; margin-top:35px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-        @click="form = { create_date: create_date_today }"
+        @click="form = {}"
       >
         重&nbsp;&nbsp;置</b-button
       >
@@ -126,7 +145,7 @@
 
     <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block text-center">
-        <b-alert variant="danger" show>删除客户可能会影响您的管理,确认删除吗?</b-alert>
+        <b-alert variant="danger" show>删除员工可能会影响您的管理,确认删除吗?</b-alert>
       </div>
       <b-button
         variant="danger"
@@ -144,41 +163,56 @@
       ></b-modal
     >
 
-    <!-- jkjkjkjk -->
-    <b-modal id="updateAlert" title="修改客户" ref="updateAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+    <!-- 修改 -->
+    <b-modal id="updateAlert" title="修改员工" ref="updateAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block">
         <div class="row">
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">客户名称</p>
+            <p class="marginBot4">工号</p>
+            <b-form-input v-model="updateForm.job_num"></b-form-input>
+          </div>
+          <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">姓名</p>
             <b-form-input v-model="updateForm.name"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">地址</p>
-            <b-form-input v-model="updateForm.address"></b-form-input>
+            <p class="marginBot4">性别</p>
+            <b-form-select v-model="updateForm.gender" :options="gender" class="marginBot" />
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">法人</p>
-            <b-form-input v-model="updateForm.legal_person"></b-form-input>
+            <p class="marginBot4">电话</p>
+            <b-form-input v-model="updateForm.phone_no"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">手机/固话(0431-8xxxxxxx)</p>
-            <b-form-input v-model="updateForm.tel"></b-form-input>
+            <p class="marginBot4">家庭住址</p>
+            <b-form-input v-model="updateForm.home_address"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">传真</p>
-            <b-form-input v-model="updateForm.fex"></b-form-input>
+            <p class="marginBot4">出生日期</p>
+            <el-date-picker
+              style="width:100%;"
+              v-model="updateForm.birthday"
+              type="date"
+              placeholder="出生日期"
+              value-format="yyyy-MM-dd"
+              format="yyyy-MM-dd"
+            ></el-date-picker>
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">税号</p>
-            <b-form-input v-model="updateForm.taxes_no"></b-form-input>
+            <p class="marginBot4">身份证号</p>
+            <b-form-input v-model="updateForm.id_number"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">银行卡号</p>
-            <b-form-input v-model="updateForm.card_no"></b-form-input>
+            <p class="marginBot4">部门 id</p>
+            <b-form-select v-model="updateForm.dept_id" :options="deptList" class="marginBot" />
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">银行账号</p>
-            <b-form-input v-model="updateForm.card_account"></b-form-input>
+            <p class="marginBot4">岗位 id</p>
+            <b-form-select v-model="updateForm.post_id" placeholder="岗位" :options="postList" class="marginBot" />
+          </div>
+          <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">在职状态:0 在职;1 离职;2 退休</p>
+            <b-form-select v-model="updateForm.status" :options="status" class="marginBot" />
           </div>
           <div class="col-lg-12 marginBot4">
             <b-button
@@ -213,9 +247,9 @@ import exportExcel from '@/components/exportExcel.vue';
 
 import _ from 'lodash';
 export default {
-  name: 'lz',
+  name: 'staff',
   metaInfo: {
-    title: '客户管理',
+    title: '员工管理',
   },
   components: {
     entrance,
@@ -223,27 +257,30 @@ export default {
   },
   data() {
     return {
+      deptList: [],
+      postList: [],
       list: [],
       create_date_today: new Date().getYear() + 1900 + '-' + new Date().getMonth() + 1 + '-' + new Date().getDate(),
-      form: {
-        create_date: new Date().getYear() + 1900 + '-' + new Date().getMonth() + 1 + '-' + new Date().getDate(),
-      },
+      form: {},
       deleteItem: '',
       updateForm: {
         gender: -1,
         dept_id: 'default',
       },
+      gender: [{ text: '请选择性别', value: null, disabled: true }, { text: '男', value: 1 }, { text: '女', value: 0 }],
+      status: [{ text: '工作状态', value: null, disabled: true }, { text: '在职', value: 0 }, { text: '离职', value: 1 }, { text: '退休', value: 2 }],
       currentPage: 1,
       limit: 15,
       totalRow: 0,
       value1: '',
-      select_client_name: '', 
+      select_staff_name: '', 
+      select_staff_job_num: '',
       lzValidator: new Validator({
         // type: { type: 'string', required: true, message: '请填写型号' },
         // num: { required: true, message: '请填写数量' },
         // create_date: { type: 'string', required: true, message: '请选择创建日期' },
       }),
-      th: ['客户名称', '地址', '法人', '手机/固话(0431-8xxxxxxx)', '传真', '税号', '银行卡号', '银行账号'],
+      th: ['员工名称', '地址', '法人', '手机/固话(0431-8xxxxxxx)', '传真', '税号', '银行卡号', '银行账号'],
       filterVal: ['name', 'address', 'legal_person', 'tel', 'fex', 'taxes_no', 'card_no', 'card_account'],
       is_title_search:false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
       skip:0,
@@ -253,6 +290,7 @@ export default {
   computed: {},
   created() {
     this.search();
+    this.getOtherList();
   },
   watch:{
     is_title_search: {
@@ -285,10 +323,10 @@ export default {
       }
       let skip = (this.currentPage - 1) * this.limit;
       let result = await this.$axios.get(
-        `/zhwl/client/client_list?skip=${skip}&limit=${this.limit}`
+        `/zhwl/staff/staff_list?skip=${skip}&limit=${this.limit}`
       );
       if (result.msg === '成功') {
-        this.$set(this, 'list', result.clientList);
+        this.$set(this, 'list', result.staffList);
         this.$set(this, 'totalRow', result.totalRow);
       }
       if (result.msg === '没有数据') {
@@ -304,10 +342,10 @@ export default {
       } 
       let skip = (this.currentPage - 1) * this.limit;
       let result = await this.$axios.get(
-        `/zhwl/client/client_list?skip=${skip}&limit=${this.limit}`
+        `/zhwl/staff/staff_list?skip=${skip}&limit=${this.limit}&name=${this.select_staff_name}&job_num=${this.select_staff_job_num}`
       );
       if (result.msg === '成功') {
-        this.$set(this, 'list', result.clientList);
+        this.$set(this, 'list', result.staffList);
         this.$set(this, 'totalRow', result.totalRow);
       }
       if (result.msg === '没有数据') {
@@ -324,10 +362,10 @@ export default {
       } 
       let skip = 0;
       let result = await this.$axios.get(
-        `/zhwl/client/client_list?skip=${skip}&limit=${this.limit}`
+        `/zhwl/staff/staff_list?skip=${skip}&limit=${this.limit}&name=${this.select_staff_name}&job_num=${this.select_staff_job_num}`
       );
       if (result.msg === '成功') {
-        this.$set(this, 'list', result.clientList);
+        this.$set(this, 'list', result.staffList);
         this.$set(this, 'totalRow', result.totalRow);
       }
       if (result.msg === '没有数据') {
@@ -335,8 +373,28 @@ export default {
         this.totalRow = 0;
       }
     },
+    //请求各表
+    async getOtherList() {
+      //请求部门表
+      let result = await this.$axios.get('/zhwl/dept/dept_list?skip=0&limit=100');
+      this.deptList = result.deptList.map(item => {
+        let newObject = { text: item.dept_name, value: item.id };
+        return newObject;
+      });
+      let defalut = { text: '请选择部门', value: null, disabled: true };
+      this.deptList.unshift(defalut);
+      //请求岗位表
+      result = await this.$axios.get('/zhwl/post/post_list?skip=0&limit=100');
+      this.postList = result.postList.map(item => {
+        let newObject = { text: item.name, value: item.id };
+        return newObject;
+      });
+      defalut = { text: '请选择岗位', value: null, disabled: true };
+      this.postList.unshift(defalut);
+    },
+    //修改
     async toUpdate() {
-      let result = await this.$axios.post(`/zhwl/client/client_edit`, { data: this.updateForm });
+      let result = await this.$axios.post(`/zhwl/staff/staff_edit`, { data: this.updateForm });
       if (result.rescode === '0') {
         this.$message.success('修改' + result.msg);
         this.closeAlert('update');
@@ -365,7 +423,7 @@ export default {
     },
     //删除
     async toDelete() {
-      let result = await this.$axios.post(`/zhwl/client/client_delete`, { data: { id: this.deleteItem } });
+      let result = await this.$axios.post(`/zhwl/staff/staff_delete`, { data: { id: this.deleteItem } });
       if (result.rescode === '0') {
         this.$message.success('删除' + result.msg);
         this.search();
@@ -377,7 +435,7 @@ export default {
     },
     //添加
     async toAdd() {
-      let result = await this.$axios.post('/zhwl/client/client_save', { data: this.form });
+      let result = await this.$axios.post('/zhwl/staff/staff_save', { data: this.form });
       if (result.rescode === '0') {
         this.$message.success('添加' + result.msg);
         this.currentPage = 1;

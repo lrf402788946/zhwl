@@ -15,7 +15,7 @@
           </tr>
           <tr>
             <td>
-              <b-form-input v-model="select_client_name" placeholder="输入部门名称" style="width:200px,margin-left:50px"></b-form-input>
+              <b-form-input v-model="select_dept_name" placeholder="输入部门名称" style="width:200px,margin-left:50px"></b-form-input>
             </td>
             <td style="padding-left:60px">
               <b-button
@@ -36,7 +36,7 @@
             role="button"
             v-b-modal="'toAdd'"
           >
-            <i class="base-margin-right-5 fa fa-plus-square" style=" color:#fff !important;"></i>添加客户
+            <i class="base-margin-right-5 fa fa-plus-square" style=" color:#fff !important;"></i>添加部门
           </a>
           <!-- 导入表格 -->
           <entrance @research="search"></entrance>
@@ -49,14 +49,14 @@
           <tbody v-if="list.length > 0">
             <tr>
               <th>部门名称</th>
-              <th>所属单位id</th>
+              <!-- <th>所属单位id</th> -->
               <th>部门职责</th>
               <th>部门电话</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.dept_name }}</td>
-              <td>{{ item.unit_id }}</td>
+              <!-- <td>{{ item.unit_id }}</td> -->
               <td>{{ item.dept_duty }}</td>
               <td>{{ item.dept_tell }}</td>
               <td>
@@ -86,8 +86,8 @@
     <b-modal id="toAdd" title="添加客户" ref="toAdd" hide-footer>
       <div style="margin-bottom: 7px;">部门名称:</div>
       <b-form-input v-model="form.dept_name"></b-form-input>
-      <div style="margin-bottom: 7px;">所属单位id:</div>
-      <b-form-input v-model="form.unit_id"></b-form-input>
+      <!-- <div style="margin-bottom: 7px;">所属单位id:</div>
+      <b-form-input v-model="form.unit_id"></b-form-input> -->
       <div style="margin-bottom: 7px;">部门职责:</div>
       <b-form-input v-model="form.dept_duty"></b-form-input>
       <div style="margin-bottom: 7px;">部门电话:</div>
@@ -95,7 +95,7 @@
       <b-button
         variant="secondary"
         style="font-size:16px !important; margin-top:35px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-        @click="form = { create_date: create_date_today }"
+        @click="form = {}"
       >
         重&nbsp;&nbsp;置</b-button
       >
@@ -136,10 +136,10 @@
             <p class="marginBot4">部门名称</p>
             <b-form-input v-model="updateForm.dept_name"></b-form-input>
           </div>
-          <div class="col-lg-12 marginBot4">
+          <!-- <div class="col-lg-12 marginBot4">
             <p class="marginBot4">所属单位id</p>
             <b-form-input v-model="updateForm.unit_id"></b-form-input>
-          </div>
+          </div> -->
           <div class="col-lg-12 marginBot4">
             <p class="marginBot4">部门职责</p>
             <b-form-input v-model="updateForm.dept_duty"></b-form-input>
@@ -193,9 +193,7 @@ export default {
     return {
       list: [],
       create_date_today: new Date().getYear() + 1900 + '-' + new Date().getMonth() + 1 + '-' + new Date().getDate(),
-      form: {
-        create_date: new Date().getYear() + 1900 + '-' + new Date().getMonth() + 1 + '-' + new Date().getDate(),
-      },
+      form: {},
       deleteItem: '',
       updateForm: {
         gender: -1,
@@ -205,7 +203,7 @@ export default {
       limit: 15,
       totalRow: 0,
       value1: '',
-      select_client_name: '', 
+      select_dept_name: '', 
       lzValidator: new Validator({
         // type: { type: 'string', required: true, message: '请填写型号' },
         // num: { required: true, message: '请填写数量' },
@@ -272,7 +270,7 @@ export default {
       } 
       let skip = (this.currentPage - 1) * this.limit;
       let result = await this.$axios.get(
-        `/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}`
+        `/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}&name=${this.select_dept_name}`
       );
       if (result.msg === '成功') {
         this.$set(this, 'list', result.deptList);
@@ -292,7 +290,7 @@ export default {
       } 
       let skip = 0;
       let result = await this.$axios.get(
-        `/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}`
+        `/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}&name=${this.select_dept_name}`
       );
       if (result.msg === '成功') {
         this.$set(this, 'list', result.deptList);
