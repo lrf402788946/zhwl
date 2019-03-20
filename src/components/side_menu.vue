@@ -11,11 +11,11 @@
                 <b-list-group>
                   <div class="expand-triangle"></div>
                   <b-list-group-item v-for="(menu_item, menu_index) in item.menu" :key="menu_index">
-                    <router-link :to="{ name: menu_item.router_name }"
-                      ><li>
+                    <a :href="menu_item.uri">
+                      <li>
                         <span> {{ menu_item.name }}</span>
                       </li>
-                    </router-link>
+                    </a>
                   </b-list-group-item>
                 </b-list-group>
               </b-card>
@@ -23,7 +23,7 @@
           </span>
         </ul>
         <div class="base-footer">
-          爱康管理平台 <br />
+          智慧物流管理平台 <br />
           Compyright © 2019-2020 <br />
           当前版本：1.0
         </div>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { YH, XT, YW, CW, TJ, CK, CL, DD } from '@/util/role_menu.js';
+import { SYSTEM, PERSONNEL, CAR, BUSINESS } from '@/util/role_menu.js';
 import { mapState } from 'vuex';
 export default {
   name: 'sideMenu',
@@ -53,47 +53,53 @@ export default {
   },
   methods: {
     menuList() {
-      let newMenu = [];
-      if (this.userRoleList) {
-        for (const item of this.userRoleList) {
-          if (item.role_code !== 'ROLE_ADMIN') {
-            switch (item.role_code) {
-              case 'ROLE_ZZ':
-                newMenu.push(YW);
-                newMenu.push(CK);
-                newMenu.push(TJ);
-                break;
-              case 'ROLE_CW':
-                newMenu.push(CW);
-                newMenu.push(YW);
-                break;
-              case 'ROLE_LD':
-                newMenu.push(TJ);
-                newMenu.push(CK);
-                break;
-              case 'ROLE_SC':
-                newMenu.push(CK);
-                newMenu.push(TJ);
-                break;
-              default:
-                break;
-            }
-          } else {
-            newMenu.splice(0, newMenu.length);
-            newMenu.push(YH);
-            newMenu.push(XT);
-            newMenu.push(YW);
-            newMenu.push(CK);
-            newMenu.push(CW);
-            newMenu.push(TJ);
-            newMenu.push(CL);
-            newMenu.push(DD);
-            break;
-          }
-        }
-        this.$set(this, 'menu', newMenu);
-      }
+      this.menu.push(SYSTEM);
+      this.menu.push(PERSONNEL);
+      this.menu.push(CAR);
+      this.menu.push(BUSINESS);
     },
+    // menuList() {
+    //   let newMenu = [];
+    //   if (this.userRoleList) {
+    //     for (const item of this.userRoleList) {
+    //       if (item.role_code !== 'ROLE_ADMIN') {
+    //         switch (item.role_code) {
+    //           case 'ROLE_ZZ':
+    //             newMenu.push(YW);
+    //             newMenu.push(CK);
+    //             newMenu.push(TJ);
+    //             break;
+    //           case 'ROLE_CW':
+    //             newMenu.push(CW);
+    //             newMenu.push(YW);
+    //             break;
+    //           case 'ROLE_LD':
+    //             newMenu.push(TJ);
+    //             newMenu.push(CK);
+    //             break;
+    //           case 'ROLE_SC':
+    //             newMenu.push(CK);
+    //             newMenu.push(TJ);
+    //             break;
+    //           default:
+    //             break;
+    //         }
+    //       } else {
+    //         newMenu.splice(0, newMenu.length);
+    //         newMenu.push(YH);
+    //         newMenu.push(XT);
+    //         newMenu.push(YW);
+    //         newMenu.push(CK);
+    //         newMenu.push(CW);
+    //         newMenu.push(TJ);
+    //         newMenu.push(CL);
+    //         newMenu.push(DD);
+    //         break;
+    //       }
+    //     }
+    //     this.$set(this, 'menu', newMenu);
+    //   }
+    // },
     openMenuList(index) {
       if (!this.$refs.collapse[index].show) {
         this.$refs.collapse.forEach(item => {

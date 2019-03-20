@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="ind">
-      欢迎使用爱康管理平台
+      欢迎使用智慧物流管理平台
     </div>
   </div>
 </template>

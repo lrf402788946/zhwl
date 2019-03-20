@@ -108,14 +108,24 @@
         <div class="row">
           <div class="col-lg-4 mb25">
             <div class="lh44">车牌号</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.car_no" filterable placeholder="请选择车辆">
+            <el-select class="marginBot" style="height:40px !important" v-model="form.car_no" filterable placeholder="请选择车辆" @change="toGetTransportNo()">
               <el-option v-for="(car, index) in carList" :key="index" :label="car.car_no" :value="car.car_no"></el-option>
             </el-select>
+          </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">运输单号：</div>
+            <b-form-input v-model="form.transport_no" :disabled="true" type="number"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">司机：</div>
             <el-select class="marginBot" style="height:40px !important" v-model="form.car_onwer" filterable placeholder="请选择司机">
               <el-option v-for="(driver, index) in driverList" :key="index" :label="driver.name" :value="driver.name"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">线路：</div>
+            <el-select class="marginBot" style="height:40px !important" v-model="form.content" filterable placeholder="请选择司机">
+              <el-option v-for="(way, index) in dlyWayList" :key="index" :label="way.content" :value="way.content"></el-option>
             </el-select>
           </div>
           <div class="col-lg-4 mb25">
@@ -141,12 +151,13 @@
                 <td>操作</td>
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
-                <td><b-form-input v-model="item.goods_name"></b-form-input></td>
-                <td><b-form-input v-model="item.content"></b-form-input></td>
-                <td><b-form-input v-model="item.price"></b-form-input></td>
+                <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
+                <td><b-form-input v-model="item.content" :disabled="true"></b-form-input></td>
+                <td><b-form-input v-model="item.price" :disabled="true"></b-form-input></td>
                 <td>
                   <b-button
                     variant="danger"
+                    :disabled="true"
                     @click="clearSubForm(index)"
                     class="resetButton"
                     style="margin-top: 23px; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
@@ -198,10 +209,8 @@ export default {
       updateForm: {},
       mainValidator: new Validator({
         car_no: [{ required: true, message: '请填写操作人' }],
-        c_id: [{ required: true, message: '请选择客户' }],
+        car_onwer: [{ required: true, message: '请选择客户' }],
         send_time: [{ required: true, message: '请选择发货日期' }],
-        dly_type: [{ required: true, message: '请选择物流方式' }],
-        status: [{ required: true, message: '请选择订单状态' }],
       }),
       th: ['订单号', '订单人', '订单日期', '备注'],
       filterVal: ['order_no', 'user_name', 'in_date', 'remark'],
@@ -229,7 +238,7 @@ export default {
     this.search();
   },
   methods: {
-    ...mapActions(['transportOrderSubList', 'getDriverList', 'getCarList', 'transporSelectOrder', 'transportSave', 'getdly_wayList']),
+    ...mapActions(['transportOrderSubList', 'getDriverList', 'getCarList', 'transporSelectOrder', 'transportSave', 'getdly_wayList', 'getTransportNo']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -263,23 +272,30 @@ export default {
     //添加
     async add() {
       try {
-        await this.orderSave({ form: this.form, subForm: this.subForm });
+        await this.transportSave({ form: this.form, subForm: this.subForm });
         this.$refs.addAlert.hide();
         this.form = {};
         this.subForm = [];
         this.search();
       } catch (error) {
-        console.error('error in line 489');
+        console.error('error in line 269');
       }
     },
     //打开与关闭修改和删除的弹框
     async openAlert(type, id) {
-      this.form.login_id = this.userInfo.login_id;
-      this.form.user_name = this.userInfo.user_name;
       let newList = this.order_loading_list.map(item => `${item}`);
       let result = await this.transporSelectOrder({ ids: newList });
-      this.$set(this, 'subForm', result.orderSubList);
+      let transportOrderSubList = result.orderSubList.map(item => {
+        let newObject = { order_sub_id: item.id, goods_name: item.goods_name, content: item.content, price: item.price, status: '0' };
+        return newObject;
+      });
+      this.$set(this, 'subForm', transportOrderSubList);
       this.$refs.addAlert.show();
+    },
+    //获得运输单号
+    async toGetTransportNo() {
+      let result = await this.getTransportNo({ car_no: this.form.car_no });
+      this.$set(this.form, 'transport_no', result);
     },
     //关闭弹框
     closeAlert(type) {
