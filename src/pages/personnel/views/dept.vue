@@ -177,7 +177,7 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import Validator from 'async-validator';
-import entrance from '@/components/entrance.vue';
+// import entrance from '@/components/entrance.vue';
 import exportExcel from '@/components/exportExcel.vue';
 
 import _ from 'lodash';
@@ -187,7 +187,7 @@ export default {
     title: '部门管理',
   },
   components: {
-    entrance,
+    // entrance,
     exportExcel,
   },
   data() {
