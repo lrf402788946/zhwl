@@ -27,6 +27,16 @@ const api = {
   goodsSave: '/zhwl/goods/goods_save',
   goodsEdit: '/zhwl/goods/goods_edit',
   goodsDelete: '/zhwl/goods/goods_delete',
+  //装车
+  transportOrderSubList: '/zhwl/transport/order_sub_list', //query:skip,limit
+  transportSelectOrder: '/zhwl/transport/order_sub_list_info', //params:ids[]
+  transportList: '/zhwl/transport/transport_list', //query:skip,limit
+  transportInfo: '/zhwl/transport/transport_info ', //query:id
+  transportMainSave: '/zhwl/transport/transport_save', //params:from
+  transportSubSave: '/zhwl/transport/transport_sub_save', //params:id,subForm
+  transportMainEdit: '/zhwl/transport/transport_edit', //params:from
+  transportSubEdit: '/zhwl/transport/transport_sub_edit', //params:id,subForm
+  transportDelete: '/zhwl/transport/transport_delete', //params:id
 };
 
 export const state = () => ({
@@ -34,6 +44,8 @@ export const state = () => ({
   orderList: [],
   orderSubList: [],
   goodsList: [],
+  transportList: [],
+  transportSubList: [],
 });
 
 export const mutations = {
@@ -48,6 +60,12 @@ export const mutations = {
   },
   [types.GOODS_LIST](state, payload) {
     state.goodsList = payload;
+  },
+  [types.TRANSPORT_LIST](state, payload) {
+    state.transportList = payload;
+  },
+  [types.TRANSPORT_INFO](state, payload) {
+    state.transportSubList = payload;
   },
 };
 
@@ -298,6 +316,137 @@ export const actions = {
     } catch (err) {
       Message.error('操作失败');
       console.error(err);
+    }
+  },
+  //装车,查询订单子表
+  async transportOrderSubList({ commit }, { skip, limit }) {
+    try {
+      let result = await this.$axios.get(`${api.transportOrderSubList}?skip=${skip}&limit=${limit}`);
+      if (result.rescode === '0') {
+        commit(types.ORDER_SUB_LIST, result.orderSubList);
+        return result.totalRow;
+      } else {
+        Message.error(result.msg);
+        commit(types.ORDER_SUB_LIST, []);
+        return 0;
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      commit(types.ORDER_SUB_LIST, []);
+      console.error(error);
+    }
+  },
+  //装车,获取所选订单子表信息
+  async transporSelectOrder({ commit }, { ids }) {
+    try {
+      let result = await this.$axios.post(`${api.transportSelectOrder}`, { data: ids });
+      if (result.rescode === '0') {
+        return result;
+      } else {
+        Message.error(result.msg);
+        return [];
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      console.error(error);
+    }
+  },
+  //查询运输记录
+  async transportList({ commit }, { skip, limit }) {
+    try {
+      let result = await this.$axios.get(`${api.transportList}?skip=${skip}&limit=${limit}`);
+      if (result.rescode === '0') {
+        commit(types.TRANSPORT_LIST, result.transport_list);
+        return result.totalRow;
+      } else {
+        Message.error(result.msg);
+        commit(types.TRANSPORT_LIST, []);
+        return 0;
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      commit(types.TRANSPORT_LIST, []);
+      console.error(error);
+    }
+  },
+  //查询运输子表记录
+  async transporSubtList({ commit }, { id }) {
+    try {
+      let result = await this.$axios.get(`${api.transportInfo}&order_id=${id}`);
+      if (result.rescode === '0') {
+        commit(types.TRANSPORT_INFO, result.transportInfo);
+      } else {
+        commit(types.TRANSPORT_INFO, []);
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      console.error(error);
+      commit(types.TRANSPORT_INFO, []);
+    }
+  },
+  //添加装车记录(运输)
+  async transportSave({ commit }, { form, subForm }) {
+    try {
+      let result = await this.$axios.post(api.transportMainSave, {
+        data: form,
+      });
+      if (result.rescode === '0') {
+        let id = result.id;
+        result = await this.$axios.post(api.transportSubSave, {
+          data: { subForm: subForm, id: id },
+        });
+        if (result.rescode === '0') {
+          Message.success('操作成功');
+        } else {
+          Message.error('操作失败');
+        }
+      } else {
+        Message.error('操作失败');
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      console.error(error);
+    }
+  },
+  //修改运输记录
+  async transportEdit({ commit }, { form, subForm }) {
+    let result;
+    try {
+      result = await this.$axios.post(api.transportMainEdit, {
+        data: form,
+      });
+      if (result.rescode === '0') {
+        let id = form.id;
+        result = await this.$axios.post(api.transportSubEdit, {
+          data: { subForm: subForm, id: id },
+        });
+        if (result.rescode === '0') {
+          Message.success('操作成功');
+        } else {
+          Message.error('操作失败');
+        }
+      } else {
+        Message.error('操作失败');
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      console.error(error);
+    }
+  },
+  //删除运输记录
+  async transportDelete({ commit }, { id }) {
+    try {
+      let result = await this.$axios.post(api.transportDelete, {
+        data: { id: id },
+      });
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      console.error(error);
     }
   },
 };

@@ -36,6 +36,10 @@ const api = {
 
 export const state = () => ({
   clientList: [],
+  deptList: [],
+  driverList: [],
+  postList: [],
+  staffList: [],
 });
 
 export const mutations = {

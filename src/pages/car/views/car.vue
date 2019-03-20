@@ -47,7 +47,7 @@
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.car_onwer }}</td>
-              <td>{{ item.cr_no }}</td>
+              <td>{{ item.car_no }}</td>
               <td>{{ item.it_member }}</td>
               <td>
                 <b-button variant="primary" style="color:white;" @click="openAlert('update', index)">详&nbsp;&nbsp;情</b-button>
@@ -103,7 +103,7 @@
             </div>
             <div class="col-lg-4 mb20">
               <div class="lh44">机动车登记编号：</div>
-              <b-form-input v-model="form.cr_no" placeholder="机动车登记编号"></b-form-input>
+              <b-form-input v-model="form.car_no" placeholder="机动车登记编号"></b-form-input>
             </div>
             <div class="col-lg-4 mb20">
               <div class="lh44">机动车类别：</div>
@@ -343,7 +343,7 @@
               </div>
               <div class="col-lg-4 mb20">
                 <div class="lh44">机动车登记编号：</div>
-                <b-form-input v-model="form.cr_no" :disabled="is_update" placeholder="机动车登记编号"></b-form-input>
+                <b-form-input v-model="form.car_no" :disabled="is_update" placeholder="机动车登记编号"></b-form-input>
               </div>
               <div class="col-lg-4 mb20">
                 <div class="lh44">机动车类别：</div>
@@ -569,7 +569,7 @@ export default {
       deleteItem: '',
       carValidator: new Validator({
         car_onwer: [{ type: 'string', required: true, message: '请填写机动车所有人' }],
-        cr_no: { type: 'string', required: true, message: '机动车登记编号' },
+        car_no: { type: 'string', required: true, message: '机动车登记编号' },
         // it_member: [{ type: 'string', required: true, message: '身份证明代码' }],
         // ro: { type: 'string', required: true, message: '登记机关' },
       }),

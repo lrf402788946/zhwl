@@ -17,7 +17,6 @@ const api = {
   carDetailSave: '/zhwl/car/car_daily_detail_save',
   carDetailEdit: '/zhwl/car/car_daily_detail_edit',
   carDetailDelete: '/zhwl/car/car_daily_detail_delete',
-  //权限分配
 };
 
 export const state = () => ({
@@ -43,6 +42,8 @@ export const actions = {
       if (result.rescode === '0') {
         commit(types.CAR_LIST, result.carList);
         return result.totalRow;
+      } else {
+        commit(types.CAR_LIST, []);
       }
     } catch (err) {
       Message.error('接口加载失败');
@@ -74,19 +75,6 @@ export const actions = {
       console.error(err);
     }
   },
-  //权限管理
-  // async getRoleList({ commit }) {
-  //   try {
-  //     let result = await this.$axios.get(`${api.roleList}`);
-  //     if (result.rescode === '0') {
-  //       commit(types.ROLE_LIST, result.roleList);
-  //       return result.totalRow;
-  //     }
-  //   } catch (err) {
-  //     Message.error('接口加载失败');
-  //     console.error(err);
-  //   }
-  // },
 
   //查询CarDetail列表
   async getCarDetailList({ commit }, payload) {
@@ -96,6 +84,8 @@ export const actions = {
       if (result.rescode === '0') {
         commit(types.CAR_DETAIL, result.carDetailList);
         return result.totalRow;
+      } else {
+        commit(types.CAR_DETAIL, []);
       }
     } catch (err) {
       Message.error('接口加载失败');
