@@ -83,10 +83,11 @@ export default {
         let newData = originData.map(item => {
           let newObject = {
             job_num: item.job_num,
-            user_name: item.user_name,
+            name: item.name,
             gender: item.gender === 0 ? '女' : '男',
             phone_no: item.phone_no,
             birthday: item.birthday,
+            home_address: item.home_address,
             id_number: item.birthday,
             dept_id: this.getName(deptList, item.dept_id),
             level: item.level,

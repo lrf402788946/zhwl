@@ -309,9 +309,15 @@ export default {
       select_driver_name: '',
       select_driver_id_card: '',
       lzValidator: new Validator({
-        // type: { type: 'string', required: true, message: '请填写型号' },
-        // num: { required: true, message: '请填写数量' },
-        // create_date: { type: 'string', required: true, message: '请选择创建日期' },
+        name: { type: 'string', required: true, message: '请填写驾驶员名称' },
+        tel: { type: 'string', required: true, message: '请填写电话/固话' },
+        id_card: { type: 'string', required: true, message: '请填写身份证' },
+        drive_card: { type: 'string', required: true, message: '请填写驾驶证号' },
+        fhc_time: { type: 'string', required: true, message: '请填写初次领证时间' },
+        car_type: { type: 'string', required: true, message: '请填写准驾车型' },
+        ccu_time: { type: 'string', required: true, message: '请选择驾驶证有效日期' },
+        cc_time: { type: 'string', required: true, message: '请选择驾驶证年检日期' },
+        qc_time: { type: 'string', required: true, message: '请选择资格证年检日期' },
       }),
       th: ['驾驶员名称', '电话/固话', '身份证', '驾驶证号', '初次领证时间', '准驾车型', '驾驶证有效日期', '驾驶证年检日期', '资格证年检日期'],
       filterVal: ['name', 'tel', 'id_card', 'drive_card', 'fhc_time', 'car_type', 'ccu_time', 'cc_time', 'qc_time'],
@@ -415,8 +421,6 @@ export default {
     },
     //添加
     async add() {
-      let date = this.timeValues[0] + '至' + this.timeValues[1];
-      this.form.ccu_time = date;
       await this.addDriverlist({data: this.form });
       this.form = {};
       this.$refs.toAdd.hide();
@@ -465,6 +469,14 @@ export default {
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
     toValidate(type) {
       if (type === 'add') {
+        if(this.timeValues === ''){
+          this.form.ccu_time = null;
+        }else if(this.timeValues === null){
+          this.form.ccu_time = null;
+        }else{
+          let date = this.timeValues[0] + '至' + this.timeValues[1];
+          this.form.ccu_time = date;
+        }
         this.lzValidator.validate(this.form, (errors, fields) => {
           if (errors) {
             return this.handleErrors(errors, fields);

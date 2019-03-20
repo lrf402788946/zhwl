@@ -44,7 +44,7 @@
         </div>
         <div style="margin:10px 0;">
           <!-- 导出表格 -->
-          <exportExcel :exportTitle="th" :db_nameList="filterVal" dataName="list" fileName="客户表"></exportExcel>
+          <exportExcel :exportTitle="th" :db_nameList="filterVal" dataName="list" fileName="部门表"></exportExcel>
         </div>
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
@@ -202,12 +202,12 @@ export default {
       value1: '',
       select_dept_name: '',
       lzValidator: new Validator({
-        // type: { type: 'string', required: true, message: '请填写型号' },
-        // num: { required: true, message: '请填写数量' },
-        // create_date: { type: 'string', required: true, message: '请选择创建日期' },
+        dept_name: { type: 'string', required: true, message: '请填写部门名称' },
+        dept_duty: { type: 'string', required: true, message: '请填写部门职责' },
+        dept_tell: { type: 'string', required: true, message: '请填写部门电话' },
       }),
-      th: ['部门名称', '所属单位id', '部门职责', '部门电话'],
-      filterVal: ['dept_name', 'unit_id', 'dept_duty', 'dept_tell'],
+      th: ['部门名称', '部门职责', '部门电话'],
+      filterVal: ['dept_name', 'dept_duty', 'dept_tell'],
       is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
       countNum: 0,
     };

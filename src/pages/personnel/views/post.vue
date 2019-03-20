@@ -186,9 +186,8 @@ export default {
       value1: '',
       select_post_name: '',
       lzValidator: new Validator({
-        // type: { type: 'string', required: true, message: '请填写型号' },
-        // num: { required: true, message: '请填写数量' },
-        // create_date: { type: 'string', required: true, message: '请选择创建日期' },
+        name: { type: 'string', required: true, message: '请填写岗位名称' },
+        money: { type: 'string', required: true, message: '请填写岗位补助' },
       }),
       th: ['岗位名称', '岗位补助'],
       filterVal: ['name', 'money'],
