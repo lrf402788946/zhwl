@@ -6,7 +6,7 @@
       </div>
       <div class="base-nav" id="base-nav">
         <ul class="top-nav-ul">
-          <li><a @click="$router.push('/')">首 &nbsp;&nbsp; 页</a></li>
+          <li><a href="/system.html#/">首 &nbsp;&nbsp; 页</a></li>
         </ul>
         <div id="base-user">
           <a href="#" class="user-name" @mouseover="mopen('m1')" @mouseout="mclose()">
