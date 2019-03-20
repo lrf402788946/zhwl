@@ -44,7 +44,7 @@
             <i class="base-margin-right-5 fa fa-plus-square" style=" color:#fff !important;"></i>添加员工
           </a>
           <!-- 导入表格 -->
-          <entrance @research="search"></entrance>
+          <!-- <entrance @research="search"></entrance> -->
         </div>
         <div style="margin:10px 0;">
           <!-- 导出表格 -->
