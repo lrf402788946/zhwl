@@ -339,7 +339,7 @@
         style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
         >添&nbsp;&nbsp;加</b-button
       >
-      
+
       <b-button
         v-if="is_update"
         variant="primary"
