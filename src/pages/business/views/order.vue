@@ -287,7 +287,7 @@
             <b-form-input v-model="updateForm.r_pay" :disabled="is_update" type="number"></b-form-input>
           </div>
           <br />
-          <table class="table table-bordered table-striped ">
+          <table class="table table-bordered table-striped " v-if="updateForm.dly_type === 0">
             <tbody>
               <tr>
                 <td>货物名称</td>
@@ -339,14 +339,7 @@
         style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
         >添&nbsp;&nbsp;加</b-button
       >
-      <b-button
-        variant="primary"
-        v-else
-        :disabled="true"
-        class="resetButton"
-        style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
-        >他运不需要添加信息</b-button
-      >
+      
       <b-button
         v-if="is_update"
         variant="primary"
