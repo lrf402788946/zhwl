@@ -37,6 +37,7 @@ const api = {
   transportMainEdit: '/zhwl/transport/transport_edit', //params:from
   transportSubEdit: '/zhwl/transport/transport_sub_edit', //params:id,subForm
   transportDelete: '/zhwl/transport/transport_delete', //params:id
+  transportNO: '/zhwl/transport/transport_no', //query:car_no
 };
 
 export const state = () => ({
@@ -444,6 +445,16 @@ export const actions = {
       } else {
         Message.error('操作失败');
       }
+    } catch (error) {
+      Message.error('接口加载失败');
+      console.error(error);
+    }
+  },
+  //获取订单号
+  async getTransportNo({ commit }, { car_no }) {
+    try {
+      let result = await this.$axios.get(`${api.transportNO}?car_no=${car_no}`);
+      return result.transport_no;
     } catch (error) {
       Message.error('接口加载失败');
       console.error(error);

@@ -108,9 +108,13 @@
         <div class="row">
           <div class="col-lg-4 mb25">
             <div class="lh44">车牌号</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.car_no" filterable placeholder="请选择车辆">
+            <el-select class="marginBot" style="height:40px !important" v-model="form.car_no" filterable placeholder="请选择车辆" @change="toGetTransportNo()">
               <el-option v-for="(car, index) in carList" :key="index" :label="car.car_no" :value="car.car_no"></el-option>
             </el-select>
+          </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">运输单号：</div>
+            <b-form-input v-model="form.transport_no" type="number"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">司机：</div>
@@ -234,7 +238,7 @@ export default {
     this.search();
   },
   methods: {
-    ...mapActions(['transportOrderSubList', 'getDriverList', 'getCarList', 'transporSelectOrder', 'transportSave', 'getdly_wayList']),
+    ...mapActions(['transportOrderSubList', 'getDriverList', 'getCarList', 'transporSelectOrder', 'transportSave', 'getdly_wayList', 'getTransportNo']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -287,6 +291,11 @@ export default {
       });
       this.$set(this, 'subForm', transportOrderSubList);
       this.$refs.addAlert.show();
+    },
+    //获得运输单号
+    async toGetTransportNo() {
+      let result = await this.getTransportNo({ car_no: this.form.car_no });
+      this.$set(this.form, 'transport_no', result);
     },
     //关闭弹框
     closeAlert(type) {
