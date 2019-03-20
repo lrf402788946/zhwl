@@ -1,5 +1,6 @@
+/* eslint-disable vue/no-parsing-error */
 <template lang="html">
-  <div id="order">
+  <div id="car_loading">
     <!-- 表格 begin -->
     <div class="base-form">
       <div class="form-inline">
@@ -57,12 +58,13 @@
             @click="openAlert('add')"
           >
             <!-- v-b-modal="'addAlert'"-->
-            <i class="base-margin-right-5 fa fa-plus-square"></i>新建订单
+            <i class="base-margin-right-5 fa fa-plus-square"></i>发车
           </a>
         </div>
         <table class="table table-bordered table-striped ">
           <tbody v-if="orderList.length > 0">
             <tr>
+              <th></th>
               <th>订单号</th>
               <th>客户</th>
               <th>订单日期</th>
@@ -70,6 +72,11 @@
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in orderList" :key="index">
+              <td>
+                <b-form-checkbox-group id="order_loading_list" name="order_loading_list" v-model="order_loading_list">
+                  <b-form-checkbox :value="item.id"></b-form-checkbox>
+                </b-form-checkbox-group>
+              </td>
               <td>{{ item.order_no }}</td>
               <td>{{ getC_name(item.c_id) }}</td>
               <td>{{ item.send_time }}</td>
@@ -105,11 +112,11 @@
       <div class="d-block text-center">
         <div class="row">
           <div class="col-lg-4 mb25">
-            <div class="lh44">操作人：</div>
-            <b-form-input v-model="form.op" placeholder="操作人"></b-form-input>
+            <div class="lh44">车牌号</div>
+            <b-form-input v-model="form.car_no" placeholder="车牌号"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
-            <div class="lh44">客户：</div>
+            <div class="lh44">司机：</div>
             <el-select class="marginBot" style="height:40px !important" v-model="form.c_id" filterable placeholder="请选择客户">
               <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
             </el-select>
@@ -119,38 +126,12 @@
             <b-form-input :disabled="true" v-model="form.order_no" placeholder="订单号"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
-            <div class="lh44">发货日期：</div>
-            <el-date-picker style="width: 100%;" v-model="form.send_time" placeholder="订单日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd" type="date">
-            </el-date-picker>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">物流方式：</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.dly_type" filterable placeholder="请选择物流方式">
-              <el-option :value="0" label="自运"></el-option>
-              <el-option :value="1" label="他运"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">状态：</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.status" filterable placeholder="请选择物流状态">
-              <el-option v-for="(item2, index) in chooseStatus" :key="index" :label="item2.text" :value="item2.value"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">应收运费：</div>
-            <b-form-input v-model="form.s_dp" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">实收运费：</div>
-            <b-form-input v-model="form.r_dp" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">应付合计：</div>
-            <b-form-input v-model="form.s_pay" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">实收合计：</div>
+            <div class="lh44">实际金额：</div>
             <b-form-input v-model="form.r_pay" type="number"></b-form-input>
+          </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">扣除金额：</div>
+            <b-form-input v-model="form.m_pay" type="number"></b-form-input>
           </div>
           <br />
           <table class="table table-bordered table-striped " v-if="form.dly_type === 0">
@@ -264,10 +245,6 @@
               <el-option :value="0" label="自运"></el-option>
               <el-option :value="1" label="他运"></el-option>
             </el-select>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">状态：</div>
-            <b-form-select v-model="updateForm.status" :disabled="is_update" :options="chooseStatus" filterable placeholder="请选择物流状态" />
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">应收运费：</div>
@@ -398,9 +375,9 @@ import Validator from 'async-validator';
 import _ from 'lodash';
 //import exportExcel from '@/components/exportExcel.vue';
 export default {
-  name: 'order',
+  name: 'car_loading',
   metaInfo: {
-    title: '订单管理',
+    title: '装车管理',
   },
   data() {
     return {
@@ -424,13 +401,8 @@ export default {
       select_order_no: '',
       select_c_id: '',
       select_in_date: [],
-      chooseStatus: [
-        { text: '待发', value: '0' },
-        { text: '装车', value: '1' },
-        { text: '到达', value: '2' },
-        { text: '支付完成', value: '3' },
-        { text: '收款完成', value: '4' },
-      ],
+      skip: 0,
+      order_loading_list: [],
     };
   },
   watch: {
