@@ -168,7 +168,7 @@ export default {
         weight: '',
         volume: '',
       },
-      is_title_search:false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
+      is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
       currentPage: 1,
       countNum: 0,
       totalRow: 0,
@@ -217,7 +217,7 @@ export default {
     },
     //模糊查询的方法
     async titlesearch() {
-      if(!this.is_title_search){
+      if (!this.is_title_search) {
         this.is_title_search = true;
         return;
       }
@@ -235,10 +235,10 @@ export default {
     async searchButton() {
       this.currentPage = 1;
       if (this.select_name === null) this.select_name = '';
-      if(!this.is_title_search){
+      if (!this.is_title_search) {
         this.is_title_search = true;
         return;
-      } 
+      }
       let skip = 0;
       let totalRow = await this.getGoodslistlike({
         skip: skip,

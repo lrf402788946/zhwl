@@ -16,12 +16,12 @@ const api = {
   orderList: '/zhwl/order/order_list', //query:skip,limit,!order_number,!cus_id,!start_time,!end_time
   orderSubList: '/zhwl/order/order_info?skip=0&limit=10000', //query:skip,limit=10000,order_id
   orderNumber: '/zhwl/order/order_num', //query:cus_id
-  orderMainSave: '/akyl/order/order_save', //params:data
-  orderSubSave: '/akyl/order/order_sub_save', //params:subForm,id--main_id
-  orderMainEdit: '/akyl/order/order_edit', //params:data
-  orderSubEdit: '/akyl/order/order_sub_edit', //params:subForm,id-main_id
-  orderDelete: '/akyl/order/order_delete', //params:id
-  orderNum: '/akyl/order/order_num', //query:cus_id
+  orderMainSave: '/zhwl/order/order_save', //params:data
+  orderSubSave: '/zhwl/order/order_sub_save', //params:subForm,id--main_id
+  orderMainEdit: '/zhwl/order/order_edit', //params:data
+  orderSubEdit: '/zhwl/order/order_sub_edit', //params:subForm,id-main_id
+  orderDelete: '/zhwl/order/order_delete', //params:id
+  orderNum: '/zhwl/order/order_no', //query:cus_id
   //货物
   goodsList: '/zhwl/goods/goods_list',
   goodsSave: '/zhwl/goods/goods_save',
@@ -41,7 +41,7 @@ export const mutations = {
     state.dlyWayList = payload;
   },
   [types.ORDER_LIST](state, payload) {
-    state.orderlist = payload;
+    state.orderList = payload;
   },
   [types.ORDER_SUB_LIST](state, payload) {
     state.orderSubList = payload;
@@ -118,16 +118,17 @@ export const actions = {
     }
   },
   //订单查询
-  async getOrderList({ commit }, { skip, limit, order_num, cus_id, start_time, end_time }) {
+  async getOrderList({ commit }, { skip, limit, order_no, c_id, start_time, end_time }) {
     try {
       let result = await this.$axios.get(
-        `${api.orderList}?skip=${skip}&limit=${limit}&order_no=${order_num}&cus_id=${cus_id}&start_time=${start_time}&end_time=${end_time}`
+        `${api.orderList}?skip=${skip}&limit=${limit}&order_no=${order_no}&c_id=${c_id}&start_time=${start_time}&end_time=${end_time}`
       );
       if (result.rescode === '0') {
         commit(types.ORDER_LIST, result.orderList);
         return result.totalRow;
       } else {
         Message.error(result.msg);
+        commit(types.ORDER_LIST, []);
       }
     } catch (error) {
       Message.error('接口加载失败');
@@ -137,7 +138,7 @@ export const actions = {
   //订单子表查询
   async getOrderSubList({ commit }, { id }) {
     try {
-      let result = await this.$axios.get(`${api.orderSubList}order_id=${id}`);
+      let result = await this.$axios.get(`${api.orderSubList}&order_id=${id}`);
       if (result.rescode === '0') {
         commit(types.ORDER_SUB_LIST, result.orderSubList);
       }
@@ -147,10 +148,10 @@ export const actions = {
     }
   },
   //获取订单号
-  async getOrderNo({ commit }, { cus_id }) {
+  async getOrderNo({ commit }) {
     try {
-      let result = this.$axios.get(`${api.orderNum}?cus_id=${cus_id}`);
-      return result.order_num;
+      let result = await this.$axios.get(`${api.orderNum}`);
+      return result.order_no;
     } catch (error) {
       Message.error('接口加载失败');
       console.error(error);
@@ -159,12 +160,12 @@ export const actions = {
   //订单创建
   async orderSave({ commit }, { form, subForm }) {
     try {
-      let result = this.$axios.post(api.orderMainSave, {
+      let result = await this.$axios.post(api.orderMainSave, {
         data: form,
       });
       if (result.rescode === '0') {
         let id = result.id;
-        result = this.$axios.post(api.orderSubSave, {
+        result = await this.$axios.post(api.orderSubSave, {
           data: { subForm: subForm, id: id },
         });
         if (result.rescode === '0') {
@@ -182,13 +183,14 @@ export const actions = {
   },
   //订单修改
   async orderEdit({ commit }, { form, subForm }) {
+    let result;
     try {
-      let result = this.$axios.post(api.orderEdit, {
+      result = await this.$axios.post(api.orderMainEdit, {
         data: form,
       });
       if (result.rescode === '0') {
         let id = form.id;
-        result = this.$axios.post(api.orderSubEdit, {
+        result = await this.$axios.post(api.orderSubEdit, {
           data: { subForm: subForm, id: id },
         });
         if (result.rescode === '0') {
@@ -207,7 +209,7 @@ export const actions = {
   //订单删除
   async orderDelete({ commit }, { id }) {
     try {
-      let result = this.$axios.post(api.orderDelete, {
+      let result = await this.$axios.post(api.orderDelete, {
         data: { id: id },
       });
       if (result.rescode === '0') {
