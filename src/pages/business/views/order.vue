@@ -514,7 +514,7 @@ export default {
     //添加
     async add() {
       try {
-        await this.orderSave({ form: this.form, subForm: this.subForm });
+        await this.orderSave({ form: this.form, subForm: this.form.dly_type === 1 ? [] : this.subForm  });
         this.$refs.addAlert.hide();
         this.form = {};
         this.subForm = [];
@@ -526,7 +526,7 @@ export default {
     //修改
     async update() {
       try {
-        await this.orderEdit({ form: this.updateForm, subForm: this.subForm });
+        await this.orderEdit({ form: this.updateForm, subForm: this.updateForm.dly_type === 1 ? [] : this.subForm });
         this.closeAlert('update');
         this.updateForm = [];
         this.subForm = [];
