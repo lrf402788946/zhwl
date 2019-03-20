@@ -196,12 +196,8 @@ export default {
       create_date_today: new Date().getYear() + 1900 + '-' + new Date().getMonth() + 1 + '-' + new Date().getDate(),
       form: {},
       deleteItem: '',
-      updateForm: {
-        gender: -1,
-        dept_id: 'default',
-      },
+      updateForm: {},
       currentPage: 1,
-      limit: 15,
       totalRow: 0,
       value1: '',
       select_dept_name: '',
@@ -213,11 +209,16 @@ export default {
       th: ['部门名称', '所属单位id', '部门职责', '部门电话'],
       filterVal: ['dept_name', 'unit_id', 'dept_duty', 'dept_tell'],
       is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
-      skip: 0,
       countNum: 0,
     };
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      skip: state => state.self.skip,
+      limit: state => state.publics.limit,
+      deptList: state => state.self.deptList,
+    }),
+  },
   created() {
     this.search();
   },
@@ -234,7 +235,7 @@ export default {
     },
   },
   methods: {
-    //整体逻辑:已有数据的修改直接=>提交=>请求=>刷新视图;添加数据则弹出框添加
+    ...mapActions(['getDeptList','getDeptListLike', 'addDeptlist', 'deptOperation']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -251,15 +252,9 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(`/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}`);
-      if (result.msg === '成功') {
-        this.$set(this, 'list', result.deptList);
-        this.$set(this, 'totalRow', result.totalRow);
-      }
-      if (result.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-      }
+      let totalRow = await this.getDeptList({ skip: skip, limit: this.limit });
+      this.$set(this, 'list', this.deptList);
+      this.$set(this, 'totalRow', totalRow);
     },
     //模糊查询的方法
     async titlesearch() {
@@ -268,15 +263,13 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(`/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}&name=${this.select_dept_name}`);
-      if (result.msg === '成功') {
-        this.$set(this, 'list', result.deptList);
-        this.$set(this, 'totalRow', result.totalRow);
-      }
-      if (result.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-      }
+      let totalRow = await this.getDeptListLike({
+        skip: skip,
+        limit: this.limit,
+        select_dept_name: this.select_dept_name,
+      });
+      this.$set(this, 'list', this.deptList);
+      this.$set(this, 'totalRow', totalRow);
     },
     //模糊查询按钮
     async searchButton() {
@@ -286,26 +279,34 @@ export default {
         return;
       }
       let skip = 0;
-      let result = await this.$axios.get(`/zhwl/dept/dept_list?skip=${skip}&limit=${this.limit}&name=${this.select_dept_name}`);
-      if (result.msg === '成功') {
-        this.$set(this, 'list', result.deptList);
-        this.$set(this, 'totalRow', result.totalRow);
-      }
-      if (result.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-      }
+      let totalRow = await this.getDeptListLike({
+        skip: skip,
+        limit: this.limit,
+        select_dept_name: this.select_dept_name,
+      });
+      this.$set(this, 'list', this.deptList);
+      this.$set(this, 'totalRow', totalRow);
     },
-    async toUpdate() {
-      let result = await this.$axios.post(`/zhwl/dept/dept_edit`, { data: this.updateForm });
-      if (result.rescode === '0') {
-        this.$message.success('修改' + result.msg);
-        this.closeAlert('update');
-        this.updateForm = {};
-        this.search();
-      } else {
-        this.$message.error(result.msg);
-      }
+    //修改
+    async update() {
+      await this.deptOperation({type:'update',data: this.updateForm });
+      this.updateForm = {};
+      this.$refs.updateAlert.hide();
+      this.search();
+    },
+    //删除
+    async toDelete() {
+      await this.deptOperation({ type: 'delete', data: this.deleteItem });
+      this.search();
+      this.deleteItem = '';
+      this.$refs.deleteAlert.hide();
+    },
+    //添加
+    async add() {
+      await this.addDeptlist({data: this.form });
+      this.form = {};
+      this.$refs.toAdd.hide();
+      this.search();
     },
     //打印
     doPrint() {
@@ -323,31 +324,6 @@ export default {
     openDeleteAlert(id) {
       this.$refs.deleteAlert.show();
       this.deleteItem = id;
-    },
-    //删除
-    async toDelete() {
-      let result = await this.$axios.post(`/zhwl/dept/dept_delete`, { data: { id: this.deleteItem } });
-      if (result.rescode === '0') {
-        this.$message.success('删除' + result.msg);
-        this.search();
-        this.deleteItem = '';
-        this.$refs.deleteAlert.hide();
-      } else {
-        this.$message.error(result.msg);
-      }
-    },
-    //添加
-    async toAdd() {
-      let result = await this.$axios.post(`/zhwl/dept/dept_save`, { data: this.form });
-      if (result.rescode === '0') {
-        this.$message.success('添加' + result.msg);
-        this.currentPage = 1;
-        this.form = { create_date: this.create_date_today };
-        this.search();
-        this.$refs.toAdd.hide();
-      } else {
-        this.$message.error(result.msg);
-      }
     },
     openAlert(type, id) {
       if (type === 'update') {
@@ -374,14 +350,14 @@ export default {
           if (errors) {
             return this.handleErrors(errors, fields);
           }
-          return this.toAdd();
+          return this.add();
         });
       } else {
         this.lzValidator.validate(this.updateForm, (errors, fields) => {
           if (errors) {
             return this.handleErrors(errors, fields);
           }
-          return this.toUpdate();
+          return this.update();
         });
       }
     },

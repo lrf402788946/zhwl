@@ -145,7 +145,7 @@
       ></b-modal
     >
 
-    <!-- jkjkjkjk -->
+    <!-- 修改 -->
     <b-modal id="updateAlert" title="修改客户" ref="updateAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block">
         <div class="row">
@@ -228,12 +228,8 @@ export default {
       create_date_today: new Date().getYear() + 1900 + '-' + new Date().getMonth() + 1 + '-' + new Date().getDate(),
       form: {},
       deleteItem: '',
-      updateForm: {
-        gender: -1,
-        dept_id: 'default',
-      },
+      updateForm: {},
       currentPage: 1,
-      limit: 15,
       totalRow: 0,
       value1: '',
       select_client_name: '',
@@ -245,7 +241,6 @@ export default {
       th: ['客户名称', '地址', '法人', '手机/固话(0431-8xxxxxxx)', '传真', '税号', '银行卡号', '银行账号'],
       filterVal: ['name', 'address', 'legal_person', 'tel', 'fex', 'taxes_no', 'card_no', 'card_account'],
       is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
-      skip: 0,
       countNum: 0,
     };
   },
@@ -272,7 +267,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['getClientList', 'goodsOperation', 'addGoodslist', 'getGoodslistlike']),
+    ...mapActions(['getClientList','getClientListLike', 'addClientlist', 'clientOperation']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -325,16 +320,25 @@ export default {
       this.$set(this, 'totalRow', totalRow);
     },
     //修改
-    async toUpdate() {
-      let result = await this.$axios.post(`/zhwl/client/client_edit`, { data: this.updateForm });
-      if (result.rescode === '0') {
-        this.$message.success('修改' + result.msg);
-        this.closeAlert('update');
-        this.updateForm = {};
-        this.search();
-      } else {
-        this.$message.error(result.msg);
-      }
+    async update() {
+      await this.clientOperation({type:'update',data: this.updateForm });
+      this.updateForm = {};
+      this.$refs.updateAlert.hide();
+      this.search();
+    },
+    //删除
+    async toDelete() {
+      await this.clientOperation({ type: 'delete', data: this.deleteItem });
+      this.search();
+      this.deleteItem = '';
+      this.$refs.deleteAlert.hide();
+    },
+    //添加
+    async add() {
+      await this.addClientlist({data: this.form });
+      this.form = {};
+      this.$refs.toAdd.hide();
+      this.search();
     },
     //打印
     doPrint() {
@@ -352,31 +356,6 @@ export default {
     openDeleteAlert(id) {
       this.$refs.deleteAlert.show();
       this.deleteItem = id;
-    },
-    //删除
-    async toDelete() {
-      let result = await this.$axios.post(`/zhwl/client/client_delete`, { data: { id: this.deleteItem } });
-      if (result.rescode === '0') {
-        this.$message.success('删除' + result.msg);
-        this.search();
-        this.deleteItem = '';
-        this.$refs.deleteAlert.hide();
-      } else {
-        this.$message.error(result.msg);
-      }
-    },
-    //添加
-    async toAdd() {
-      let result = await this.$axios.post('/zhwl/client/client_save', { data: this.form });
-      if (result.rescode === '0') {
-        this.$message.success('添加' + result.msg);
-        this.currentPage = 1;
-        this.form = { create_date: this.create_date_today };
-        this.search();
-        this.$refs.toAdd.hide();
-      } else {
-        this.$message.error(result.msg);
-      }
     },
     openAlert(type, id) {
       if (type === 'update') {
@@ -403,14 +382,14 @@ export default {
           if (errors) {
             return this.handleErrors(errors, fields);
           }
-          return this.toAdd();
+          return this.add();
         });
       } else {
         this.lzValidator.validate(this.updateForm, (errors, fields) => {
           if (errors) {
             return this.handleErrors(errors, fields);
           }
-          return this.toUpdate();
+          return this.update();
         });
       }
     },
