@@ -253,7 +253,7 @@ export default {
     title: '员工管理',
   },
   components: {
-    entrance,
+    // entrance,
     exportExcel,
   },
   data() {

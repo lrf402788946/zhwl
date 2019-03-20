@@ -187,7 +187,7 @@ export default {
     title: '部门管理',
   },
   components: {
-    entrance,
+    // entrance,
     exportExcel,
   },
   data() {

@@ -122,8 +122,9 @@
             </el-select>
           </div>
           <div class="col-lg-4 mb25">
-            <div class="lh44">订单号：</div>
-            <b-form-input :disabled="true" v-model="form.order_no" placeholder="订单号"></b-form-input>
+            <div class="lh44">发货日期：</div>
+            <el-date-picker style="width: 100%;" v-model="form.send_time" placeholder="发货日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd" type="date">
+            </el-date-picker>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">实际金额：</div>

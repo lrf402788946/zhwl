@@ -171,7 +171,7 @@ export default {
     title: '岗位管理',
   },
   components: {
-    entrance,
+    // entrance,
     exportExcel,
   },
   data() {

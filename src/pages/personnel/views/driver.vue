@@ -294,7 +294,7 @@ export default {
     title: '驾驶员管理',
   },
   components: {
-    entrance,
+    // entrance,
     exportExcel,
   },
   data() {
