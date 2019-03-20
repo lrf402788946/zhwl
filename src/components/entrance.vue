@@ -108,12 +108,12 @@ export default {
           });
           let result = await _this.$axios.post(`/zhwl/${routerName}/${routerName}_import`, { data: importArray });
           console.log(result);
-          if (result.data.rescode === '0') {
+          if (result.rescode === '0') {
             _this.$message.success('导入成功');
             _this.$emit('research');
           } else {
             _this.$message.error('导入失败');
-            console.debug(result.data.msg);
+            console.debug(result.msg);
           }
         };
         reader.readAsArrayBuffer(f);

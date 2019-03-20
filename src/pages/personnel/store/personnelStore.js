@@ -70,6 +70,7 @@ export const actions = {
         return result.totalRow;
       }
     } catch (err) {
+      commit(types.CLIENT_LIST, []);
       Message.error('接口加载失败');
       console.error(err);
     }
@@ -87,6 +88,7 @@ export const actions = {
         return result.totalRow;
       }
     } catch (err) {
+      commit(types.CLIENT_LIST, []);
       Message.error('接口加载失败');
       console.error(err);
     }
@@ -143,6 +145,7 @@ export const actions = {
         return result.totalRow;
       }
     } catch (err) {
+      commit(types.CLIENT_LIST, []);
       Message.error('接口加载失败');
       console.error(err);
     }
@@ -160,6 +163,7 @@ export const actions = {
         return result.totalRow;
       }
     } catch (err) {
+      commit(types.CLIENT_LIST, []);
       Message.error('接口加载失败');
       console.error(err);
     }
@@ -216,6 +220,7 @@ export const actions = {
         return result.totalRow;
       }
     } catch (err) {
+      commit(types.CLIENT_LIST, []);
       Message.error('接口加载失败');
       console.error(err);
     }
@@ -233,6 +238,7 @@ export const actions = {
         return result.totalRow;
       }
     } catch (err) {
+      commit(types.CLIENT_LIST, []);
       Message.error('接口加载失败');
       console.error(err);
     }
@@ -289,6 +295,7 @@ export const actions = {
         return result.totalRow;
       }
     } catch (err) {
+      commit(types.CLIENT_LIST, []);
       Message.error('接口加载失败');
       console.error(err);
     }
@@ -306,6 +313,7 @@ export const actions = {
         return result.totalRow;
       }
     } catch (err) {
+      commit(types.CLIENT_LIST, []);
       Message.error('接口加载失败');
       console.error(err);
     }
@@ -362,6 +370,7 @@ export const actions = {
         return result.totalRow;
       }
     } catch (err) {
+      commit(types.CLIENT_LIST, []);
       Message.error('接口加载失败');
       console.error(err);
     }
@@ -379,6 +388,7 @@ export const actions = {
         return result.totalRow;
       }
     } catch (err) {
+      commit(types.CLIENT_LIST, []);
       Message.error('接口加载失败');
       console.error(err);
     }
