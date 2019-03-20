@@ -60,6 +60,8 @@ export const actions = {
       if (result.rescode === '0') {
         commit(types.DLY_WAY_LIST, result.dlyWayList);
         return result.totalRow;
+      } else {
+        commit(types.DLY_WAY_LIST, []);
       }
     } catch (err) {
       Message.error('接口加载失败');
@@ -74,10 +76,10 @@ export const actions = {
         `${api.dly_wayList}?name=${select_name}&start_city=${select_start_city}&end_city=${select_end_city}&skip=${skip}&limit=${limit}`
       );
       if (result.rescode === '0') {
-        console.log(111);
-        console.log(result);
         commit(types.DLY_WAY_LIST, result.dlyWayList);
         return result.totalRow;
+      } else {
+        commit(types.DLY_WAY_LIST, []);
       }
     } catch (err) {
       Message.error('接口加载失败');
@@ -129,6 +131,7 @@ export const actions = {
       } else {
         Message.error(result.msg);
         commit(types.ORDER_LIST, []);
+        return 0;
       }
     } catch (error) {
       Message.error('接口加载失败');
@@ -141,6 +144,8 @@ export const actions = {
       let result = await this.$axios.get(`${api.orderSubList}&order_id=${id}`);
       if (result.rescode === '0') {
         commit(types.ORDER_SUB_LIST, result.orderSubList);
+      } else {
+        commit(types.ORDER_SUB_LIST, []);
       }
     } catch (error) {
       Message.error('接口加载失败');
@@ -230,6 +235,9 @@ export const actions = {
       if (result.rescode === '0') {
         commit(types.GOODS_LIST, result.goodsList);
         return result.totalRow;
+      } else {
+        commit(types.GOODS_LIST, []);
+        return 0;
       }
     } catch (err) {
       Message.error('接口加载失败');
@@ -244,6 +252,9 @@ export const actions = {
       if (result.rescode === '0') {
         commit(types.GOODS_LIST, result.goodsList);
         return result.totalRow;
+      } else {
+        commit(types.GOODS_LIST, []);
+        return 0;
       }
     } catch (err) {
       Message.error('接口加载失败');

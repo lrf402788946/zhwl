@@ -49,6 +49,9 @@ export const actions = {
       if (result.rescode === '0') {
         commit(types.USER_LIST, result.userList);
         return result.totalRow;
+      } else {
+        commit(types.USER_LIST, []);
+        return 0;
       }
     } catch (err) {
       Message.error('接口加载失败');

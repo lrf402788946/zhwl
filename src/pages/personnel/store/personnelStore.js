@@ -94,7 +94,9 @@ export const actions = {
   //添加客户
   async addClientlist({ commit }, { data }) {
     try {
-      let result = await this.$axios.post(`${api.clientSave}`, { data: data });
+      let result = await this.$axios.post(`${api.clientSave}`, {
+        data: data,
+      });
       if (result.rescode === '0') {
         commit(types.CLIENT_LIST, result.clientList);
         return result.totalRow;
@@ -109,9 +111,13 @@ export const actions = {
     let result;
     try {
       if (type === 'delete') {
-        result = await this.$axios.post(`${api.clientDelete}`, { data: { id: data } });
+        result = await this.$axios.post(`${api.clientDelete}`, {
+          data: { id: data },
+        });
       } else {
-        result = await this.$axios.post(`${api.clientEdit}`, { data: data });
+        result = await this.$axios.post(`${api.clientEdit}`, {
+          data: data,
+        });
       }
       if (result.rescode === '0') {
         Message.success('操作成功');
@@ -161,7 +167,9 @@ export const actions = {
   //添加部门
   async addDeptlist({ commit }, { data }) {
     try {
-      let result = await this.$axios.post(`${api.deptSave}`, { data: data });
+      let result = await this.$axios.post(`${api.deptSave}`, {
+        data: data,
+      });
       if (result.rescode === '0') {
         commit(types.DEPT_LIST, result.deptList);
         return result.totalRow;
@@ -176,9 +184,13 @@ export const actions = {
     let result;
     try {
       if (type === 'delete') {
-        result = await this.$axios.post(`${api.deptDelete}`, { data: { id: data } });
+        result = await this.$axios.post(`${api.deptDelete}`, {
+          data: { id: data },
+        });
       } else {
-        result = await this.$axios.post(`${api.deptEdit}`, { data: data });
+        result = await this.$axios.post(`${api.deptEdit}`, {
+          data: data,
+        });
       }
       if (result.rescode === '0') {
         Message.success('操作成功');
@@ -228,7 +240,9 @@ export const actions = {
   //添加驾驶员
   async addDriverlist({ commit }, { data }) {
     try {
-      let result = await this.$axios.post(`${api.driverSave}`, { data: data });
+      let result = await this.$axios.post(`${api.driverSave}`, {
+        data: data,
+      });
       if (result.rescode === '0') {
         commit(types.DRIVER_LIST, result.driverList);
         return result.totalRow;
@@ -243,9 +257,13 @@ export const actions = {
     let result;
     try {
       if (type === 'delete') {
-        result = await this.$axios.post(`${api.driverDelete}`, { data: { id: data } });
+        result = await this.$axios.post(`${api.driverDelete}`, {
+          data: { id: data },
+        });
       } else {
-        result = await this.$axios.post(`${api.driverEdit}`, { data: data });
+        result = await this.$axios.post(`${api.driverEdit}`, {
+          data: data,
+        });
       }
       if (result.rescode === '0') {
         Message.success('操作成功');
@@ -295,7 +313,9 @@ export const actions = {
   //添加岗位
   async addPostlist({ commit }, { data }) {
     try {
-      let result = await this.$axios.post(`${api.postSave}`, { data: data });
+      let result = await this.$axios.post(`${api.postSave}`, {
+        data: data,
+      });
       if (result.rescode === '0') {
         commit(types.POST_LIST, result.postList);
         return result.totalRow;
@@ -310,9 +330,13 @@ export const actions = {
     let result;
     try {
       if (type === 'delete') {
-        result = await this.$axios.post(`${api.postDelete}`, { data: { id: data } });
+        result = await this.$axios.post(`${api.postDelete}`, {
+          data: { id: data },
+        });
       } else {
-        result = await this.$axios.post(`${api.postEdit}`, { data: data });
+        result = await this.$axios.post(`${api.postEdit}`, {
+          data: data,
+        });
       }
       if (result.rescode === '0') {
         Message.success('操作成功');
@@ -325,7 +349,7 @@ export const actions = {
       console.error(err);
     }
   },
-  //查询客户列表
+  //查询员工列表
   async getStaffList({ commit }, payload) {
     const { skip, limit } = payload;
     try {
@@ -342,7 +366,7 @@ export const actions = {
       console.error(err);
     }
   },
-  //模糊查询客户列表方法
+  //模糊查询员工列表方法
   async getStaffListLike({ commit }, payload) {
     const { skip, limit, select_staff_name, select_staff_job_num } = payload;
     try {
@@ -359,10 +383,12 @@ export const actions = {
       console.error(err);
     }
   },
-  //添加客户
+  //添加员工
   async addStafflist({ commit }, { data }) {
     try {
-      let result = await this.$axios.post(`${api.staffSave}`, { data: data });
+      let result = await this.$axios.post(`${api.staffSave}`, {
+        data: data,
+      });
       if (result.rescode === '0') {
         commit(types.STAFF_LIST, result.staffList);
         return result.totalRow;
@@ -372,14 +398,18 @@ export const actions = {
       console.error(err);
     }
   },
-  //客户删除，修改
+  //员工删除，修改
   async staffOperation({ commit }, { type, data }) {
     let result;
     try {
       if (type === 'delete') {
-        result = await this.$axios.post(`${api.staffDelete}`, { data: { id: data } });
+        result = await this.$axios.post(`${api.staffDelete}`, {
+          data: { id: data },
+        });
       } else {
-        result = await this.$axios.post(`${api.staffEdit}`, { data: data });
+        result = await this.$axios.post(`${api.staffEdit}`, {
+          data: data,
+        });
       }
       if (result.rescode === '0') {
         Message.success('操作成功');
