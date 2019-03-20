@@ -114,7 +114,7 @@
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">运输单号：</div>
-            <b-form-input v-model="form.transport_no" type="number"></b-form-input>
+            <b-form-input v-model="form.transport_no" :disabled="true" type="number"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">司机：</div>
