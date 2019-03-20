@@ -218,7 +218,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['getPostList','getPostListLike', 'addPostlist', 'postOperation']),
+    ...mapActions(['getPostList', 'getPostListLike', 'addPostlist', 'postOperation']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -272,7 +272,7 @@ export default {
     },
     //修改
     async update() {
-      await this.postOperation({type:'update',data: this.updateForm });
+      await this.postOperation({ type: 'update', data: this.updateForm });
       this.updateForm = {};
       this.$refs.updateAlert.hide();
       this.search();
@@ -286,7 +286,7 @@ export default {
     },
     //添加
     async add() {
-      await this.addPostlist({data: this.form });
+      await this.addPostlist({ data: this.form });
       this.form = {};
       this.$refs.toAdd.hide();
       this.search();

@@ -272,7 +272,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['getClientList','getClientListLike', 'addClientlist', 'clientOperation']),
+    ...mapActions(['getClientList', 'getClientListLike', 'addClientlist', 'clientOperation']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -326,7 +326,7 @@ export default {
     },
     //修改
     async update() {
-      await this.clientOperation({type:'update',data: this.updateForm });
+      await this.clientOperation({ type: 'update', data: this.updateForm });
       this.updateForm = {};
       this.$refs.updateAlert.hide();
       this.search();
@@ -340,7 +340,7 @@ export default {
     },
     //添加
     async add() {
-      await this.addClientlist({data: this.form });
+      await this.addClientlist({ data: this.form });
       this.form = {};
       this.$refs.toAdd.hide();
       this.search();

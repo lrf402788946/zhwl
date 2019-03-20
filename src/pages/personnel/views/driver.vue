@@ -350,7 +350,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['getDriverList','getDriverListLike', 'addDriverlist', 'driverOperation']),
+    ...mapActions(['getDriverList', 'getDriverListLike', 'addDriverlist', 'driverOperation']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -407,7 +407,7 @@ export default {
     //修改
     async update() {
       this.updateForm.ccu_time = this.updateForm.ccu_time[0] + '至' + this.updateForm.ccu_time[1];
-      await this.driverOperation({type:'update',data: this.updateForm });
+      await this.driverOperation({ type: 'update', data: this.updateForm });
       this.updateForm = {};
       this.$refs.updateAlert.hide();
       this.search();
@@ -421,7 +421,7 @@ export default {
     },
     //添加
     async add() {
-      await this.addDriverlist({data: this.form });
+      await this.addDriverlist({ data: this.form });
       this.form = {};
       this.$refs.toAdd.hide();
       this.search();
@@ -469,11 +469,11 @@ export default {
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
     toValidate(type) {
       if (type === 'add') {
-        if(this.timeValues === ''){
+        if (this.timeValues === '') {
           this.form.ccu_time = null;
-        }else if(this.timeValues === null){
+        } else if (this.timeValues === null) {
           this.form.ccu_time = null;
-        }else{
+        } else {
           let date = this.timeValues[0] + '至' + this.timeValues[1];
           this.form.ccu_time = date;
         }

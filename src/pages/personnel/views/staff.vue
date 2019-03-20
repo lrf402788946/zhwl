@@ -280,11 +280,11 @@ export default {
         birthday: { type: 'string', required: true, message: '请选择出生日期' },
         id_number: { type: 'string', required: true, message: '请填写身份证号' },
         dept_id: { required: true, message: '请选择部门' },
-        post_id: {required: true, message: '请选择岗位' },
+        post_id: { required: true, message: '请选择岗位' },
         status: { required: true, message: '请选择在职状态' },
       }),
-      th: ['工号','员工名称','性别','电话','家庭住址','出生日期','身份证号','部门','岗位','在职状态'],
-      filterVal: ['job_num','name','gender','phone_no','home_address','birthday','id_number','dept_id','post_id','status'],
+      th: ['工号', '员工名称', '性别', '电话', '家庭住址', '出生日期', '身份证号', '部门', '岗位', '在职状态'],
+      filterVal: ['job_num', 'name', 'gender', 'phone_no', 'home_address', 'birthday', 'id_number', 'dept_id', 'post_id', 'status'],
       is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
       countNum: 0,
     };
@@ -313,7 +313,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['getStaffList','getStaffListLike', 'addStafflist', 'staffOperation']),
+    ...mapActions(['getStaffList', 'getStaffListLike', 'addStafflist', 'staffOperation']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -369,7 +369,7 @@ export default {
     },
     //修改
     async update() {
-      await this.staffOperation({type:'update',data: this.updateForm });
+      await this.staffOperation({ type: 'update', data: this.updateForm });
       this.updateForm = {};
       this.$refs.updateAlert.hide();
       this.search();
@@ -383,7 +383,7 @@ export default {
     },
     //添加
     async add() {
-      await this.addStafflist({data: this.form });
+      await this.addStafflist({ data: this.form });
       this.form = {};
       this.$refs.toAdd.hide();
       this.search();

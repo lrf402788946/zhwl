@@ -235,7 +235,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['getDeptList','getDeptListLike', 'addDeptlist', 'deptOperation']),
+    ...mapActions(['getDeptList', 'getDeptListLike', 'addDeptlist', 'deptOperation']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -289,7 +289,7 @@ export default {
     },
     //修改
     async update() {
-      await this.deptOperation({type:'update',data: this.updateForm });
+      await this.deptOperation({ type: 'update', data: this.updateForm });
       this.updateForm = {};
       this.$refs.updateAlert.hide();
       this.search();
@@ -303,7 +303,7 @@ export default {
     },
     //添加
     async add() {
-      await this.addDeptlist({data: this.form });
+      await this.addDeptlist({ data: this.form });
       this.form = {};
       this.$refs.toAdd.hide();
       this.search();
