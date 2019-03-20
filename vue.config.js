@@ -5,6 +5,8 @@ module.exports = {
   pages: {
     login: 'src/pages/login/main.js',
     system: 'src/pages/system/main.js',
+    business: 'src/pages/business/main.js',
+    personnel: 'src/pages/personnel/main.js',
     car: 'src/pages/car/main.js',
   },
   configureWebpack: config => {

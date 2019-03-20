@@ -4,6 +4,7 @@ import index from './index.vue';
 import dly_way from './views/dly_way.vue';
 import order from './views/order.vue';
 import goods from './views/goods.vue';
+import car_loading from './views/car_loading.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -27,6 +28,11 @@ export default new Router({
           path: '/goods',
           name: 'goods',
           component: goods,
+        },
+        {
+          path: '/car_loading',
+          name: 'car_loading',
+          component: car_loading,
         },
       ],
     },

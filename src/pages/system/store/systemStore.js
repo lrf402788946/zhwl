@@ -56,6 +56,7 @@ export const actions = {
     } catch (err) {
       Message.error('接口加载失败');
       console.error(err);
+      commit(types.USER_LIST, []);
     }
   },
   //用户操作
@@ -101,6 +102,7 @@ export const actions = {
     } catch (err) {
       Message.error('接口加载失败');
       console.error(err);
+      commit(types.ROLE_LIST, []);
     }
   },
   //角色操作

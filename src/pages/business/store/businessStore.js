@@ -66,6 +66,7 @@ export const actions = {
     } catch (err) {
       Message.error('接口加载失败');
       console.error(err);
+      commit(types.DLY_WAY_LIST, []);
     }
   },
   //模糊查询路线列表
@@ -84,6 +85,7 @@ export const actions = {
     } catch (err) {
       Message.error('接口加载失败');
       console.error(err);
+      commit(types.DLY_WAY_LIST, []);
     }
   },
   //添加路线
@@ -135,6 +137,7 @@ export const actions = {
       }
     } catch (error) {
       Message.error('接口加载失败');
+      commit(types.ORDER_LIST, []);
       console.error(error);
     }
   },
@@ -150,6 +153,7 @@ export const actions = {
     } catch (error) {
       Message.error('接口加载失败');
       console.error(error);
+      commit(types.ORDER_SUB_LIST, []);
     }
   },
   //获取订单号
@@ -242,6 +246,7 @@ export const actions = {
     } catch (err) {
       Message.error('接口加载失败');
       console.error(err);
+      commit(types.GOODS_LIST, []);
     }
   },
   //模糊查询货物列表
@@ -259,6 +264,7 @@ export const actions = {
     } catch (err) {
       Message.error('接口加载失败');
       console.error(err);
+      commit(types.GOODS_LIST, []);
     }
   },
   //添加货物
