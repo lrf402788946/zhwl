@@ -31,7 +31,7 @@ const api = {
   transportOrderSubList: '/zhwl/transport/order_sub_list', //query:skip,limit
   transportSelectOrder: '/zhwl/transport/order_sub_list_info', //params:ids[]
   transportList: '/zhwl/transport/transport_list', //query:skip,limit
-  transportInfo: '/zhwl/transport/transport_info ', //query:id
+  transportInfo: '/zhwl/transport/transport_info', //query:id
   transportMainSave: '/zhwl/transport/transport_save', //params:from
   transportSubSave: '/zhwl/transport/transport_sub_save', //params:id,subForm
   transportMainEdit: '/zhwl/transport/transport_edit', //params:from
@@ -352,11 +352,11 @@ export const actions = {
     }
   },
   //查询运输记录
-  async transportList({ commit }, { skip, limit }) {
+  async getTransportList({ commit }, { skip, limit }) {
     try {
       let result = await this.$axios.get(`${api.transportList}?skip=${skip}&limit=${limit}`);
       if (result.rescode === '0') {
-        commit(types.TRANSPORT_LIST, result.transport_list);
+        commit(types.TRANSPORT_LIST, result.orderList);
         return result.totalRow;
       } else {
         Message.error(result.msg);
@@ -370,11 +370,11 @@ export const actions = {
     }
   },
   //查询运输子表记录
-  async transporSubtList({ commit }, { id }) {
+  async getTransportSubList({ commit }, { id }) {
     try {
-      let result = await this.$axios.get(`${api.transportInfo}&order_id=${id}`);
+      let result = await this.$axios.get(`${api.transportInfo}?transport_main_id=${id}`);
       if (result.rescode === '0') {
-        commit(types.TRANSPORT_INFO, result.transportInfo);
+        commit(types.TRANSPORT_INFO, result.transportSubList);
       } else {
         commit(types.TRANSPORT_INFO, []);
       }

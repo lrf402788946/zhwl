@@ -5,6 +5,7 @@ import dly_way from './views/dly_way.vue';
 import order from './views/order.vue';
 import goods from './views/goods.vue';
 import car_loading from './views/car_loading.vue';
+import transport from './views/transport.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -33,6 +34,11 @@ export default new Router({
           path: '/car_loading',
           name: 'car_loading',
           component: car_loading,
+        },
+        {
+          path: '/transport',
+          name: 'transport',
+          component: transport,
         },
       ],
     },
