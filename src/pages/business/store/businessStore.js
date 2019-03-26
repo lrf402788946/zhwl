@@ -322,7 +322,7 @@ export const actions = {
   //装车,查询订单子表
   async transportOrderSubList({ commit }, { skip, limit }) {
     try {
-      let result = await this.$axios.get(`${api.orderList}?skip=${skip}&limit=${limit}&status=0`);
+      let result = await this.$axios.get(`${api.order_sub_list}?skip=${skip}&limit=${limit}`);
       if (result.rescode === '0') {
         commit(types.ORDER_SUB_LIST, result.orderSubList);
         return result.totalRow;
