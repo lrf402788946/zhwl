@@ -320,9 +320,9 @@ export const actions = {
     }
   },
   //装车,查询订单子表
-  async transportOrderSubList({ commit }, { skip, limit }) {
+  async transportOrderSubList({ commit }, { skip, limit, id }) {
     try {
-      let result = await this.$axios.get(`${api.transportOrderSubList}?skip=${skip}&limit=${limit}`);
+      let result = await this.$axios.get(`${api.transportOrderSubList}?skip=${skip}&limit=${limit}&id=${id}`);
       if (result.rescode === '0') {
         commit(types.ORDER_SUB_LIST, result.orderSubList);
         return result.totalRow;
@@ -355,7 +355,11 @@ export const actions = {
   //查询运输记录
   async getTransportList({ commit }, { skip, limit, transport_no, car_no, driver_id, start_time, end_time }) {
     try {
-      let result = await this.$axios.get(`${api.transportList}?skip=${skip}&limit=${limit}&transport_no=${transport_no}&car_no=${car_no}&driver_id=${driver_id}&start_time=${start_time}&end_time=${end_time}`);
+      let result = await this.$axios.get(
+        `${
+          api.transportList
+        }?skip=${skip}&limit=${limit}&transport_no=${transport_no}&car_no=${car_no}&driver_id=${driver_id}&start_time=${start_time}&end_time=${end_time}`
+      );
       if (result.rescode === '0') {
         commit(types.TRANSPORT_LIST, result.orderList);
         return result.totalRow;
