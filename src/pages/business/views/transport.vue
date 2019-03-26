@@ -23,7 +23,7 @@
               <p class="marginBot4">查询驾驶员姓名:</p>
               <el-select class="marginBot" style="height:40px !important" v-model="select_driver_id" filterable placeholder="输入">
                 <el-option value="" label="全部驾驶员">全部驾驶员</el-option>
-                <el-option v-for="(item, index) in clientList" :key="index" :label="item.name" :value="item.id"></el-option>
+                <el-option v-for="item in driverList" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </div>
             <div class="col-lg-4 marginBot4">
@@ -107,7 +107,7 @@
           <div class="col-lg-4 mb25">
             <div class="lh44">司机：</div>
             <el-select class="marginBot" :disabled="true" style="height:40px !important" v-model="updateForm.car_onwer" filterable placeholder="请选择司机">
-              <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
+              <el-option v-for="item in driverList" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
           <div class="col-lg-4 mb25">
@@ -158,8 +158,8 @@
                 <td><b-form-input :disabled="true" v-model="item.price"></b-form-input></td>
                 <td>
                   <el-select class="marginBot" style="height:40px !important" v-model="item.status" :disabled="is_update" filterable placeholder="请选择状态">
-                    <el-option :value="0" label="未到达" :selected="true"></el-option>
-                    <el-option :value="1" label="已到达"></el-option>
+                    <el-option :value="1" label="未到达" :selected="true"></el-option>
+                    <el-option :value="2" label="已到达"></el-option>
                   </el-select>
                 </td>
               </tr>
@@ -246,14 +246,15 @@ export default {
       th: ['订单号', '订单人', '订单日期', '备注'],
       filterVal: ['transport_no', 'user_name', 'in_date', 'remark'],
       select_transport_no: '',
-      select_c_id: '',
+      select_car_no: '',
+      select_driver_id: '',
       select_in_date: [],
       chooseStatus: [
-        { text: '待发', value: '0' },
+        // { text: '待发', value: '0' },
         { text: '装车', value: '1' },
         { text: '到达', value: '2' },
-        { text: '支付完成', value: '3' },
-        { text: '收款完成', value: '4' },
+        // { text: '支付完成', value: '3' },
+        // { text: '收款完成', value: '4' },
       ],
     };
   },
@@ -265,16 +266,16 @@ export default {
       transportList: state => state.self.transportList,
       transportSubListVuex: state => state.self.transportSubList,
       dlyWayList: state => state.self.dlyWayList,
-      clientList: state => state.personnel.clientList,
+      driverList: state => state.personnel.driverList,
     }),
   },
   async created() {
     this.search();
-    await this.getClientList({ skip: 0, limit: 10000 });
     await this.getdly_wayList({ skip: 0, limit: 10000 });
+    await this.getDriverList({ skip: 0, limit: 10000 });
   },
   methods: {
-    ...mapActions(['getTransportList', 'getTransportSubList', 'getTransportNo', 'getClientList', 'getdly_wayList', 'transportSave', 'transportEdit', 'transportDelete']),
+    ...mapActions(['getTransportList', 'getTransportSubList', 'getTransportNo', 'getdly_wayList', 'transportSave', 'transportEdit', 'transportDelete', 'getDriverList']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -290,17 +291,12 @@ export default {
         skip: skip,
         limit: this.limit,
         transport_no: this.select_transport_no,
-        c_id: this.select_c_id,
-        start_time: this.select_in_date > 0 ? this.select_in_date[0] : '',
-        end_time: this.select_in_date > 0 ? this.select_in_date[1] : '',
+        car_no: this.select_car_no,
+        driver_id: this.select_driver_id,
+        start_time: this.select_in_date.length > 0 ? this.select_in_date[0] : '',
+        end_time: this.select_in_date.length > 0 ? this.select_in_date[1] : '',
       });
       this.$set(this, 'totalRow', totalRow);
-    },
-    //显示名字
-    getC_name(id) {
-      if (this.clientList.length > 0) {
-        return this.clientList.filter(item => item.id === id)[0].name;
-      }
     },
     //验证
     toValidate(type) {

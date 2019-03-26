@@ -131,12 +131,6 @@
             </el-select>
           </div>
           <div class="col-lg-4 mb25">
-            <div class="lh44">状态：</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.status" filterable placeholder="请选择物流状态">
-              <el-option v-for="(item2, index) in chooseStatus" :key="index" :label="item2.text" :value="item2.value"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-4 mb25">
             <div class="lh44">应收运费：</div>
             <b-form-input v-model="form.s_dp" type="number"></b-form-input>
           </div>
@@ -267,7 +261,7 @@
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">状态：</div>
-            <b-form-select v-model="updateForm.status" :disabled="is_update" :options="chooseStatus" filterable placeholder="请选择物流状态" />
+            <b-form-select v-model="updateForm.status" :disabled="true" :options="chooseStatus" filterable/>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">应收运费：</div>
@@ -417,7 +411,6 @@ export default {
         c_id: [{ required: true, message: '请选择客户' }],
         send_time: [{ required: true, message: '请选择发货日期' }],
         dly_type: [{ required: true, message: '请选择物流方式' }],
-        status: [{ required: true, message: '请选择订单状态' }],
       }),
       th: ['订单号', '订单人', '订单日期', '备注'],
       filterVal: ['order_no', 'user_name', 'in_date', 'remark'],
@@ -426,10 +419,10 @@ export default {
       select_in_date: [],
       chooseStatus: [
         { text: '待发', value: '0' },
-        { text: '装车', value: '1' },
+        { text: '装车运输', value: '1' },
         { text: '到达', value: '2' },
-        { text: '支付完成', value: '3' },
-        { text: '收款完成', value: '4' },
+        // { text: '支付完成', value: '3' },
+        // { text: '收款完成', value: '4' },
       ],
     };
   },
@@ -475,8 +468,8 @@ export default {
         limit: this.limit,
         order_no: this.select_order_no,
         c_id: this.select_c_id,
-        start_time: this.select_in_date > 0 ? this.select_in_date[0] : '',
-        end_time: this.select_in_date > 0 ? this.select_in_date[1] : '',
+        start_time: this.select_in_date.length > 0 ? this.select_in_date[0] : '',
+        end_time: this.select_in_date.length > 0 ? this.select_in_date[1] : '',
       });
       this.$set(this, 'totalRow', totalRow);
     },
@@ -514,6 +507,7 @@ export default {
     //添加
     async add() {
       try {
+        this.form.status = 0;
         await this.orderSave({ form: this.form, subForm: this.form.dly_type === 1 ? [] : this.subForm });
         this.$refs.addAlert.hide();
         this.form = {};

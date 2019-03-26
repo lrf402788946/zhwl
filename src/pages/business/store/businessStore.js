@@ -353,9 +353,9 @@ export const actions = {
     }
   },
   //查询运输记录
-  async getTransportList({ commit }, { skip, limit }) {
+  async getTransportList({ commit }, { skip, limit, transport_no, car_no, driver_id, start_time, end_time }) {
     try {
-      let result = await this.$axios.get(`${api.transportList}?skip=${skip}&limit=${limit}`);
+      let result = await this.$axios.get(`${api.transportList}?skip=${skip}&limit=${limit}&transport_no=${transport_no}&car_no=${car_no}&driver_id=${driver_id}&start_time=${start_time}&end_time=${end_time}`);
       if (result.rescode === '0') {
         commit(types.TRANSPORT_LIST, result.orderList);
         return result.totalRow;

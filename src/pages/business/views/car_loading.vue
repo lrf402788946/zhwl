@@ -65,10 +65,12 @@
           <tbody v-if="orderSubList.length > 0">
             <tr>
               <th>选择货物</th>
+              <th>订单号</th>
               <th>货物</th>
-              <th>运输内容</th>
+              <th>运输路线</th>
               <th>数量</th>
               <th>重量</th>
+              <!-- <th>操作</th> -->
             </tr>
             <tr v-for="(item, index) in orderSubList" :key="index">
               <td>
@@ -76,10 +78,12 @@
                   <b-form-checkbox :value="item.id"></b-form-checkbox>
                 </b-form-checkbox-group>
               </td>
+              <td>{{ item.order_no }}</td>
               <td>{{ item.goods_name }}</td>
               <td>{{ item.content }}</td>
               <td>{{ item.goods_num }}</td>
               <td>{{ item.goods_weight }}</td>
+              <!-- <td><b-button variant="danger" style="color:white;" @click="addOrderSublist(index)">拆&nbsp;&nbsp;分</b-button></td> -->
             </tr>
           </tbody>
           <tbody v-else>
@@ -114,7 +118,7 @@
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">运输单号：</div>
-            <b-form-input v-model="form.transport_no" :disabled="true" type="number"></b-form-input>
+            <b-form-input v-model="form.transport_no" :disabled="true"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">司机：</div>
@@ -124,7 +128,7 @@
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">线路：</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.content" filterable placeholder="请选择司机">
+            <el-select class="marginBot" style="height:40px !important" v-model="form.content" filterable placeholder="请选择线路">
               <el-option v-for="(way, index) in dlyWayList" :key="index" :label="way.content" :value="way.content"></el-option>
             </el-select>
           </div>
@@ -145,19 +149,21 @@
           <table class="table table-bordered table-striped ">
             <tbody>
               <tr>
+                <td>订单号</td>
                 <td>货物名称</td>
                 <td>线路</td>
                 <td>运输金额</td>
                 <td>操作</td>
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
+                <td><b-form-input v-model="item.order_no" :disabled="true"></b-form-input></td>
                 <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
                 <td><b-form-input v-model="item.content" :disabled="true"></b-form-input></td>
                 <td><b-form-input v-model="item.price" :disabled="true"></b-form-input></td>
                 <td>
                   <b-button
                     variant="danger"
-                    :disabled="true"
+                    :disabled="false"
                     @click="clearSubForm(index)"
                     class="resetButton"
                     style="margin-top: 23px; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
@@ -239,6 +245,13 @@ export default {
   },
   methods: {
     ...mapActions(['transportOrderSubList', 'getDriverList', 'getCarList', 'transporSelectOrder', 'transportSave', 'getdly_wayList', 'getTransportNo']),
+    // //拆分
+    // addOrderSublist(index){
+    //   console.log(index)
+    //   let newArray={};
+    //   this.orderSubList.splice(index+1,0,newArray);
+    //   console.log(this.orderSubList);
+    // },
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -272,6 +285,9 @@ export default {
     //添加
     async add() {
       try {
+        for (let index = 0; index < this.subForm.length; index++) {
+          this.subForm[index].status = '1';
+        }
         await this.transportSave({ form: this.form, subForm: this.subForm });
         this.$refs.addAlert.hide();
         this.form = {};
@@ -286,7 +302,7 @@ export default {
       let newList = this.order_loading_list.map(item => `${item}`);
       let result = await this.transporSelectOrder({ ids: newList });
       let transportOrderSubList = result.orderSubList.map(item => {
-        let newObject = { order_sub_id: item.id, goods_name: item.goods_name, content: item.content, price: item.price, status: '0' };
+        let newObject = { order_no: item.order_no, order_sub_id: item.id, goods_name: item.goods_name, content: item.content, price: item.price, status: '0' };
         return newObject;
       });
       this.$set(this, 'subForm', transportOrderSubList);
