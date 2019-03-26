@@ -13,7 +13,7 @@ const api = {
   dly_wayEdit: '/zhwl/dlyway/dly_way_edit',
   dly_wayDelete: '/zhwl/dlyway/dly_way_delete',
   //订单
-  orderList: '/zhwl/order/order_list', //query:skip,limit,!order_number,!cus_id,!start_time,!end_time
+  orderList: '/zhwl/order/order_list', //query:skip,limit,!order_number,!cus_id,!start_time,!end_time / status=0查询的是拆分数据
   orderSubList: '/zhwl/order/order_info?skip=0&limit=10000', //query:skip,limit=10000,order_id
   orderNumber: '/zhwl/order/order_num', //query:cus_id
   orderMainSave: '/zhwl/order/order_save', //params:data
@@ -322,7 +322,7 @@ export const actions = {
   //装车,查询订单子表
   async transportOrderSubList({ commit }, { skip, limit }) {
     try {
-      let result = await this.$axios.get(`${api.transportOrderSubList}?skip=${skip}&limit=${limit}`);
+      let result = await this.$axios.get(`${api.orderList}?skip=${skip}&limit=${limit}&status=0`);
       if (result.rescode === '0') {
         commit(types.ORDER_SUB_LIST, result.orderSubList);
         return result.totalRow;
@@ -355,7 +355,11 @@ export const actions = {
   //查询运输记录
   async getTransportList({ commit }, { skip, limit, transport_no, car_no, driver_id, start_time, end_time }) {
     try {
-      let result = await this.$axios.get(`${api.transportList}?skip=${skip}&limit=${limit}&transport_no=${transport_no}&car_no=${car_no}&driver_id=${driver_id}&start_time=${start_time}&end_time=${end_time}`);
+      let result = await this.$axios.get(
+        `${
+          api.transportList
+        }?skip=${skip}&limit=${limit}&transport_no=${transport_no}&car_no=${car_no}&driver_id=${driver_id}&start_time=${start_time}&end_time=${end_time}`
+      );
       if (result.rescode === '0') {
         commit(types.TRANSPORT_LIST, result.orderList);
         return result.totalRow;
