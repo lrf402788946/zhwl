@@ -22,6 +22,7 @@ const api = {
   orderSubEdit: '/zhwl/order/order_sub_edit', //params:subForm,id-main_id
   orderDelete: '/zhwl/order/order_delete', //params:id
   orderNum: '/zhwl/order/order_no', //query:cus_id
+  orderSubSplit: '/zhwl/order/order_sub_split',
   //货物
   goodsList: '/zhwl/goods/goods_list',
   goodsSave: '/zhwl/goods/goods_save',
@@ -209,6 +210,22 @@ export const actions = {
       console.error(error);
     }
   },
+  //拆分订单
+  async orderSubSplit({ commit }, { subForm }) {
+    try {
+      let result = await this.$axios.post(api.orderSubSplit, {
+        data: subForm,
+      });
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      console.error(error);
+    }
+  },
   //订单修改
   async orderEdit({ commit }, { form, subForm }) {
     let result;
@@ -320,9 +337,9 @@ export const actions = {
     }
   },
   //装车,查询订单子表
-  async transportOrderSubList({ commit }, { skip, limit, id }) {
+  async transportOrderSubList({ commit }, { skip, limit}) {
     try {
-      let result = await this.$axios.get(`${api.transportOrderSubList}?skip=${skip}&limit=${limit}&id=${id}`);
+      let result = await this.$axios.get(`${api.transportOrderSubList}?skip=${skip}&limit=${limit}`);
       if (result.rescode === '0') {
         commit(types.ORDER_SUB_LIST, result.orderSubList);
         return result.totalRow;

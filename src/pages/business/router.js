@@ -6,6 +6,7 @@ import order from './views/order.vue';
 import goods from './views/goods.vue';
 import car_loading from './views/car_loading.vue';
 import transport from './views/transport.vue';
+import split_cargo from './views/split_cargo.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -39,6 +40,11 @@ export default new Router({
           path: '/transport',
           name: 'transport',
           component: transport,
+        },
+        {
+          path: '/split_cargo',
+          name: 'split_cargo',
+          component: split_cargo,
         },
       ],
     },
