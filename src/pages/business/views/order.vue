@@ -261,7 +261,7 @@
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">状态：</div>
-            <b-form-select v-model="updateForm.status" :disabled="true" :options="chooseStatus" filterable/>
+            <b-form-select v-model="updateForm.status" :disabled="true" :options="chooseStatus" filterable />
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">应收运费：</div>

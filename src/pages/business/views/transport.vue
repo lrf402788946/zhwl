@@ -54,27 +54,27 @@
         <div class="base-align-right" style="margin-bottom: 20px;"></div>
         <table class="table table-btransported table-striped ">
           <!-- <tbody v-if="transportList.length > 0"> -->
-            <tr>
-              <th>车牌号</th>
-              <th>司机</th>
-              <th>发货时间</th>
-              <th>线路</th>
-              <th>运输单号</th>
-              <th>状态</th>
-              <th>操作</th>
-            </tr>
-            <tr v-for="(item, index) in transportList" :key="index">
-              <td>{{ item.car_no }}</td>
-              <td>{{ item.car_onwer }}</td>
-              <td>{{ item.send_time }}</td>
-              <td>{{ item.content }}</td>
-              <td>{{ item.transport_no }}</td>
-              <td>{{ item.status | getStatus }}</td>
-              <td>
-                <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">详&nbsp;&nbsp;情</b-button>
-                <b-button variant="danger" style="color:white;" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button>
-              </td>
-            </tr>
+          <tr>
+            <th>车牌号</th>
+            <th>司机</th>
+            <th>发货时间</th>
+            <th>线路</th>
+            <th>运输单号</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+          <tr v-for="(item, index) in transportList" :key="index">
+            <td>{{ item.car_no }}</td>
+            <td>{{ item.car_onwer }}</td>
+            <td>{{ item.send_time }}</td>
+            <td>{{ item.content }}</td>
+            <td>{{ item.transport_no }}</td>
+            <td>{{ item.status | getStatus }}</td>
+            <td>
+              <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">详&nbsp;&nbsp;情</b-button>
+              <b-button variant="danger" style="color:white;" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button>
+            </td>
+          </tr>
           <!-- </tbody>
           <tbody v-else>
             <tr>
@@ -82,6 +82,7 @@
             </tr>
           </tbody> -->
         </table>
+
         <el-pagination
           layout="total, prev, pager, next"
           :background="true"
@@ -275,7 +276,16 @@ export default {
     await this.getDriverList({ skip: 0, limit: 10000 });
   },
   methods: {
-    ...mapActions(['getTransportList', 'getTransportSubList', 'getTransportNo', 'getdly_wayList', 'transportSave', 'transportEdit', 'transportDelete', 'getDriverList']),
+    ...mapActions([
+      'getTransportList',
+      'getTransportSubList',
+      'getTransportNo',
+      'getdly_wayList',
+      'transportSave',
+      'transportEdit',
+      'transportDelete',
+      'getDriverList',
+    ]),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;

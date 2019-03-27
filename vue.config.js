@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? '/zhwl/' : './',
   pages: {
-    login: 'src/pages/login/main.js',
+    index: 'src/pages/login/main.js',
     system: 'src/pages/system/main.js',
     business: 'src/pages/business/main.js',
     personnel: 'src/pages/personnel/main.js',

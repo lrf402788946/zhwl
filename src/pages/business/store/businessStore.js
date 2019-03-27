@@ -13,7 +13,7 @@ const api = {
   dly_wayEdit: '/zhwl/dlyway/dly_way_edit',
   dly_wayDelete: '/zhwl/dlyway/dly_way_delete',
   //订单
-  orderList: '/zhwl/order/order_list', //query:skip,limit,!order_number,!cus_id,!start_time,!end_time
+  orderList: '/zhwl/order/order_list', //query:skip,limit,!order_number,!cus_id,!start_time,!end_time / status=0查询的是拆分数据
   orderSubList: '/zhwl/order/order_info?skip=0&limit=10000', //query:skip,limit=10000,order_id
   orderNumber: '/zhwl/order/order_num', //query:cus_id
   orderMainSave: '/zhwl/order/order_save', //params:data
