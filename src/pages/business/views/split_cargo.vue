@@ -82,9 +82,9 @@
                   data-toggle="tooltip"
                   title=""
                   role="button"
-                  @click="openIncomeAlert(index)"
+                  @click="openIncomeAlert(item.id)"
                 >
-                  <i class="base-margin-right-5 fa"></i>添加收入项
+                  <i class="base-margin-right-5 fa"></i>添加/修改收入
                 </a>
               </td>
             </tr>
@@ -110,7 +110,7 @@
     </div>
 
     <!--添加弹框-->
-    <b-modal id="addAlert" ref="addAlert" size="xl" hide-footer>
+    <b-modal id="addAlert" title="拆分订单" ref="addAlert" size="xl" hide-footer>
       <div class="d-block text-center">
         <div class="row">
           <h4>原订单</h4>
@@ -188,36 +188,40 @@
         >返&nbsp;&nbsp;回</b-button
       >
     </b-modal>
-    <!--添加弹框-->
-    <b-modal id="incomeAlert" ref="incomeAlert" size="xl" hide-footer>
+    <!--添加/修改收入弹框-->
+    <b-modal id="incomeAlert" title="添加/修改收入" ref="incomeAlert" size="lg" hide-footer>
       <div class="d-block text-center">
         <div class="row">
           <table class="table table-bordered table-striped ">
-            <tbody>
-              <tr>
-                <td>订单号</td>
-                <td>货物名称</td>
-                <td>线路</td>
-              </tr>
-              <tr>
-                <td><b-form-input v-model="item.order_no" :disabled="true"></b-form-input></td>
-                <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
-                <td><b-form-input v-model="item.content" :disabled="true"></b-form-input></td>
-              </tr>
-            </tbody>
+            <tr>
+              <td>费用ID：</td>
+              <td>
+                <el-select class="marginBot" style="height:40px !important" v-model="incomeList.cost_id" filterable placeholder="输入订单人">
+                  <el-option v-for="(item, index) in costList" :key="index" :label="item.cost_name" :value="item.id"></el-option>
+                </el-select>
+              </td>
+            </tr>
+            <tr>
+              <td>收入金额：</td>
+              <td><b-form-input v-model="incomeList.in_price"></b-form-input></td>
+            </tr>
+            <tr>
+              <td>备注：</td>
+              <td><b-form-input v-model="incomeList.remark"></b-form-input></td>
+            </tr>
           </table>
         </div>
       </div>
       <b-button
         variant="primary"
-        @click="toValidate('add')"
+        @click="income()"
         class="resetButton"
         style="font-size:16px !important; margin:25px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
         >保&nbsp;&nbsp;存</b-button
       >
       <b-button
         variant="secondary"
-        @click="closeAlert('update')"
+        @click="closeIncomeAlert()"
         class="resetButton"
         style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #ccc !important;  width:30% !important; padding:6px 80px !important;"
         >返&nbsp;&nbsp;回</b-button
@@ -240,6 +244,8 @@ export default {
     return {
       list: [],
       subForm: [],
+      incomeList: {},
+      slipId: '',
       is_update: true,
       operateId: '',
       currentPage: 1,
@@ -256,6 +262,7 @@ export default {
       select_in_date: [],
       skip: 0,
       orderList: {},
+      costList: [],
     };
   },
   computed: {
@@ -273,6 +280,7 @@ export default {
     await this.getdly_wayList({ skip: 0, limit: 10000 });
     await this.getDriverList({ skip: 0, limit: 10000 });
     this.search();
+    this.getCostList();
   },
   methods: {
     ...mapActions([
@@ -354,9 +362,40 @@ export default {
       this.$refs.addAlert.show();
     },
     //打开收入的弹框
-    async openIncomeAlert(index) {
-      this.subForm = [];
+    async openIncomeAlert(slip_id) {
+      let result = await this.$axios.get(`/zhwl/zhwl_in/zhwl_in_list?slip_id=${slip_id}`);
+      // if (result.rescode === '0') {
+      //   this.$set(this, 'incomeList', result.zhwl_in_list);
+      // }
+      this.slipId = slip_id;
       this.$refs.incomeAlert.show();
+    },
+    //获取cost费用名称字段
+    async getCostList() {
+      let result = await this.$axios.get(`/zhwl/cost/cost_list?skip=0&limit=1000000`);
+      if (result.rescode === '0') {
+        this.$set(this, 'costList', result.clientPactList);
+      }
+    },
+    //添加收入
+    async income() {
+      this.incomeList.slip_id = this.slipId;
+      let result = await this.$axios.post('/zhwl/zhwl_in/zhwl_in_save', { data: this.incomeList });
+      if (result.data.rescode === '0') {
+        this.$message.success('修改' + result.data.msg);
+        this.closeIncomeAlert();
+        this.incomeList = {};
+        this.search();
+      } else {
+        this.$message.error(result.data.msg);
+      }
+      this.slipId = '';
+    },
+    //关闭添加收入弹框
+    closeIncomeAlert() {
+      this.$refs.incomeAlert.hide();
+      this.incomeList = {};
+      this.search();
     },
     //获得运输单号
     async toGetTransportNo() {
