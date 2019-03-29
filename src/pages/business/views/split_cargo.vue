@@ -66,25 +66,25 @@
               <td>{{ item.goods_volume }}</td>
               <td>{{ item.goods_weight }}</td>
               <td>
-                  <a
-                    class="btn btn-info base-margin-bottom"
-                    style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
-                    data-toggle="tooltip"
-                    title=""
-                    role="button"
-                    @click="openAlert(index)"
+                <a
+                  class="btn btn-info base-margin-bottom"
+                  style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
+                  data-toggle="tooltip"
+                  title=""
+                  role="button"
+                  @click="openAlert(index)"
                 >
-                    <i class="base-margin-right-5 fa"></i>拆分货物
+                  <i class="base-margin-right-5 fa"></i>拆分货物
                 </a>
                 <a
-                    class="btn btn-info base-margin-bottom"
-                    style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
-                    data-toggle="tooltip"
-                    title=""
-                    role="button"
-                    @click="openIncomeAlert(index)"
+                  class="btn btn-info base-margin-bottom"
+                  style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
+                  data-toggle="tooltip"
+                  title=""
+                  role="button"
+                  @click="openIncomeAlert(item.id)"
                 >
-                    <i class="base-margin-right-5 fa"></i>添加收入项
+                  <i class="base-margin-right-5 fa"></i>添加/修改收入
                 </a>
               </td>
             </tr>
@@ -110,29 +110,29 @@
     </div>
 
     <!--添加弹框-->
-    <b-modal id="addAlert" ref="addAlert" size="xl" hide-footer>
+    <b-modal id="addAlert" title="拆分订单" ref="addAlert" size="xl" hide-footer>
       <div class="d-block text-center">
         <div class="row">
           <h4>原订单</h4>
           <table class="table table-bordered table-striped ">
-              <tbody>
-                <tr>
-                    <td>订单号</td>
-                    <td>货物名称</td>
-                    <td>线路</td>
-                    <td>数量</td>
-                    <td>体积</td>
-                    <td>重量</td>
-                </tr>
-                <tr>
-                    <td>{{orderList.order_no}}</td>
-                    <td>{{orderList.goods_name}}</td>
-                    <td>{{orderList.content}}</td>
-                    <td>{{orderList.goods_num}}</td>
-                    <td>{{orderList.goods_volume}}</td>
-                    <td>{{orderList.goods_weight}}</td>
-                </tr>
-              </tbody>
+            <tbody>
+              <tr>
+                <td>订单号</td>
+                <td>货物名称</td>
+                <td>线路</td>
+                <td>数量</td>
+                <td>体积</td>
+                <td>重量</td>
+              </tr>
+              <tr>
+                <td>{{ orderList.order_no }}</td>
+                <td>{{ orderList.goods_name }}</td>
+                <td>{{ orderList.content }}</td>
+                <td>{{ orderList.goods_num }}</td>
+                <td>{{ orderList.goods_volume }}</td>
+                <td>{{ orderList.goods_weight }}</td>
+              </tr>
+            </tbody>
           </table>
           <h4>拆分后订单</h4>
           <b-button variant="danger" style="color:white;" @click="addOrderSublist()">拆&nbsp;分&nbsp;订&nbsp;单</b-button>
@@ -188,36 +188,40 @@
         >返&nbsp;&nbsp;回</b-button
       >
     </b-modal>
-    <!--添加弹框-->
-    <b-modal id="incomeAlert" ref="incomeAlert" size="xl" hide-footer>
+    <!--添加/修改收入弹框-->
+    <b-modal id="incomeAlert" title="添加/修改收入" ref="incomeAlert" size="lg" hide-footer>
       <div class="d-block text-center">
         <div class="row">
           <table class="table table-bordered table-striped ">
-            <tbody>
-              <tr>
-                <td>订单号</td>
-                <td>货物名称</td>
-                <td>线路</td>
-              </tr>
-              <tr>
-                <td><b-form-input v-model="item.order_no" :disabled="true"></b-form-input></td>
-                <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
-                <td><b-form-input v-model="item.content" :disabled="true"></b-form-input></td>
-              </tr>
-            </tbody>
+            <tr>
+              <td>费用ID：</td>
+              <td>
+                <el-select class="marginBot" style="height:40px !important" v-model="incomeList.cost_id" filterable placeholder="输入订单人">
+                  <el-option v-for="(item, index) in costList" :key="index" :label="item.cost_name" :value="item.id"></el-option>
+                </el-select>
+              </td>
+            </tr>
+            <tr>
+              <td>收入金额：</td>
+              <td><b-form-input v-model="incomeList.in_price"></b-form-input></td>
+            </tr>
+            <tr>
+              <td>备注：</td>
+              <td><b-form-input v-model="incomeList.remark"></b-form-input></td>
+            </tr>
           </table>
         </div>
       </div>
       <b-button
         variant="primary"
-        @click="toValidate('add')"
+        @click="income()"
         class="resetButton"
         style="font-size:16px !important; margin:25px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
         >保&nbsp;&nbsp;存</b-button
       >
       <b-button
         variant="secondary"
-        @click="closeAlert('update')"
+        @click="closeIncomeAlert()"
         class="resetButton"
         style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #ccc !important;  width:30% !important; padding:6px 80px !important;"
         >返&nbsp;&nbsp;回</b-button
@@ -240,6 +244,8 @@ export default {
     return {
       list: [],
       subForm: [],
+      incomeList: {},
+      slipId: '',
       is_update: true,
       operateId: '',
       currentPage: 1,
@@ -255,7 +261,8 @@ export default {
       select_c_id: '',
       select_in_date: [],
       skip: 0,
-      orderList:{},
+      orderList: {},
+      costList: [],
     };
   },
   computed: {
@@ -273,19 +280,29 @@ export default {
     await this.getdly_wayList({ skip: 0, limit: 10000 });
     await this.getDriverList({ skip: 0, limit: 10000 });
     this.search();
+    this.getCostList();
   },
   methods: {
-    ...mapActions(['transportOrderSubList', 'getDriverList', 'getCarList', 'transporSelectOrder', 'transportSave', 'getdly_wayList', 'getTransportNo', 'orderSubSplit']),
+    ...mapActions([
+      'transportOrderSubList',
+      'getDriverList',
+      'getCarList',
+      'transporSelectOrder',
+      'transportSave',
+      'getdly_wayList',
+      'getTransportNo',
+      'orderSubSplit',
+    ]),
     //拆分
-    addOrderSublist(){
-      let newArray={};
+    addOrderSublist() {
+      let newArray = {};
       newArray.order_no = this.orderList.order_no;
       newArray.goods_name = this.orderList.goods_name;
       newArray.content = this.orderList.content;
       newArray.goods_num = 0;
       newArray.goods_weight = 0;
-      this.subForm.splice(this.subForm.length,0,newArray);
-      this.subForm[this.subForm.length-1].showDel = true;
+      this.subForm.splice(this.subForm.length, 0, newArray);
+      this.subForm[this.subForm.length - 1].showDel = true;
     },
     //分页
     toSearch(currentPage) {
@@ -322,8 +339,8 @@ export default {
       try {
         for (let index = 0; index < this.subForm.length; index++) {
           this.subForm[index].status = '1';
-          if(index!=0){
-              this.subForm[index].order_no=''
+          if (index != 0) {
+            this.subForm[index].order_no = '';
           }
         }
         await this.orderSubSplit({ form: this.form, subForm: this.subForm });
@@ -336,7 +353,7 @@ export default {
     },
     //打开添加的弹框
     async openAlert(index) {
-      this.subForm=[];
+      this.subForm = [];
       await this.transportOrderSubList({
         skip: 0,
         limit: 100000000,
@@ -345,9 +362,40 @@ export default {
       this.$refs.addAlert.show();
     },
     //打开收入的弹框
-    async openIncomeAlert(index) {
-      this.subForm=[];
+    async openIncomeAlert(slip_id) {
+      let result = await this.$axios.get(`/zhwl/zhwl_in/zhwl_in_list?slip_id=${slip_id}`);
+      // if (result.rescode === '0') {
+      //   this.$set(this, 'incomeList', result.zhwl_in_list);
+      // }
+      this.slipId = slip_id;
       this.$refs.incomeAlert.show();
+    },
+    //获取cost费用名称字段
+    async getCostList() {
+      let result = await this.$axios.get(`/zhwl/cost/cost_list?skip=0&limit=1000000`);
+      if (result.rescode === '0') {
+        this.$set(this, 'costList', result.clientPactList);
+      }
+    },
+    //添加收入
+    async income() {
+      this.incomeList.slip_id = this.slipId;
+      let result = await this.$axios.post('/zhwl/zhwl_in/zhwl_in_save', { data: this.incomeList });
+      if (result.data.rescode === '0') {
+        this.$message.success('修改' + result.data.msg);
+        this.closeIncomeAlert();
+        this.incomeList = {};
+        this.search();
+      } else {
+        this.$message.error(result.data.msg);
+      }
+      this.slipId = '';
+    },
+    //关闭添加收入弹框
+    closeIncomeAlert() {
+      this.$refs.incomeAlert.hide();
+      this.incomeList = {};
+      this.search();
     },
     //获得运输单号
     async toGetTransportNo() {

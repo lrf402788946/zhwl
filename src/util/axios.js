@@ -9,7 +9,6 @@ axios.defaults.headers.post['Content-Type'] = 'multipart/form-data';
 axios.interceptors.request.use(
   config => {
     let url = config.url;
-    console.log(filterUrl(url));
     if (filterUrl(url)) {
       let loading = Loading.service({
         fullscreen: true,
