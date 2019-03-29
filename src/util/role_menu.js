@@ -38,6 +38,10 @@ export const PERSONNEL = {
       name: '司机管理',
       uri: '/personnel.html#/driver',
     },
+    {
+      name: '合同管理',
+      uri: '/personnel.html#/contract',
+    },
   ],
 };
 export const CAR = {

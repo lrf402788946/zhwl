@@ -41,12 +41,14 @@
           <tbody v-if="list.length > 0">
             <tr>
               <th>机动车所有人</th>
+              <th>类别</th>
               <th>机动车登记编号</th>
               <th>身份证明代码</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.car_onwer }}</td>
+              <td>{{ item.type === '0' ? '自供' : '供应商' }}</td>
               <td>{{ item.car_no }}</td>
               <td>{{ item.it_member }}</td>
               <td>
@@ -74,6 +76,13 @@
         ></el-pagination>
         <b-modal id="toAdd" size="xl" title="添加车辆信息" ref="toAdd" hide-footer>
           <div class="row" style="text-align: left;">
+            <div class="col-lg-4 mb25">
+              <div class="lh44">汽车所属关系:</div>
+              <el-select class="marginBot" style="height:40px !important" v-model="form.type" filterable placeholder="请选择汽车所属关系">
+                <el-option label="自供" value="0"></el-option>
+                <el-option label="供应商" value="1"></el-option>
+              </el-select>
+            </div>
             <div class="col-lg-4 mb25">
               <div class="lh44">机动车所有人：</div>
               <b-form-input v-model="form.car_onwer" placeholder="机动车所有人"></b-form-input>
@@ -303,6 +312,20 @@
         <b-modal id="updateAlert" title="车辆信息详情" ref="updateAlert" size="xl" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
           <div class="d-block text-center">
             <div class="row" style="text-align: left;">
+              <div class="col-lg-4 mb25">
+                <div class="lh44">汽车所属关系:</div>
+                <el-select
+                  class="marginBot"
+                  style="height:40px !important"
+                  :disabled="is_update"
+                  v-model="form.type"
+                  filterable
+                  placeholder="请选择汽车所属关系"
+                >
+                  <el-option label="自供" value="0"></el-option>
+                  <el-option label="供应商" value="1"></el-option>
+                </el-select>
+              </div>
               <div class="col-lg-4 mb25">
                 <div class="lh44">机动车所有人：</div>
                 <b-form-input v-model="form.car_onwer" :disabled="is_update" placeholder="机动车所有人"></b-form-input>

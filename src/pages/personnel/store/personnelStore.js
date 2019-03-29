@@ -32,6 +32,11 @@ const api = {
   staffEdit: '/zhwl/staff/staff_edit',
   staffDelete: '/zhwl/staff/staff_delete',
   staffSave: '/zhwl/staff/staff_save',
+  //合同
+  contractList: '/zhwl/clientpact/client_pact_list',
+  contractSave: '/zhwl/clientpact/client_pact_save',
+  contractEdit: '/zhwl/clientpact/client_pact_edit',
+  contractDelete: '/zhwl/clientpact/client_pact_delete',
 };
 
 export const state = () => ({
@@ -40,6 +45,7 @@ export const state = () => ({
   driverList: [],
   postList: [],
   staffList: [],
+  contractList: [],
 });
 
 export const mutations = {
@@ -57,6 +63,9 @@ export const mutations = {
   },
   [types.STAFF_LIST](state, payload) {
     state.staffList = payload;
+  },
+  [types.CONTRACT_LIST](state, payload) {
+    state.contractList = payload;
   },
 };
 
@@ -422,6 +431,49 @@ export const actions = {
         });
       } else {
         result = await this.$axios.post(`${api.staffEdit}`, {
+          data: data,
+        });
+      }
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+        console.warn(`error in:${type}`);
+      }
+    } catch (err) {
+      Message.error('操作失败');
+      console.error(err);
+    }
+  },
+  //查询合同列表
+  async getContractList({ commit }, payload) {
+    const { skip, limit, pact_no, cus_id } = payload;
+    try {
+      let result = await this.$axios.get(`${api.contractList}?skip=${skip}&limit=${limit}&pact_no=${pact_no}&cus_id=${cus_id}`);
+      if (result.rescode === '0') {
+        commit(types.CONTRACT_LIST, result.clientPactList);
+        return result.totalRow;
+      } else {
+        commit(types.CONTRACT_LIST, []);
+        return 0;
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
+      console.error(err);
+      commit(types.CONTRACT_LIST, []);
+    }
+  },
+  //合同操作
+  async contractOperation({ commit }, { type, data }) {
+    let result;
+    try {
+      if (type === 'contractDelete') {
+        result = await this.$axios.post(_.get(api, type), {
+          data: { id: data },
+        });
+      } else {
+        //edit
+        result = await this.$axios.post(_.get(api, type), {
           data: data,
         });
       }

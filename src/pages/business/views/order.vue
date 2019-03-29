@@ -104,78 +104,112 @@
     <b-modal id="addAlert" title="新添订单" ref="addAlert" size="xl" hide-footer>
       <div class="d-block text-center">
         <div class="row">
-          <div class="col-lg-4 mb25">
-            <div class="lh44">操作人：</div>
-            <b-form-input v-model="form.op" placeholder="操作人"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">客户：</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.c_id" filterable placeholder="请选择客户">
-              <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-4 mb25">
+          <!--line1-->
+          <div class="col-lg-3 mb25">
             <div class="lh44">订单号：</div>
             <b-form-input :disabled="true" v-model="form.order_no" placeholder="订单号"></b-form-input>
           </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">发货日期：</div>
-            <el-date-picker style="width: 100%;" v-model="form.send_time" placeholder="订单日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd" type="date">
-            </el-date-picker>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">操作人：</div>
+            <b-form-input v-model="form.op" placeholder="操作人"></b-form-input>
           </div>
-          <div class="col-lg-4 mb25">
+          <div class="col-lg-3 mb25">
             <div class="lh44">物流方式：</div>
             <el-select class="marginBot" style="height:40px !important" v-model="form.dly_type" filterable placeholder="请选择物流方式">
               <el-option :value="0" label="自运"></el-option>
               <el-option :value="1" label="他运"></el-option>
             </el-select>
           </div>
-          <div class="col-lg-4 mb25">
+          <div class="col-lg-3 mb25">
+            <div class="lh44">发货日期：</div>
+            <el-date-picker style="width: 100%;" v-model="form.send_time" placeholder="订单日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd" type="date">
+            </el-date-picker>
+          </div>
+          <!--line2-->
+          <div class="col-lg-3 mb25">
+            <div class="lh44">发货方：</div>
+            <el-select class="marginBot" style="height:40px !important" v-model="form.c_name" filterable placeholder="请选择发货方">
+              <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.name"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">发货地址：</div>
+            <b-form-input v-model="form.op" placeholder="请填写发货地址"></b-form-input>
+          </div>
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">发货人：</div>
+            <b-form-input v-model="form.op" placeholder="请填写发货人"></b-form-input>
+          </div>
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">发货人联系方式：</div>
+            <b-form-input v-model="form.op" placeholder="请填写发货人联系方式"></b-form-input>
+          </div>
+          <!--line3-->
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">收货方：</div>
+            <el-select class="marginBot" style="height:40px !important" v-model="form.c_id" filterable placeholder="请选择收货方">
+              <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">收货地址：</div>
+            <b-form-input v-model="form.op" placeholder="请填写收货地址"></b-form-input>
+          </div>
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">收货人：</div>
+            <b-form-input v-model="form.op" placeholder="请填写收货人"></b-form-input>
+          </div>
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">收货人联系方式：</div>
+            <b-form-input v-model="form.op" placeholder="请填写收货人联系方式"></b-form-input>
+          </div>
+          <!--line4-->
+          <div class="col-lg-3 mb25">
             <div class="lh44">应收运费：</div>
             <b-form-input v-model="form.s_dp" type="number"></b-form-input>
           </div>
-          <div class="col-lg-4 mb25">
+          <div class="col-lg-3 mb25">
             <div class="lh44">实收运费：</div>
             <b-form-input v-model="form.r_dp" type="number"></b-form-input>
           </div>
-          <div class="col-lg-4 mb25">
+          <div class="col-lg-3 mb25">
             <div class="lh44">应付合计：</div>
             <b-form-input v-model="form.s_pay" type="number"></b-form-input>
           </div>
-          <div class="col-lg-4 mb25">
+          <div class="col-lg-3 mb25">
             <div class="lh44">实收合计：</div>
             <b-form-input v-model="form.r_pay" type="number"></b-form-input>
           </div>
           <br />
-          <table class="table table-bordered table-striped " v-if="form.dly_type === 0">
+          <table class="table table-bordered table-striped ">
             <tbody>
               <tr>
-                <td>货物名称</td>
-                <td>数量</td>
+                <td>产品名称</td>
+                <td>发货数量</td>
+                <td colspan="3">包装数量</td>
                 <td>重量</td>
-                <td>线路</td>
-                <td>运输内容</td>
-                <td>运输金额</td>
+                <td>体积</td>
+                <td>件数</td>
                 <td>操作</td>
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
                 <td><b-form-input v-model="item.goods_name"></b-form-input></td>
                 <td><b-form-input v-model="item.goods_num" type="number"></b-form-input></td>
+                <!--没有字段↓-->
+                <td>桶装:<b-form-input v-model="item.goods_bgnum" type="number"></b-form-input></td>
+                <td>箱装数<b-form-input v-model="item.goods_bgnum" type="number"></b-form-input></td>
+                <td>托装数<b-form-input v-model="item.goods_bgnum" type="number"></b-form-input></td>
                 <td><b-form-input v-model="item.goods_weight" type="number"></b-form-input></td>
-                <td>
-                  <el-select
-                    @change="getContent(item.dly_way_id, index)"
-                    class="marginBot8"
-                    style="height:40px !important"
-                    v-model="item.dly_way_id"
-                    filterable
-                    placeholder="请选择线路"
-                  >
-                    <el-option v-for="item1 in dlyWayList" :key="item1.id" :label="item1.name" :value="item1.id"> </el-option>
-                  </el-select>
-                </td>
-                <td><b-form-input v-model="item.content"></b-form-input></td>
-                <td><b-form-input v-model="item.price"></b-form-input></td>
+                <!--没有字段↓-->
+                <td><b-form-input v-model="item.goods_volume" type="number"></b-form-input></td>
+                <td><b-form-input v-model="item.js"></b-form-input></td>
                 <td>
                   <b-button
                     variant="danger"
@@ -192,18 +226,10 @@
       </div>
       <b-button
         variant="primary"
-        v-if="form.dly_type === 0"
         @click="addSubForm('add')"
         class="resetButton"
         style="font-size:16px !important; margin-top:25px; width:30% !important; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
         >添&nbsp;&nbsp;加</b-button
-      >
-      <b-button
-        variant="primary"
-        v-else
-        class="resetButton"
-        style="font-size:16px !important; margin-top:25px; width:30% !important; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-        >他运不需要添加信息</b-button
       >
       <b-button
         variant="primary"
@@ -225,21 +251,23 @@
     <b-modal id="updateAlert" title="订单详情" ref="updateAlert" size="xl" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block text-center">
         <div class="row">
-          <div class="col-lg-4 mb25">
-            <div class="lh44">操作人：</div>
-            <b-form-input v-model="updateForm.op" :disabled="true" placeholder="操作人"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">客户：</div>
-            <el-select class="marginBot" :disabled="true" style="height:40px !important" v-model="updateForm.c_id" filterable placeholder="请选择客户">
-              <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-4 mb25">
+          <!--line1-->
+          <div class="col-lg-3 mb25">
             <div class="lh44">订单号：</div>
             <b-form-input :disabled="true" v-model="updateForm.order_no" placeholder="订单号"></b-form-input>
           </div>
-          <div class="col-lg-4 mb25">
+          <div class="col-lg-3 mb25">
+            <div class="lh44">操作人：</div>
+            <b-form-input v-model="updateForm.op" :disabled="true" placeholder="操作人"></b-form-input>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">物流方式：</div>
+            <el-select class="marginBot" style="height:40px !important" v-model="updateForm.dly_type" :disabled="true" filterable placeholder="请选择物流方式">
+              <el-option :value="0" label="自运"></el-option>
+              <el-option :value="1" label="他运"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
             <div class="lh44">发货日期：</div>
             <el-date-picker
               style="width: 100%;"
@@ -252,63 +280,96 @@
             >
             </el-date-picker>
           </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">物流方式：</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="updateForm.dly_type" :disabled="true" filterable placeholder="请选择物流方式">
-              <el-option :value="0" label="自运"></el-option>
-              <el-option :value="1" label="他运"></el-option>
+          <!--line2-->
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">发货方：</div>
+            <el-select class="marginBot" :disabled="true" style="height:40px !important" v-model="updateForm.c_id" filterable placeholder="请选择发货方">
+              <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
             </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">发货地址：</div>
+            <b-form-input v-model="form.op" placeholder="请填写发货地址"></b-form-input>
+          </div>
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">发货人：</div>
+            <b-form-input v-model="form.op" placeholder="请填写发货人"></b-form-input>
+          </div>
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">发货人联系方式：</div>
+            <b-form-input v-model="form.op" placeholder="请填写发货人联系方式"></b-form-input>
+          </div>
+          <!--line3-->
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">收货方：</div>
+            <el-select class="marginBot" style="height:40px !important" v-model="form.c_id" filterable placeholder="请选择收货方">
+              <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">收货地址：</div>
+            <b-form-input v-model="form.op" placeholder="请填写收货地址"></b-form-input>
+          </div>
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">收货人：</div>
+            <b-form-input v-model="form.op" placeholder="请填写收货人"></b-form-input>
+          </div>
+          <div class="col-lg-3 mb25">
+            <!--没字段-->
+            <div class="lh44">收货人联系方式：</div>
+            <b-form-input v-model="form.op" placeholder="请填写收货人联系方式"></b-form-input>
+          </div>
+          <!--line4-->
+          <div class="col-lg-3 mb25">
+            <div class="lh44">应收运费：</div>
+            <b-form-input v-model="updateForm.s_dp" :disabled="is_update" type="number"></b-form-input>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">实收运费：</div>
+            <b-form-input v-model="updateForm.r_dp" :disabled="is_update" type="number"></b-form-input>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">应付合计：</div>
+            <b-form-input v-model="updateForm.s_pay" :disabled="is_update" type="number"></b-form-input>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">实收合计：</div>
+            <b-form-input v-model="updateForm.r_pay" :disabled="is_update" type="number"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">状态：</div>
             <b-form-select v-model="updateForm.status" :disabled="true" :options="chooseStatus" filterable />
           </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">应收运费：</div>
-            <b-form-input v-model="updateForm.s_dp" :disabled="is_update" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">实收运费：</div>
-            <b-form-input v-model="updateForm.r_dp" :disabled="is_update" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">应付合计：</div>
-            <b-form-input v-model="updateForm.s_pay" :disabled="is_update" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">实收合计：</div>
-            <b-form-input v-model="updateForm.r_pay" :disabled="is_update" type="number"></b-form-input>
-          </div>
           <br />
-          <table class="table table-bordered table-striped " v-if="updateForm.dly_type === 0">
+          <table class="table table-bordered table-striped ">
             <tbody>
               <tr>
-                <td>货物名称</td>
-                <td>数量</td>
+                <td>产品名称</td>
+                <td>发货数量</td>
+                <td colspan="3">包装数量</td>
                 <td>重量</td>
-                <td>线路</td>
-                <td>运输内容</td>
-                <td>运输金额</td>
+                <td>体积</td>
+                <td>件数</td>
                 <td>操作</td>
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
                 <td><b-form-input v-model="item.goods_name"></b-form-input></td>
                 <td><b-form-input v-model="item.goods_num" type="number"></b-form-input></td>
+                <!--没有字段↓-->
+                <td><b-form-input v-model="item.goods_bgnum" type="number"></b-form-input></td>
+                <td><b-form-input v-model="item.goods_bgnum" type="number"></b-form-input></td>
+                <td><b-form-input v-model="item.goods_bgnum" type="number"></b-form-input></td>
                 <td><b-form-input v-model="item.goods_weight" type="number"></b-form-input></td>
-                <td>
-                  <el-select
-                    @change="getContent(item.dly_way_id, index)"
-                    class="marginBot8"
-                    style="height:40px !important"
-                    v-model="item.dly_way_id"
-                    filterable
-                    placeholder="请选择线路"
-                  >
-                    <el-option v-for="item1 in dlyWayList" :key="item1.id" :label="item1.name" :value="item1.id"> </el-option>
-                  </el-select>
-                </td>
-                <td><b-form-input v-model="item.content"></b-form-input></td>
-                <td><b-form-input v-model="item.price"></b-form-input></td>
+                <!--没有字段↓-->
+                <td><b-form-input v-model="item.goods_volume" type="number"></b-form-input></td>
+                <td><b-form-input v-model="item.js"></b-form-input></td>
                 <td>
                   <b-button
                     variant="danger"
@@ -325,7 +386,6 @@
       </div>
       <b-button
         variant="primary"
-        v-if="updateForm.dly_type === 0"
         :disabled="is_update"
         @click="addSubForm('update')"
         class="resetButton"

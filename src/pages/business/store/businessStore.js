@@ -39,6 +39,11 @@ const api = {
   transportSubEdit: '/zhwl/transport/transport_sub_edit', //params:id,subForm
   transportDelete: '/zhwl/transport/transport_delete', //params:id
   transportNO: '/zhwl/transport/transport_no', //query:car_no
+  //费用
+  costList: '/zhwl/cost/cost_list',
+  costSave: '/zhwl/cost/cost_save',
+  costEdit: '/zhwl/cost/cost_edit',
+  costDelete: '/zhwl/cost/cost_delete',
 };
 
 export const state = () => ({
@@ -337,7 +342,7 @@ export const actions = {
     }
   },
   //装车,查询订单子表
-  async transportOrderSubList({ commit }, { skip, limit}) {
+  async transportOrderSubList({ commit }, { skip, limit }) {
     try {
       let result = await this.$axios.get(`${api.transportOrderSubList}?skip=${skip}&limit=${limit}`);
       if (result.rescode === '0') {
@@ -479,6 +484,41 @@ export const actions = {
     } catch (error) {
       Message.error('接口加载失败');
       console.error(error);
+    }
+  },
+  //查询费用列表
+  async getCostList({ commit }, payload) {
+    const { skip, limit, pact_no, cus_id } = payload;
+    try {
+      let result = await this.$axios.get(`${api.costList}?skip=${skip}&limit=${limit}`);
+      if (result.rescode === '0') {
+        return {
+          totalRow: result.totalRow,
+          data: result.clientPactList,
+        };
+      } else {
+        return { totalRow: 0, data: null };
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
+      console.error(err);
+    }
+  },
+  //费用操作
+  async costOperation({ commit }, { type, data }) {
+    let result;
+    try {
+      let body = type === 'costDelete' ? { data: { id: data } } : { data: data };
+      result = await this.$axios.post(_.get(api, type), body);
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+        console.warn(`error in:${type}`);
+      }
+    } catch (err) {
+      Message.error('操作失败');
+      console.error(err);
     }
   },
 };

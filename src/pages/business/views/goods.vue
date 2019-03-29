@@ -185,7 +185,6 @@ export default {
   },
   computed: {
     ...mapState({
-      skip: state => state.self.skip,
       limit: state => state.publics.limit,
       goodsList: state => state.self.goodsList,
     }),

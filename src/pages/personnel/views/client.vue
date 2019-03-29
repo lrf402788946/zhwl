@@ -52,22 +52,18 @@
               <th>客户名称</th>
               <th>客户地址</th>
               <th>法人</th>
-              <th>手机/固话（0431-8xxxxxxx）</th>
-              <th>传真</th>
-              <th>税号</th>
-              <th>银行卡号</th>
+              <th>开户行</th>
               <th>银行账号</th>
+              <th>税号</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.name }}</td>
               <td>{{ item.address }}</td>
               <td>{{ item.legal_person }}</td>
-              <td>{{ item.tel }}</td>
-              <td>{{ item.fex }}</td>
-              <td>{{ item.taxes_no }}</td>
-              <td>{{ item.card_no }}</td>
+              <td>{{ item.bank }}</td>
               <td>{{ item.card_account }}</td>
+              <td>{{ item.taxes_no }}</td>
               <td>
                 <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">修&nbsp;&nbsp;改</b-button>
                 <b-button variant="danger" style="color:white;" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
@@ -93,22 +89,22 @@
       </div>
     </div>
     <b-modal id="toAdd" title="添加客户" ref="toAdd" hide-footer>
+      <div style="margin-bottom: 7px;">所属人:</div>
+      <el-select class="marginBot" style="height:40px !important" v-model="form.s_id" filterable placeholder="请选择所属员工">
+        <el-option v-for="(staff, index) in staffList" :key="index" :label="staff.name" :value="staff.id"></el-option>
+      </el-select>
       <div style="margin-bottom: 7px;">客户名称:</div>
       <b-form-input v-model="form.name"></b-form-input>
       <div style="margin-bottom: 7px;">地址:</div>
       <b-form-input v-model="form.address"></b-form-input>
       <div style="margin-bottom: 7px;">法人:</div>
       <b-form-input v-model="form.legal_person"></b-form-input>
-      <div style="margin-bottom: 7px;">手机/固话(0431-8xxxxxxx):</div>
-      <b-form-input v-model="form.tel"></b-form-input>
-      <div style="margin-bottom: 7px;">传真:</div>
-      <b-form-input v-model="form.fex"></b-form-input>
-      <div style="margin-bottom: 7px;">税号:</div>
-      <b-form-input v-model="form.taxes_no"></b-form-input>
-      <div style="margin-bottom: 7px;">银行卡号:</div>
-      <b-form-input v-model="form.card_no"></b-form-input>
+      <div style="margin-bottom: 7px;">开户行:</div>
+      <b-form-input v-model="form.bank"></b-form-input>
       <div style="margin-bottom: 7px;">银行账号:</div>
       <b-form-input v-model="form.card_account"></b-form-input>
+      <div style="margin-bottom: 7px;">税号:</div>
+      <b-form-input v-model="form.taxes_no"></b-form-input>
       <b-button
         variant="secondary"
         style="font-size:16px !important; margin-top:35px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
@@ -150,6 +146,12 @@
       <div class="d-block">
         <div class="row">
           <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">所属人</p>
+            <el-select class="marginBot" style="height:40px !important" v-model="updateForm.s_id" filterable placeholder="请选择所属员工">
+              <el-option v-for="(staff, index) in staffList" :key="index" :label="staff.name" :value="staff.id"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-12 marginBot4">
             <p class="marginBot4">客户名称</p>
             <b-form-input v-model="updateForm.name"></b-form-input>
           </div>
@@ -162,24 +164,16 @@
             <b-form-input v-model="updateForm.legal_person"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">手机/固话(0431-8xxxxxxx)</p>
-            <b-form-input v-model="updateForm.tel"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">传真</p>
-            <b-form-input v-model="updateForm.fex"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">税号</p>
-            <b-form-input v-model="updateForm.taxes_no"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">银行卡号</p>
-            <b-form-input v-model="updateForm.card_no"></b-form-input>
+            <p class="marginBot4">开户行</p>
+            <b-form-input v-model="updateForm.bank"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
             <p class="marginBot4">银行账号</p>
             <b-form-input v-model="updateForm.card_account"></b-form-input>
+          </div>
+          <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">税号</p>
+            <b-form-input v-model="updateForm.taxes_no"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
             <b-button
@@ -237,27 +231,26 @@ export default {
         name: { type: 'string', required: true, message: '请填写客户名称' },
         address: { type: 'string', required: true, message: '请填写地址' },
         legal_person: { type: 'string', required: true, message: '请填写法人' },
-        tel: { type: 'string', required: true, message: '请填写手机/固话' },
-        fex: { type: 'string', required: true, message: '请填写传真' },
-        taxes_no: { type: 'string', required: true, message: '请填写税号' },
-        card_no: { type: 'string', required: true, message: '请填写银行卡号' },
+        bank: { type: 'string', required: true, message: '请填写开户行' },
         card_account: { type: 'string', required: true, message: '请填写银行账号' },
+        taxes_no: { type: 'string', required: true, message: '请填写税号' },
       }),
-      th: ['客户名称', '地址', '法人', '手机/固话', '传真', '税号', '银行卡号', '银行账号'],
-      filterVal: ['name', 'address', 'legal_person', 'tel', 'fex', 'taxes_no', 'card_no', 'card_account'],
+      th: ['客户名称', '地址', '法人', '开户行', '银行账号', '税号'],
+      filterVal: ['name', 'address', 'legal_person', 'bank', 'card_account', 'taxes_no'],
       is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
       countNum: 0,
     };
   },
   computed: {
     ...mapState({
-      skip: state => state.self.skip,
       limit: state => state.publics.limit,
       clientList: state => state.self.clientList,
+      staffList: state => state.self.staffList,
     }),
   },
-  created() {
+  async created() {
     this.search();
+    await this.getStaffList({ skip: 0, limit: 10000 });
   },
   watch: {
     is_title_search: {
@@ -272,7 +265,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['getClientList', 'getClientListLike', 'addClientlist', 'clientOperation']),
+    ...mapActions(['getClientList', 'getClientListLike', 'addClientlist', 'clientOperation', 'getStaffList']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;

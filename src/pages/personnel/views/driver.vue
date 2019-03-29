@@ -329,7 +329,6 @@ export default {
   },
   computed: {
     ...mapState({
-      skip: state => state.self.skip,
       limit: state => state.publics.limit,
       driverList: state => state.self.driverList,
     }),

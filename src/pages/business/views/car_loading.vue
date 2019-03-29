@@ -111,68 +111,87 @@
       <div class="d-block text-center">
         <div class="row">
           <div class="col-lg-4 mb25">
-            <div class="lh44">车牌号</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.car_no" filterable placeholder="请选择车辆" @change="toGetTransportNo()">
-              <el-option v-for="(car, index) in carList" :key="index" :label="car.car_no" :value="car.car_no"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-4 mb25">
             <div class="lh44">运输单号：</div>
             <b-form-input v-model="form.transport_no" :disabled="true"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">司机：</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.car_onwer" filterable placeholder="请选择司机">
-              <el-option v-for="(driver, index) in driverList" :key="index" :label="driver.name" :value="driver.name"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">线路：</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.content" filterable placeholder="请选择线路">
-              <el-option v-for="(way, index) in dlyWayList" :key="index" :label="way.content" :value="way.content"></el-option>
-            </el-select>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">发货日期：</div>
             <el-date-picker style="width: 100%;" v-model="form.send_time" placeholder="发货日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd" type="date">
             </el-date-picker>
           </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">实际金额：</div>
-            <b-form-input v-model="form.r_pay" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">扣除金额：</div>
-            <b-form-input v-model="form.m_pay" type="number"></b-form-input>
-          </div>
           <br />
-          <table class="table table-bordered table-striped ">
-            <tbody>
-              <tr>
-                <td>订单号</td>
-                <td>货物名称</td>
-                <td>线路</td>
-                <td>运输金额</td>
-                <td>操作</td>
-              </tr>
-              <tr v-for="(item, index) in subForm" :key="index">
-                <td><b-form-input v-model="item.order_no" :disabled="true"></b-form-input></td>
-                <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
-                <td><b-form-input v-model="item.content" :disabled="true"></b-form-input></td>
-                <td><b-form-input v-model="item.price" :disabled="true"></b-form-input></td>
-                <td>
-                  <b-button
-                    variant="danger"
-                    :disabled="false"
-                    @click="clearSubForm(index)"
-                    class="resetButton"
-                    style="margin-top: 23px; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
-                    >删&nbsp;&nbsp;除</b-button
-                  >
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="col-lg-12 mb25">
+            <el-tabs v-model="tabs" type="card" :stretch="true">
+              <el-tab-pane label="所装货物" name="1">
+                <table class="table table-bordered table-striped ">
+                  <tbody>
+                    <tr>
+                      <td>订单号</td>
+                      <td>货物名称</td>
+                      <!-- <td>线路</td> -->
+                      <td>运输金额</td>
+                      <td>操作</td>
+                    </tr>
+                    <tr v-for="(item, index) in subForm" :key="index">
+                      <td><b-form-input v-model="item.order_no" :disabled="true"></b-form-input></td>
+                      <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
+                      <!-- <td><b-form-input v-model="item.content" :disabled="true"></b-form-input></td> -->
+                      <td><b-form-input v-model="item.price" :disabled="true"></b-form-input></td>
+                      <td>
+                        <b-button
+                          variant="danger"
+                          :disabled="false"
+                          @click="clearSubForm(index)"
+                          class="resetButton"
+                          style="margin-top: 23px; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
+                          >删&nbsp;&nbsp;除</b-button
+                        >
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </el-tab-pane>
+              <el-tab-pane label="支出单" name="2">
+                <div class="col-lg-1 mb25">
+                  <el-button size="mini" type="primary" icon="el-icon-plus" circle @click="() => costList.push({})"></el-button>
+                </div>
+                <div style="padding: 0px 20px;" v-for="(item, index) in costList" :key="index">
+                  <div class="row">
+                    <div class="col-lg-3 mb25">
+                      <div class="lh44">供应商</div>
+                      <el-select class="marginBot" style="height:40px !important" v-model="item.car_id" filterable placeholder="请选择供应商">
+                        <el-option v-for="(car, index) in carList" :key="index" :label="car.car_onwer" :value="car.id"></el-option>
+                      </el-select>
+                    </div>
+                    <div class="col-lg-3 mb25">
+                      <div class="lh44">支出项</div>
+                      <el-select class="marginBot" style="height:40px !important" v-model="item.car_id" filterable placeholder="请选择支出项">
+                        <el-option v-for="(car, index) in carList" :key="index" :label="car.car_onwer" :value="car.id"></el-option>
+                      </el-select>
+                    </div>
+                    <div class="col-lg-2 mb25">
+                      <div class="lh44">支出金额</div>
+                      <b-form-input v-model="item.out_price" :disabled="true"></b-form-input>
+                    </div>
+                    <div class="col-lg-3 mb25">
+                      <div class="lh44">备注</div>
+                      <b-form-input v-model="item.remark" :disabled="true"></b-form-input>
+                    </div>
+                    <div class="col-lg-1 mb25">
+                      <el-button
+                        style="position: relative;top: 30px;"
+                        size="mini"
+                        type="danger"
+                        icon="el-icon-minus"
+                        circle
+                        @click="index => costList.splice(index, 1)"
+                      ></el-button>
+                    </div>
+                  </div>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
         </div>
       </div>
       <b-button
@@ -207,6 +226,7 @@ export default {
     return {
       list: [],
       subForm: [],
+      costList: [],
       is_update: true,
       operateId: '',
       currentPage: 1,
@@ -225,6 +245,7 @@ export default {
       select_in_date: [],
       skip: 0,
       order_loading_list: [],
+      tabs: '1',
     };
   },
   computed: {
@@ -245,13 +266,6 @@ export default {
   },
   methods: {
     ...mapActions(['transportOrderSubList', 'getDriverList', 'getCarList', 'transporSelectOrder', 'transportSave', 'getdly_wayList', 'getTransportNo']),
-    // //拆分
-    // addOrderSublist(index){
-    //   console.log(index)
-    //   let newArray={};
-    //   this.orderSubList.splice(index+1,0,newArray);
-    //   console.log(this.orderSubList);
-    // },
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -284,21 +298,21 @@ export default {
     },
     //添加
     async add() {
-      try {
-        for (let index = 0; index < this.subForm.length; index++) {
-          this.subForm[index].status = '1';
-        }
-        await this.transportSave({ form: this.form, subForm: this.subForm });
-        this.$refs.addAlert.hide();
-        this.form = {};
-        this.subForm = [];
-        this.search();
-      } catch (error) {
-        console.error('error in line 269');
+      for (let index = 0; index < this.subForm.length; index++) {
+        this.subForm[index].status = '1';
       }
+      await this.transportSave({ form: this.form, subForm: this.subForm });
+      this.$refs.addAlert.hide();
+      this.form = {};
+      this.subForm = [];
+      this.search();
     },
     //打开与关闭修改和删除的弹框
     async openAlert(type, id) {
+      if (this.order_loading_list <= 0) {
+        this.$message.error('请选择要装车的货物');
+        return false;
+      }
       let newList = this.order_loading_list.map(item => `${item}`);
       let result = await this.transporSelectOrder({ ids: newList });
       let transportOrderSubList = result.orderSubList.map(item => {
@@ -336,6 +350,13 @@ export default {
     //删除表单中内容
     clearSubForm(i) {
       this.subForm.splice(i, 1);
+    },
+    transportType() {
+      if (this.form.tt === '0' || this.form.tt === '1') {
+        return this.form.tt;
+      } else {
+        return '2';
+      }
     },
     reset() {
       this.form = {};

@@ -193,7 +193,6 @@ export default {
   data() {
     return {
       list: [],
-      create_date_today: new Date().getYear() + 1900 + '-' + new Date().getMonth() + 1 + '-' + new Date().getDate(),
       form: {},
       deleteItem: '',
       updateForm: {},
@@ -214,7 +213,6 @@ export default {
   },
   computed: {
     ...mapState({
-      skip: state => state.self.skip,
       limit: state => state.publics.limit,
       deptList: state => state.self.deptList,
     }),

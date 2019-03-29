@@ -6,6 +6,7 @@ import dept from './views/dept.vue';
 import driver from './views/driver.vue';
 import post from './views/post.vue';
 import staff from './views/staff.vue';
+import contract from './views/contract.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -39,6 +40,11 @@ export default new Router({
           path: '/staff',
           name: 'staff',
           component: staff,
+        },
+        {
+          path: '/contract',
+          name: 'contract',
+          component: contract,
         },
       ],
     },

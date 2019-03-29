@@ -272,7 +272,6 @@ export default {
   },
   computed: {
     ...mapState({
-      skip: state => state.self.skip,
       limit: state => state.publics.limit,
       dlyWayList: state => state.self.dlyWayList,
     }),

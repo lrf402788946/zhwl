@@ -1,32 +1,31 @@
 <template lang="html">
-  <div id="post">
+  <div id="client">
     <!-- 表格 begin -->
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">岗位列表</a>
+          <a class="base-margin-left-20">合同列表</a>
           <div class="button-table"></div>
         </div>
       </div>
       <div class="base-padding-20 base-bg-fff">
-        <table>
-          <tr>
-            <td>岗位名称查询:</td>
-          </tr>
-          <tr>
-            <td>
-              <b-form-input v-model="select_post_name" placeholder="输入岗位名称" style="width:200px,margin-left:50px"></b-form-input>
-            </td>
-            <td style="padding-left:60px">
-              <b-button
-                variant="primary"
-                style="font-size: 12px !important; color: rgb(255, 255, 255) !important; width: 100% !important; padding: 6px 15px !important; margin-right: 0px !important;"
-                @click="searchButton()"
-                >点&nbsp;&nbsp;击&nbsp;&nbsp;查&nbsp;&nbsp;询</b-button
-              >
-            </td>
-          </tr>
-        </table>
+        <div class="row">
+          <div class="col-lg-2 mb25 ml2Mix plr0 lh44">合同编号:</div>
+          <div class="col-lg-3 mb25 pll0">
+            <b-form-input v-model="select_pact_no" placeholder="输入合同编号" style="width:200px,margin-left:50px"></b-form-input>
+          </div>
+          <div class="col-lg-2 mb25 ml13Mix plr0 lh44">客户:</div>
+          <div class="col-lg-3 mb25 pll0">
+            <el-select class="marginBot" style="height:40px !important" v-model="select_cus_id" filterable placeholder="请选择客户">
+              <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-2 mb25">
+            <b-button variant="primary" style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;" @click="search('vague')"
+              ><i class="base-margin-right-5 fa fa-search"></i>点击查询</b-button
+            >
+          </div>
+        </div>
 
         <div class="base-align-right" style="margin-bottom:20px;">
           <a
@@ -37,25 +36,39 @@
             role="button"
             v-b-modal="'toAdd'"
           >
-            <i class="base-margin-right-5 fa fa-plus-square" style=" color:#fff !important;"></i>添加岗位
+            <i class="base-margin-right-5 fa fa-plus-square" style=" color:#fff !important;"></i>添加合同
           </a>
           <!-- 导入表格 -->
-          <!-- <entrance @research="search"></entrance> -->
+          <entrance @research="search"></entrance>
         </div>
         <div style="margin:10px 0;">
           <!-- 导出表格 -->
-          <exportExcel :exportTitle="th" :db_nameList="filterVal" dataName="list" fileName="岗位表"></exportExcel>
+          <exportExcel :exportTitle="th" :db_nameList="filterVal" dataName="list" fileName="合同表"></exportExcel>
         </div>
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
             <tr>
-              <th>岗位名称</th>
-              <th>岗位补助</th>
+              <th>客户</th>
+              <th>合同编号</th>
+              <th>甲方</th>
+              <th>乙方</th>
+              <th>合同周期</th>
+              <th>结算方式</th>
+              <th>结算周期</th>
+              <th>价格</th>
+              <th>税率</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
-              <td>{{ item.name }}</td>
-              <td>{{ item.money }}</td>
+              <td>{{ { data: clientList, searchItem: 'id', value: item.cus_id, label: 'name' } | getName }}</td>
+              <td>{{ item.pact_no }}</td>
+              <td>{{ item.jf }}</td>
+              <td>{{ item.yf }}</td>
+              <td>{{ item.cycle }}</td>
+              <td>{{ item.js_type }}</td>
+              <td>{{ item.js_cycle }}</td>
+              <td>{{ item.price }}</td>
+              <td>{{ item.cess }}</td>
               <td>
                 <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">修&nbsp;&nbsp;改</b-button>
                 <b-button variant="danger" style="color:white;" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
@@ -80,11 +93,28 @@
         ></el-pagination>
       </div>
     </div>
-    <b-modal id="toAdd" title="添加岗位" ref="toAdd" hide-footer>
-      <div style="margin-bottom: 7px;">岗位名称:</div>
-      <b-form-input v-model="form.name"></b-form-input>
-      <div style="margin-bottom: 7px;">岗位补助:</div>
-      <b-form-input v-model="form.money"></b-form-input>
+    <!--添加-->
+    <b-modal id="toAdd" title="添加合同" ref="toAdd" hide-footer>
+      <div style="margin-bottom: 7px;">选择客户:</div>
+      <el-select class="marginBot" style="height:40px !important" v-model="form.cus_id" filterable placeholder="请选择客户">
+        <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
+      </el-select>
+      <div style="margin-bottom: 7px;">合同编号:</div>
+      <b-form-input v-model="form.pact_no"></b-form-input>
+      <div style="margin-bottom: 7px;">甲方:</div>
+      <b-form-input v-model="form.jf"></b-form-input>
+      <div style="margin-bottom: 7px;">乙方:</div>
+      <b-form-input v-model="form.yf"></b-form-input>
+      <div style="margin-bottom: 7px;">合同周期:</div>
+      <b-form-input v-model="form.cycle"></b-form-input>
+      <div style="margin-bottom: 7px;">结算方式:</div>
+      <b-form-input v-model="form.js_type"></b-form-input>
+      <div style="margin-bottom: 7px;">结算周期:</div>
+      <b-form-input v-model="form.js_cycle"></b-form-input>
+      <div style="margin-bottom: 7px;">价格:</div>
+      <b-form-input v-model="form.price"></b-form-input>
+      <div style="margin-bottom: 7px;">税率:</div>
+      <b-form-input v-model="form.cess"></b-form-input>
       <b-button
         variant="secondary"
         style="font-size:16px !important; margin-top:35px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
@@ -100,10 +130,10 @@
         保&nbsp;&nbsp;存</b-button
       ></b-modal
     >
-
+    <!--删除-->
     <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block text-center">
-        <b-alert variant="danger" show>删除岗位可能会影响您的管理,确认删除吗?</b-alert>
+        <b-alert variant="danger" show>删除合同可能会影响您的管理,确认删除吗?</b-alert>
       </div>
       <b-button
         variant="danger"
@@ -121,17 +151,47 @@
       ></b-modal
     >
 
-    <!-- jkjkjkjk -->
-    <b-modal id="updateAlert" title="修改岗位" ref="updateAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+    <!-- 修改 -->
+    <b-modal id="updateAlert" title="修改合同" ref="updateAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block">
         <div class="row">
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">岗位名称</p>
-            <b-form-input v-model="updateForm.name"></b-form-input>
+            <p class="marginBot4">选择客户</p>
+            <el-select class="marginBot" style="height:40px !important" v-model="updateForm.cus_id" filterable placeholder="请选择客户">
+              <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
+            </el-select>
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">岗位补助</p>
-            <b-form-input v-model="updateForm.money"></b-form-input>
+            <p class="marginBot4">合同编号</p>
+            <b-form-input v-model="updateForm.pact_no"></b-form-input>
+          </div>
+          <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">甲方</p>
+            <b-form-input v-model="updateForm.jf"></b-form-input>
+          </div>
+          <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">乙方</p>
+            <b-form-input v-model="updateForm.yf"></b-form-input>
+          </div>
+          <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">合同周期</p>
+            <b-form-input v-model="updateForm.cycle"></b-form-input>
+          </div>
+          <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">结算方式</p>
+            <b-form-input v-model="updateForm.js_type"></b-form-input>
+          </div>
+          <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">结算周期</p>
+            <b-form-input v-model="updateForm.js_cycle"></b-form-input>
+          </div>
+          <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">价格</p>
+            <b-form-input v-model="updateForm.price"></b-form-input>
+          </div>
+          <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">税率</p>
+            <b-form-input v-model="updateForm.cess"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
             <b-button
@@ -154,24 +214,23 @@
         </div>
       </div></b-modal
     >
-    <!-- klklklkl -->
   </div>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex';
 import Validator from 'async-validator';
-// import entrance from '@/components/entrance.vue';
+import entrance from '@/components/entrance.vue';
 import exportExcel from '@/components/exportExcel.vue';
 
 import _ from 'lodash';
 export default {
-  name: 'post',
+  name: 'client',
   metaInfo: {
-    title: '岗位管理',
+    title: '合同管理',
   },
   components: {
-    // entrance,
+    entrance,
     exportExcel,
   },
   data() {
@@ -183,109 +242,69 @@ export default {
       updateForm: {},
       currentPage: 1,
       totalRow: 0,
-      value1: '',
-      select_post_name: '',
-      lzValidator: new Validator({
-        name: { type: 'string', required: true, message: '请填写岗位名称' },
-        money: { type: 'string', required: true, message: '请填写岗位补助' },
+      select_cus_id: '',
+      select_pact_no: '',
+      contractValidator: new Validator({
+        cus_id: { required: true, message: '请选择此合同的客户' },
+        pact_no: { type: 'string', required: true, message: '请填写合同编号' },
+        jf: { type: 'string', required: true, message: '请填写甲方' },
+        yf: { type: 'string', required: true, message: '请填写乙方' },
+        cycle: { type: 'string', required: true, message: '请填写合同周期' },
+        js_type: { type: 'string', required: true, message: '请填写结算方式' },
+        js_cycle: { type: 'string', required: true, message: '请填写结算周期' },
+        price: { required: true, message: '请填写价格' },
+        cess: { required: true, message: '请填写税率' },
       }),
-      th: ['岗位名称', '岗位补助'],
-      filterVal: ['name', 'money'],
-      is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
+      th: ['合同编号', '甲方', '乙方', '合同周期', '结算方式', '结算周期', '价格', '税率'],
+      filterVal: ['pact_no', 'jf', 'yf', 'cycle', 'js_type', 'js_cycle', 'price', 'cess'],
       countNum: 0,
     };
   },
   computed: {
     ...mapState({
       limit: state => state.publics.limit,
-      postList: state => state.self.postList,
+      clientList: state => state.self.clientList,
+      contractList: state => state.self.contractList,
     }),
   },
-  created() {
+  async created() {
     this.search();
-  },
-  watch: {
-    is_title_search: {
-      handler(nV, oV) {
-        this.$set(this, 'currentPage', 1);
-        if (nV) {
-          this.titlesearch();
-        } else {
-          this.search();
-        }
-      },
-    },
+    await this.getClientList({ skip: 0, limit: '10000' });
   },
   methods: {
-    ...mapActions(['getPostList', 'getPostListLike', 'addPostlist', 'postOperation']),
+    ...mapActions(['getClientList', 'getContractList', 'contractOperation']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
-      if (this.is_title_search) {
-        this.titlesearch();
-      } else {
-        this.search();
-      }
+      this.search();
     },
     //查询
-    async search() {
-      if (this.is_title_search) {
-        this.is_title_search = false;
-        return;
+    async search(type) {
+      if (type === 'vague') {
+        this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let totalRow = await this.getPostList({ skip: skip, limit: this.limit });
-      this.$set(this, 'list', this.postList);
-      this.$set(this, 'totalRow', totalRow);
-    },
-    //模糊查询的方法
-    async titlesearch() {
-      if (!this.is_title_search) {
-        this.is_title_search = true;
-        return;
-      }
-      let skip = (this.currentPage - 1) * this.limit;
-      let totalRow = await this.getPostListLike({
-        skip: skip,
-        limit: this.limit,
-        select_post_name: this.select_post_name,
-      });
-      this.$set(this, 'list', this.postList);
-      this.$set(this, 'totalRow', totalRow);
-    },
-    //模糊查询按钮
-    async searchButton() {
-      this.currentPage = 1;
-      if (!this.is_title_search) {
-        this.is_title_search = true;
-        return;
-      }
-      let skip = 0;
-      let totalRow = await this.getPostListLike({
-        skip: skip,
-        limit: this.limit,
-        select_post_name: this.select_post_name,
-      });
-      this.$set(this, 'list', this.postList);
+      let totalRow = await this.getContractList({ skip: skip, limit: this.limit, pact_no: this.select_pact_no, cus_id: this.select_cus_id });
+      this.$set(this, 'list', this.contractList);
       this.$set(this, 'totalRow', totalRow);
     },
     //修改
     async update() {
-      await this.postOperation({ type: 'update', data: this.updateForm });
+      await this.contractOperation({ type: 'contractEdit', data: this.updateForm });
       this.updateForm = {};
       this.$refs.updateAlert.hide();
       this.search();
     },
     //删除
     async toDelete() {
-      await this.postOperation({ type: 'delete', data: this.deleteItem });
+      await this.contractOperation({ type: 'contractDelete', data: this.deleteItem });
       this.search();
       this.deleteItem = '';
       this.$refs.deleteAlert.hide();
     },
     //添加
     async add() {
-      await this.addPostlist({ data: this.form });
+      await this.contractOperation({ type: 'contractSave', data: this.form });
       this.form = {};
       this.$refs.toAdd.hide();
       this.search();
@@ -328,14 +347,14 @@ export default {
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
     toValidate(type) {
       if (type === 'add') {
-        this.lzValidator.validate(this.form, (errors, fields) => {
+        this.contractValidator.validate(this.form, (errors, fields) => {
           if (errors) {
             return this.handleErrors(errors, fields);
           }
           return this.add();
         });
       } else {
-        this.lzValidator.validate(this.updateForm, (errors, fields) => {
+        this.contractValidator.validate(this.updateForm, (errors, fields) => {
           if (errors) {
             return this.handleErrors(errors, fields);
           }

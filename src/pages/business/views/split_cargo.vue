@@ -66,25 +66,25 @@
               <td>{{ item.goods_volume }}</td>
               <td>{{ item.goods_weight }}</td>
               <td>
-                  <a
-                    class="btn btn-info base-margin-bottom"
-                    style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
-                    data-toggle="tooltip"
-                    title=""
-                    role="button"
-                    @click="openAlert(index)"
+                <a
+                  class="btn btn-info base-margin-bottom"
+                  style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
+                  data-toggle="tooltip"
+                  title=""
+                  role="button"
+                  @click="openAlert(index)"
                 >
-                    <i class="base-margin-right-5 fa"></i>拆分货物
+                  <i class="base-margin-right-5 fa"></i>拆分货物
                 </a>
                 <a
-                    class="btn btn-info base-margin-bottom"
-                    style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
-                    data-toggle="tooltip"
-                    title=""
-                    role="button"
-                    @click="openIncomeAlert(index)"
+                  class="btn btn-info base-margin-bottom"
+                  style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
+                  data-toggle="tooltip"
+                  title=""
+                  role="button"
+                  @click="openIncomeAlert(index)"
                 >
-                    <i class="base-margin-right-5 fa"></i>添加收入项
+                  <i class="base-margin-right-5 fa"></i>添加收入项
                 </a>
               </td>
             </tr>
@@ -115,24 +115,24 @@
         <div class="row">
           <h4>原订单</h4>
           <table class="table table-bordered table-striped ">
-              <tbody>
-                <tr>
-                    <td>订单号</td>
-                    <td>货物名称</td>
-                    <td>线路</td>
-                    <td>数量</td>
-                    <td>体积</td>
-                    <td>重量</td>
-                </tr>
-                <tr>
-                    <td>{{orderList.order_no}}</td>
-                    <td>{{orderList.goods_name}}</td>
-                    <td>{{orderList.content}}</td>
-                    <td>{{orderList.goods_num}}</td>
-                    <td>{{orderList.goods_volume}}</td>
-                    <td>{{orderList.goods_weight}}</td>
-                </tr>
-              </tbody>
+            <tbody>
+              <tr>
+                <td>订单号</td>
+                <td>货物名称</td>
+                <td>线路</td>
+                <td>数量</td>
+                <td>体积</td>
+                <td>重量</td>
+              </tr>
+              <tr>
+                <td>{{ orderList.order_no }}</td>
+                <td>{{ orderList.goods_name }}</td>
+                <td>{{ orderList.content }}</td>
+                <td>{{ orderList.goods_num }}</td>
+                <td>{{ orderList.goods_volume }}</td>
+                <td>{{ orderList.goods_weight }}</td>
+              </tr>
+            </tbody>
           </table>
           <h4>拆分后订单</h4>
           <b-button variant="danger" style="color:white;" @click="addOrderSublist()">拆&nbsp;分&nbsp;订&nbsp;单</b-button>
@@ -255,7 +255,7 @@ export default {
       select_c_id: '',
       select_in_date: [],
       skip: 0,
-      orderList:{},
+      orderList: {},
     };
   },
   computed: {
@@ -275,17 +275,26 @@ export default {
     this.search();
   },
   methods: {
-    ...mapActions(['transportOrderSubList', 'getDriverList', 'getCarList', 'transporSelectOrder', 'transportSave', 'getdly_wayList', 'getTransportNo', 'orderSubSplit']),
+    ...mapActions([
+      'transportOrderSubList',
+      'getDriverList',
+      'getCarList',
+      'transporSelectOrder',
+      'transportSave',
+      'getdly_wayList',
+      'getTransportNo',
+      'orderSubSplit',
+    ]),
     //拆分
-    addOrderSublist(){
-      let newArray={};
+    addOrderSublist() {
+      let newArray = {};
       newArray.order_no = this.orderList.order_no;
       newArray.goods_name = this.orderList.goods_name;
       newArray.content = this.orderList.content;
       newArray.goods_num = 0;
       newArray.goods_weight = 0;
-      this.subForm.splice(this.subForm.length,0,newArray);
-      this.subForm[this.subForm.length-1].showDel = true;
+      this.subForm.splice(this.subForm.length, 0, newArray);
+      this.subForm[this.subForm.length - 1].showDel = true;
     },
     //分页
     toSearch(currentPage) {
@@ -322,8 +331,8 @@ export default {
       try {
         for (let index = 0; index < this.subForm.length; index++) {
           this.subForm[index].status = '1';
-          if(index!=0){
-              this.subForm[index].order_no=''
+          if (index != 0) {
+            this.subForm[index].order_no = '';
           }
         }
         await this.orderSubSplit({ form: this.form, subForm: this.subForm });
@@ -336,7 +345,7 @@ export default {
     },
     //打开添加的弹框
     async openAlert(index) {
-      this.subForm=[];
+      this.subForm = [];
       await this.transportOrderSubList({
         skip: 0,
         limit: 100000000,
@@ -346,7 +355,7 @@ export default {
     },
     //打开收入的弹框
     async openIncomeAlert(index) {
-      this.subForm=[];
+      this.subForm = [];
       this.$refs.incomeAlert.show();
     },
     //获得运输单号
