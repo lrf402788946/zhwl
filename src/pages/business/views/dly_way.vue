@@ -48,34 +48,22 @@
           <tbody v-if="list.length > 0">
             <tr>
               <th>路线名称</th>
-              <th>计费方式</th>
               <th>起始地省份</th>
               <th>起始地城市</th>
+              <th>起始站点</th>
               <th>目的地省份</th>
               <th>目的地城市</th>
-              <th>运输内容</th>
-              <th>按重量的运输价格</th>
-              <th>按重量的运输标准</th>
-              <th>提送货费单价</th>
-              <th>提送货费计费标准</th>
-              <th>运输时限</th>
+              <th>目的站点</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.name }}</td>
-              <td>
-                <b-form-select v-model="item.type" :options="gender" />
-              </td>
               <td>{{ item.start_province }}</td>
               <td>{{ item.start_city }}</td>
+              <td>{{ item.start_site }}</td>
               <td>{{ item.end_province }}</td>
               <td>{{ item.end_city }}</td>
-              <td>{{ item.content }}</td>
-              <td>{{ item.dwp }}</td>
-              <td>{{ item.dwp_criterion }}</td>
-              <td>{{ item.pgp }}</td>
-              <td>{{ item.pgp_criterion }}</td>
-              <td>{{ item.ys_limit }}</td>
+              <td>{{ item.end_site }}</td>
               <td>
                 <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">修&nbsp;&nbsp;改</b-button>
                 <b-button variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
@@ -101,36 +89,32 @@
         <b-modal id="toAdd" title="添加路线" ref="toAdd" hide-footer>
           <p class="marginBot5">路线名称</p>
           <b-form-input v-model="form.name" class="marginBot20" placeholder="请填写路线名称"></b-form-input>
-          <p class="marginBot5">计算方式</p>
-          <b-form-radio-group
-            id="btnradios1"
-            buttons
-            button-variant="outline-primary"
-            v-model="form.type"
-            :options="[{ text: '重量计费', value: '0' }, { text: '体积计费', value: '1' }]"
-            name="radiosBtnDefault"
-          />
           <p class="marginBot5">起始地省份</p>
-          <b-form-input v-model="form.start_province" class="marginBot20" placeholder="请填写起始地省份"></b-form-input>
+          <b-form-select v-model="form.start_province" class="marginBot20">
+            <option :value="undefined" disabled>请选择起始地省份</option>
+            <option v-for="(item, index) in startProvinceList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
+          </b-form-select>
           <p class="marginBot5">起始地城市</p>
-          <b-form-input v-model="form.start_city" class="marginBot20" placeholder="请填写起始地城市"></b-form-input>
+          <b-form-select v-model="form.start_city" class="marginBot20" id="startCityTip">
+            <option label="----------------------" :value="undefined" disabled></option>
+            <option v-for="(item, index) in startCityList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
+          </b-form-select>
+          <b-tooltip target="startCityTip" title="请选择起始地城市" placement="right"></b-tooltip>
+          <p class="marginBot5">起始站点</p>
+          <b-form-input v-model="form.start_site" class="marginBot20" placeholder="请填写起始站点"></b-form-input>
           <p class="marginBot5">目的地省份</p>
-          <b-form-input v-model="form.end_province" class="marginBot20" placeholder="请填写目的地省份"></b-form-input>
+          <b-form-select v-model="form.end_province" class="marginBot20">
+            <option :value="undefined" disabled>请选择目的地省份</option>
+            <option v-for="(item, index) in endProvinceList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
+          </b-form-select>
           <p class="marginBot5">目的地城市</p>
-          <b-form-input v-model="form.end_city" class="marginBot20" placeholder="请填写目的地城市"></b-form-input>
-          <p class="marginBot5">运输内容</p>
-          <b-form-input v-model="form.content" class="marginBot20" placeholder="请填写运输内容"></b-form-input>
-          <p class="marginBot5">按重量的运输价格</p>
-          <b-form-input v-model="form.dwp" class="marginBot20" placeholder="请填写按重量的运输价格"></b-form-input>
-          <p class="marginBot5">按重量的运输标准</p>
-          <b-form-input v-model="form.dwp_criterion" class="marginBot20" placeholder="请填写按重量的运输标准"></b-form-input>
-          <p class="marginBot5">提送货费单价</p>
-          <b-form-input v-model="form.pgp" class="marginBot20" placeholder="请填写提送货费单价"></b-form-input>
-          <p class="marginBot5">提送货费计费标准</p>
-          <b-form-input v-model="form.pgp_criterion" class="marginBot20" placeholder="请填写提送货费计费标准"></b-form-input>
-          <p class="marginBot5">运输时限</p>
-          <b-form-input v-model="form.ys_limit" class="marginBot20" placeholder="请填写运输时限"></b-form-input>
-
+          <b-form-select v-model="form.end_city" class="marginBot20" id="endCityTip">
+            <option label="----------------------" :value="undefined" disabled></option>
+            <option v-for="(item, index) in endCityList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
+          </b-form-select>
+          <b-tooltip target="endCityTip" title="请选择目的地城市" placement="right"></b-tooltip>
+          <p class="marginBot5">目的站点</p>
+          <b-form-input v-model="form.end_site" class="marginBot20" placeholder="请填写目的站点"></b-form-input>
           <b-button
             variant="secondary"
             @click="form = { p_id: 0 }"
@@ -150,35 +134,32 @@
         <b-modal id="Edit" title="修改路线" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
           <p class="marginBot5">路线名称</p>
           <b-form-input v-model="form.name" class="marginBot20" placeholder="请填写路线名称"></b-form-input>
-          <p class="marginBot5">计算方式</p>
-          <b-form-radio-group
-            id="btnradios1"
-            buttons
-            button-variant="outline-primary"
-            v-model="form.type"
-            :options="[{ text: '重量计费', value: '0' }, { text: '体积计费', value: '1' }]"
-            name="radiosBtnDefault"
-          />
           <p class="marginBot5">起始地省份</p>
-          <b-form-input v-model="form.start_province" class="marginBot20" placeholder="请填写起始地省份"></b-form-input>
+          <b-form-select v-model="form.start_province" class="marginBot20">
+            <option :value="undefined" disabled>请选择起始地省份</option>
+            <option v-for="(item, index) in startProvinceList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
+          </b-form-select>
           <p class="marginBot5">起始地城市</p>
-          <b-form-input v-model="form.start_city" class="marginBot20" placeholder="请填写起始地城市"></b-form-input>
+          <b-form-select v-model="form.start_city" class="marginBot20" id="startCityTip">
+            <option label="----------------------" :value="undefined" disabled></option>
+            <option v-for="(item, index) in startCityList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
+          </b-form-select>
+          <b-tooltip target="startCityTip" title="请选择起始地城市" placement="right"></b-tooltip>
+          <p class="marginBot5">起始站点</p>
+          <b-form-input v-model="form.start_site" class="marginBot20" placeholder="请填写起始站点"></b-form-input>
           <p class="marginBot5">目的地省份</p>
-          <b-form-input v-model="form.end_province" class="marginBot20" placeholder="请填写目的地省份"></b-form-input>
+          <b-form-select v-model="form.end_province" class="marginBot20">
+            <option :value="undefined" disabled>请选择目的地省份</option>
+            <option v-for="(item, index) in endProvinceList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
+          </b-form-select>
           <p class="marginBot5">目的地城市</p>
-          <b-form-input v-model="form.end_city" class="marginBot20" placeholder="请填写目的地城市"></b-form-input>
-          <p class="marginBot5">运输内容</p>
-          <b-form-input v-model="form.content" class="marginBot20" placeholder="请填写运输内容"></b-form-input>
-          <p class="marginBot5">按重量的运输价格</p>
-          <b-form-input v-model="form.dwp" class="marginBot20" placeholder="请填写按重量的运输价格"></b-form-input>
-          <p class="marginBot5">按重量的运输标准</p>
-          <b-form-input v-model="form.dwp_criterion" class="marginBot20" placeholder="请填写按重量的运输标准"></b-form-input>
-          <p class="marginBot5">提送货费单价</p>
-          <b-form-input v-model="form.pgp" class="marginBot20" placeholder="请填写提送货费单价"></b-form-input>
-          <p class="marginBot5">提送货费计费标准</p>
-          <b-form-input v-model="form.pgp_criterion" class="marginBot20" placeholder="请填写提送货费计费标准"></b-form-input>
-          <p class="marginBot5">运输时限</p>
-          <b-form-input v-model="form.ys_limit" class="marginBot20" placeholder="请填写运输时限"></b-form-input>
+          <b-form-select v-model="form.end_city" class="marginBot20" id="endCityTip">
+            <option label="----------------------" :value="undefined" disabled></option>
+            <option v-for="(item, index) in endCityList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
+          </b-form-select>
+          <b-tooltip target="endCityTip" title="请选择目的地城市" placement="right"></b-tooltip>
+          <p class="marginBot5">目的站点</p>
+          <b-form-input v-model="form.end_site" class="marginBot20" placeholder="请填写目的站点"></b-form-input>
           <b-button
             variant="secondary"
             @click="closeAlert()"
@@ -231,21 +212,11 @@ export default {
   data() {
     return {
       list: [],
-      gender: [{ text: '请选择计费方式', value: null, disabled: true }, { text: '重量计费', value: 0 }, { text: '体积计费', value: 1 }],
-      form: {
-        type: '0',
-        start_province: '',
-        start_city: '',
-        end_province: '',
-        end_city: '',
-        content: '',
-        dwp: '',
-        dwp_criterion: '',
-        pgp: '',
-        pgp_criterion: '',
-        ys_limit: '',
-      },
-      type: '',
+      form: {},
+      startProvinceList: [],
+      endProvinceList: [],
+      startCityList: [],
+      endCityList: [],
       currentPage: 1,
       countNum: 0,
       totalRow: 0,
@@ -254,19 +225,14 @@ export default {
       select_order_no: '',
       select_start_city: '',
       select_end_city: '',
-      roleValidator: new Validator({
-        type: [{ required: true, message: '请选择计费方式' }],
+      mainValidator: new Validator({
         name: { required: true, message: '请填写路线名称' },
         start_province: { required: true, message: '请填写起始地省份' },
         start_city: { required: true, message: '请填写起始地城市' },
+        start_site: { required: true, message: '请填写起始站点' },
         end_province: { required: true, message: '请填写目的地省份' },
         end_city: { required: true, message: '请填写目的地城市' },
-        content: { required: true, message: '请填写运输内容' },
-        dwp: { required: true, message: '请填写按重量的运输价格' },
-        dwp_criterion: { required: true, message: '请填写按重量的运输标准' },
-        pgp: { required: true, message: '请请填写提送货费单价' },
-        pgp_criterion: { required: true, message: '请填写提送货费计费标准' },
-        ys_limit: { required: true, message: '请填写运输时间' },
+        end_site: { required: true, message: '请填写目的站点' },
       }),
     };
   },
@@ -276,11 +242,30 @@ export default {
       dlyWayList: state => state.self.dlyWayList,
     }),
   },
+  watch: {
+    'form.start_province': {
+      async handler(newValue) {
+        let id = this.startProvinceList.filter(item => item.city_name === newValue)[0].id;
+        let { data } = await this.getRegion({ pid: id });
+        this.$set(this, 'startCityList', data);
+      },
+    },
+    'form.end_province': {
+      async handler(newValue) {
+        let id = this.endProvinceList.filter(item => item.city_name === newValue)[0].id;
+        let { data } = await this.getRegion({ pid: id });
+        this.$set(this, 'endCityList', data);
+      },
+    },
+  },
   async created() {
     await this.search();
+    let { data } = await this.getRegion({ pid: 1 });
+    this.$set(this, 'startProvinceList', data);
+    this.$set(this, 'endProvinceList', data);
   },
   methods: {
-    ...mapActions(['getdly_wayList', 'dlywayOperation', 'adddly_wayList', 'getdly_wayListlike']),
+    ...mapActions(['getdly_wayList', 'dlywayOperation', 'adddly_wayList', 'getdly_wayListlike', 'getRegion']),
     async search() {
       //查询方法
       let skip = (this.currentPage - 1) * this.limit;
@@ -321,7 +306,6 @@ export default {
       if (this.select_start_city === null) this.select_start_city = '';
       if (this.select_end_city === null) this.select_end_city = '';
       let skip = (this.currentPage - 1) * this.limit;
-      console.log(222);
       await this.getdly_wayListlike({
         skip: skip,
         limit: this.limit,
@@ -329,13 +313,11 @@ export default {
         select_start_city: this.select_start_city,
         select_end_city: this.select_end_city,
       });
-      console.log(333);
-      console.log(this.dlyWayList);
       this.$set(this, 'list', this.dlyWayList);
     },
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
     async toValidate(type) {
-      this.roleValidator.validate(this.form, (errors, fields) => {
+      this.mainValidator.validate(this.form, (errors, fields) => {
         if (errors) {
           return this.handleErrors(errors, fields);
         }
@@ -348,7 +330,6 @@ export default {
     },
     //添加
     async add() {
-      console.log(this.form);
       await this.adddly_wayList({ type: 'dlywaySave', data: this.form });
       this.form = {};
       this.$refs.toAdd.hide();

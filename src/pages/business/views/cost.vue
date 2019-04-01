@@ -152,7 +152,7 @@ export default {
     return {
       list: [],
       form: {},
-      updateForm: {}, 
+      updateForm: {},
       currentPage: 1,
       totalRow: 0,
       operateId: '',
