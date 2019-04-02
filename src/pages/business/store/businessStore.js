@@ -533,4 +533,39 @@ export const actions = {
       console.error(err);
     }
   },
+  //支出单列表
+  async getOutList({ commit }, { skip, limit, main_id }) {
+    try {
+      let result = await this.$axios.get(`${api.outList}?skip=${skip}&limit=${limit}&transport_main_id=${main_id}`);
+      if (result.rescode === '0') {
+        return {
+          totalRow: result.totalRow,
+          data: result.outList,
+        };
+      } else {
+        return { totalRow: 0, data: null };
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
+      console.error(err);
+    }
+  },
+  //支出表操作
+  async outOperation({ commit }, { type, data }) {
+    let result;
+    try {
+      let body = type === 'outDelete' ? { data: { id: data } } : { data: data };
+      result = await this.$axios.post(_.get(api, type), body);
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+        console.warn(`error in:${type}`);
+        throw new Error('操作失败');
+      }
+    } catch (err) {
+      Message.error('操作失败');
+      console.error(err);
+    }
+  },
 };

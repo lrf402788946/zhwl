@@ -13,11 +13,11 @@
           <div class="row" style="margin-bottom: 15px !important;">
             <div class="col-lg-3 marginBot4">
               <p class="marginBot4">查询运输单号:</p>
-              <b-form-input v-model="select_transport_no" placeholder="输入"></b-form-input>
+              <b-form-input v-model="select_transport_no" placeholder="输入运输单号"></b-form-input>
             </div>
             <div class="col-lg-3 marginBot4">
               <p class="marginBot4">查询车牌号:</p>
-              <b-form-input v-model="select_car_no" placeholder="输入"></b-form-input>
+              <b-form-input v-model="select_car_no" placeholder="输入车牌号"></b-form-input>
             </div>
             <div class="col-lg-3 marginBot4">
               <p class="marginBot4">查询驾驶员姓名:</p>

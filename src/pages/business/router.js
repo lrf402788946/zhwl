@@ -8,6 +8,7 @@ import car_loading from './views/car_loading.vue';
 import transport from './views/transport.vue';
 import split_cargo from './views/split_cargo.vue';
 import cost from './views/cost.vue';
+import out from './views/out.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -51,6 +52,11 @@ export default new Router({
           path: '/cost',
           name: 'cost',
           component: cost,
+        },
+        {
+          path: '/out',
+          name: 'out',
+          component: out,
         },
       ],
     },
