@@ -99,6 +99,10 @@
               <option v-for="(item, index) in statusList" :key="index" :label="item.text" :value="item.value"></option>
             </b-form-select>
           </div>
+          <div class="col-lg-12 mb25">
+            <div class="lh44">运输内容：</div>
+            <b-form-input v-model="form.content"></b-form-input>
+          </div>
           <br />
           <div class="col-lg-12 mb25">
             <el-tabs v-model="tabs" type="card" :stretch="true">
@@ -224,6 +228,7 @@ export default {
       subForm: [],
       costForm: [],
       costList: [],
+      newDlyList: [],
       is_update: true,
       operateId: '',
       currentPage: 1,
@@ -260,6 +265,14 @@ export default {
     let { data } = await this.getCostList({ skip: 0, limit: 10000 });
     (data = data.filter(item => item.cost_type !== '0')), this.$set(this, 'costList', data);
     this.search();
+    this.newDlyList = this.dlyWayList.map(item => {
+      let newObject = {
+        id: item.id,
+        name: item.name,
+        content: item.start_province + '-' + item.start_city + '-' + item.start_site + '至' + item.end_province + '-' + item.end_city + '-' + item.end_site,
+      };
+      return newObject;
+    });
   },
   methods: {
     ...mapActions([
@@ -304,6 +317,8 @@ export default {
       this.subForm.forEach((item, index) => {
         this.$set(this.subForm[index], `dly_way_id`, id);
       });
+      let object = this.newDlyList.filter(item => item.id === id)[0];
+      this.$set(this.form, 'content', object.content);
     },
     //添加
     async add() {

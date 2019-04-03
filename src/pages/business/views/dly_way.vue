@@ -381,39 +381,216 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.marginBot5{
-  margin-bottom: 5px;
+.marginBot4 {
+  margin-bottom: 4px;
 }
-.marginBot8{
-  margin-bottom: 8px;
+.marginBot {
+  margin-bottom: 15px;
 }
-.marginBot20{
-  margin-bottom: 20px;
+.resetButton {
+  color: #fff;
+  margin-right: 20px;
 }
-.resetButton{
-  color:#fff;
-  margin-right:20px;
-}
-.table th, .table td {
-    padding: 0.5rem;
+.table th,
+.table td {
+  padding: 0.5rem;
+  vertical-align: inherit;
 }
 .btn {
-    margin-left: 0 !important;
-    padding: 2px 5px !important;
-    margin-bottom: 0 !important;
-    margin-right: 10px !important;
-    font-size: 12px !important;
-    font-weight: normal !important;
-    line-height: 1.42857143 !important;
-    text-align: center !important;
-    white-space: nowrap !important;
-    vertical-align: middle !important;
-    width: auto !important;
-    border: 1px solid transparent !important;
-    border-radius: 3px !important;
-    height: auto !important;
+  margin-left: 0 !important;
+  padding: 2px 5px !important;
+  margin-bottom: 0 !important;
+  margin-right: 10px !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  line-height: 1.42857143 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+  width: auto !important;
+  border: 1px solid transparent !important;
+  border-radius: 3px !important;
+  height: auto !important;
+}
+.btn-primary {
+  background-color: #5bc0de;
+}
+.btn-primary1 {
+  background-color: #5bc0de;
+  color: white;
+  width: 400px;
+  height: 280px;
+  cursor: hand;
+}
+.breadcrumb {
+  padding: 14px 18px;
+  margin-bottom: 25px;
+  list-style: none;
+  background-color: #f5f5f5;
+}
+.breadcrumb > li {
+  font-size: 16px;
+  color: #999;
+  display: inline-block;
+}
+.breadcrumb > li a {
+  font-size: 16px;
+  color: #999;
+  display: inline-block;
+}
+.base-form-title {
+  font-weight: bold;
+  display: block;
+  line-height: 40px;
+  font-size: 16px;
+  color: #46687f;
+  letter-spacing: 1px;
+  text-align: left;
+  background-color: #5bc0de;
+}
+.base-margin-left-20 {
+  margin-left: 20px;
+}
+.base-form-title a {
+  color: #fff !important;
+  text-decoration: none;
+}
+.base-padding-20 {
+  padding: 20px;
+}
+.base-bg-fff {
+  background-color: #fff;
+}
+.row {
+  margin-right: -15px;
+  margin-left: -15px;
+}
+.base-margin-right-40 {
+  margin-right: 40px;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+.form-control {
+  display: block;
+  width: 100%;
+  height: 44px;
+  padding: 6px 15px;
+  font-size: 16px;
+  line-height: 1.42857143;
+  color: #555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;
+  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+input,
+textarea,
+select,
+button {
+  text-rendering: auto;
+  color: initial;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-transform: none;
+  text-indent: 0px;
+  text-shadow: none;
+  display: inline-block;
+  text-align: start;
+  margin: 0em;
+  font: 400 13.3333px Arial;
+}
+.btn-info {
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+.base-margin-2 {
+  margin: 2px 0;
+}
+.btn-xs,
+.btn-group-xs > .btn {
+  padding: 3px 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 5px;
+}
+.btn-info {
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+.base-margin-right-5 {
+  margin-right: 5px;
+}
+.base-margin-bottom {
+  margin-bottom: 20px;
+}
+.table-bordered {
+  border: 1px solid #ddd;
 }
 .table {
-    font-size: 14px;
+  font-size: 14px;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 20px;
+}
+table {
+  background-color: transparent;
+}
+table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+.base-header {
+  min-width: 1024px;
+  height: 75px;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.base-header-left {
+  float: left;
+  width: 240px;
+  height: 60px;
+  border-bottom: 1px #161e25 solid;
+  color: #a6a6a6;
+  cursor: pointer;
+  background-size: 100%;
+}
+ul,
+li {
+  margin: 0px;
+  padding: 0px;
+}
+li {
+  list-style: none;
+}
+.modal.show .modal-dialog {
+  -webkit-transform: none;
+  transform: none;
+  max-width: 700px !important;
+}
+@media (min-width: 576px) {
+  .modal-dialog {
+    max-width: 700px !important;
+    margin: 1.75rem auto;
+  }
+}
+.lh44 {
+  text-align: left;
+  line-height: 35px;
+}
+.mb25 {
+  margin-bottom: 10px;
+}
+.mb20 {
+  margin-bottom: 20px;
 }
 </style>

@@ -49,6 +49,11 @@ const api = {
   outSave: '/zhwl/out/out_save',
   outEdit: '/zhwl/out/out_edit',
   outDelete: '/zhwl/out/out_delete',
+  //支出单
+  inList: '/zhwl/in/in_list', //transport_main_id
+  inSave: '/zhwl/in/in_save',
+  inEdit: '/zhwl/in/in_edit',
+  inDelete: '/zhwl/in/in_delete',
 };
 
 export const state = () => ({
@@ -388,7 +393,7 @@ export const actions = {
         }?skip=${skip}&limit=${limit}&transport_no=${transport_no}&car_no=${car_no}&driver_id=${driver_id}&start_time=${start_time}&end_time=${end_time}`
       );
       if (result.rescode === '0') {
-        commit(types.TRANSPORT_LIST, result.orderList);
+        commit(types.TRANSPORT_LIST, result.transportList);
         return result.totalRow;
       } else {
         Message.error(result.msg);
@@ -555,6 +560,41 @@ export const actions = {
     let result;
     try {
       let body = type === 'outDelete' ? { data: { id: data } } : { data: data };
+      result = await this.$axios.post(_.get(api, type), body);
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+        console.warn(`error in:${type}`);
+        throw new Error('操作失败');
+      }
+    } catch (err) {
+      Message.error('操作失败');
+      console.error(err);
+    }
+  },
+  //收入单列表
+  async getInList({ commit }, { skip, limit, main_id }) {
+    try {
+      let result = await this.$axios.get(`${api.inList}?skip=${skip}&limit=${limit}&transport_main_id=${main_id}`);
+      if (result.rescode === '0') {
+        return {
+          totalRow: result.totalRow,
+          data: result.outList,
+        };
+      } else {
+        return { totalRow: 0, data: null };
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
+      console.error(err);
+    }
+  },
+  //收入表操作
+  async inOperation({ commit }, { type, data }) {
+    let result;
+    try {
+      let body = type === 'inDelete' ? { data: { id: data } } : { data: data };
       result = await this.$axios.post(_.get(api, type), body);
       if (result.rescode === '0') {
         Message.success('操作成功');

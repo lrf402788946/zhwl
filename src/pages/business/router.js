@@ -9,6 +9,7 @@ import transport from './views/transport.vue';
 import split_cargo from './views/split_cargo.vue';
 import cost from './views/cost.vue';
 import out from './views/out.vue';
+import in_page from './views/in.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -57,6 +58,11 @@ export default new Router({
           path: '/out',
           name: 'out',
           component: out,
+        },
+        {
+          path: '/in_page',
+          name: 'in_page',
+          component: in_page,
         },
       ],
     },

@@ -1,17 +1,17 @@
 <template lang="html">
-  <div id="out">
+  <div id="in">
     <!-- 表格 begin -->
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">支出单列表</a>
+          <a class="base-margin-left-20">收入单列表</a>
           <div class="button-table"></div>
         </div>
       </div>
       <div class="base-padding-20 base-bg-fff">
         <table>
           <tr>
-            <td>支出单查询</td>
+            <td>收入单查询</td>
           </tr>
           <tr>
             <td><b-form-input v-model="select_main_id" placeholder="输入运输单号"></b-form-input></td>
@@ -28,20 +28,34 @@
           </tr>
         </table>
 
+        <b-button v-b-modal.modal-multi-1>Open First Modal</b-button>
+
+        <b-modal id="modal-multi-1" size="lg" title="First Modal" ok-only no-stacking>
+          <p class="my-2">First Modal</p>
+          <b-button v-b-modal.modal-multi-2>Open Second Modal</b-button>
+        </b-modal>
+
+        <b-modal id="modal-multi-2" title="Second Modal" ok-only>
+          <p class="my-2">Second Modal</p>
+          <b-button v-b-modal.modal-multi-3 size="sm">Open Third Modal</b-button>
+        </b-modal>
+
+        <b-modal id="modal-multi-3" size="sm" title="Third Modal" ok-only>
+          <p class="my-1">Third Modal</p>
+        </b-modal>
+
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
             <tr>
-              <th>供应商</th>
-              <th>司机</th>
-              <th>线路</th>
-              <th>支出金额</th>
+              <th>单号</th>
+              <th>收入项目</th>
+              <th>收入金额</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
-              <td>{{ { data: carList, searchItem: 'id', value: item.car_id, label: 'car_onwer' } | getName }}</td>
-              <td>{{ { data: driverList, searchItem: 'id', value: item.driver_id, label: 'name' } | getName }}</td>
-              <td>{{ { data: dlyWayList, searchItem: 'id', value: item.dly_way_id, label: 'name' } | getName }}</td>
-              <td>{{ item.out_price }}</td>
+              <td>{{ item.order_no }}</td>
+              <td>{{ { data: costList, searchItem: 'id', value: item.cost_id, label: 'cost_name' } | getName }}</td>
+              <td>{{ item.in_price }}</td>
               <td>
                 <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">修&nbsp;&nbsp;改</b-button>
                 <b-button variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
@@ -64,25 +78,13 @@
           @current-change="toSearch"
           :total="totalRow"
         ></el-pagination>
-        <b-modal id="Edit" title="修改支出单" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
-          <p class="marginBot5">供应商</p>
-          <el-select class="marginBot" style="height:40px !important" v-model="form.car_id" filterable placeholder="请选择供应商">
-            <el-option v-for="(car, index) in carList" :key="index" :label="car.car_onwer" :value="car.id"></el-option>
-          </el-select>
-          <p class="marginBot5">司机</p>
-          <el-select class="marginBot" style="height:40px !important" v-model="form.driver_id" filterable placeholder="请选择司机">
-            <el-option v-for="(driver, index) in driverList" :key="index" :label="driver.name" :value="driver.id"></el-option>
-          </el-select>
-          <p class="marginBot5">线路</p>
-          <el-select class="marginBot" style="height:40px !important" v-model="form.dly_way_id" filterable placeholder="请选择线路">
-            <el-option v-for="(way, index) in dlyWayList" :key="index" :label="way.name" :value="way.id"></el-option>
-          </el-select>
-          <p class="marginBot5">支出项</p>
+        <b-modal id="Edit" title="修改收入单" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+          <p class="marginBot5">收入项</p>
           <el-select class="marginBot" style="height:40px !important" v-model="form.cost_id" filterable placeholder="请选择支出项">
             <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
           </el-select>
-          <p class="marginBot5">支出金额</p>
-          <b-form-input v-model="form.out_price"></b-form-input>
+          <p class="marginBot5">收入金额</p>
+          <b-form-input v-model="form.in_price"></b-form-input>
           <p class="marginBot5">备注</p>
           <b-form-input v-model="form.remark"></b-form-input>
           <b-button
@@ -103,7 +105,7 @@
 
         <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
           <div class="d-block text-center">
-            <b-alert variant="danger" show>确定删除该支出单?</b-alert>
+            <b-alert variant="danger" show>确定删除该收入单?</b-alert>
           </div>
           <b-button
             variant="danger"
@@ -129,9 +131,9 @@
 import { mapActions, mapState } from 'vuex';
 import Validator from 'async-validator';
 export default {
-  name: 'out',
+  name: 'in',
   metaInfo: {
-    title: '支出单管理',
+    title: '收入单管理',
   },
   components: {},
   data() {
@@ -169,10 +171,10 @@ export default {
       this.getCarList({ skip: 0, limit: 10000 }),
     ]);
     let { data } = await this.getCostList({ skip: 0, limit: 10000 });
-    (data = data.filter(item => item.cost_type !== '0')), this.$set(this, 'costList', data);
+    (data = data.filter(item => item.cost_type !== '1')), this.$set(this, 'costList', data);
   },
   methods: {
-    ...mapActions(['getOutList', 'getDriverList', 'getdly_wayList', 'getCarList', 'getCostList', 'outOperation']),
+    ...mapActions(['getInList', 'getDriverList', 'getdly_wayList', 'getCarList', 'getCostList', 'inOperation']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -184,7 +186,7 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let { totalRow, data } = await this.getOutList({ skip: skip, limit: this.limit, main_id: this.select_main_id });
+      let { totalRow, data } = await this.getInList({ skip: skip, limit: this.limit, main_id: this.select_main_id });
       this.$set(this, 'totalRow', totalRow);
       if (totalRow == 0) {
         this.$set(this, 'list', {});
@@ -212,7 +214,7 @@ export default {
     },
     //删除
     async toDelete() {
-      await this.outOperation({ type: 'outDelete', data: this.deleteItem });
+      await this.inOperation({ type: 'inDelete', data: this.deleteItem });
       this.search();
       this.deleteItem = '';
       this.$refs.deleteAlert.hide();
@@ -221,10 +223,11 @@ export default {
     openUpdateAlert(index) {
       this.$refs.Edit.show();
       this.form = JSON.parse(JSON.stringify(this.list[index]));
+      console.log(Object.keys(this.form));
     },
     //修改
     async update() {
-      await this.outOperation({ type: 'outEdit', data: this.form });
+      await this.inOperation({ type: 'inEdit', data: this.form });
       this.form = {};
       this.$refs.Edit.hide();
       this.search();
