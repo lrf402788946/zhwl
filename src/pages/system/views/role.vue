@@ -194,7 +194,6 @@ export default {
     //关闭弹框
     closeAlert() {
       this.$refs.Edit.hide();
-      this.list = JSON.parse(JSON.stringify(this.origin));
       this.operateId = '';
       this.form = {};
     },

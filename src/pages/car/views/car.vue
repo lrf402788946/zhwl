@@ -730,7 +730,6 @@ export default {
     },
     // closeAlert() {
     //   this.$refs.updateAlert.hide();
-    //   this.list = JSON.parse(JSON.stringify(this.origin));
     //   this.operateId = '';
     //   this.form = {};
     // },

@@ -1,5 +1,5 @@
 <template lang="html">
-  <div id="sideMenu" style="height: 100vh; display: block; background: #1c2b36;">
+  <div id="sideMenu" style="height: 100vh; display: block; background: #1c2b36;overflow-y: scroll !important;">
     <div class="base-main-left" id="menuBox">
       <div class="base-sidebar-menu">
         <span class="title">操作面板</span>

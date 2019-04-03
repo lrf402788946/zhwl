@@ -10,44 +10,6 @@
         </div>
       </div>
       <div class="base-padding-20 base-bg-fff">
-        <div>
-          <div class="row" style="margin-bottom: 15px !important;">
-            <div class="col-lg-3 marginBot4">
-              <!-- <p class="marginBot4">订单单号查询:</p>
-              <b-form-input v-model="select_order_no" placeholder="输入订单单号"></b-form-input> -->
-            </div>
-            <div class="col-lg-3 marginBot4">
-              <!-- <p class="marginBot4">订单人查询:</p>
-              <el-select class="marginBot" style="height:40px !important" v-model="select_c_id" filterable placeholder="输入订单人">
-                <el-option value="" label="全部客户">全部客户</el-option>
-                <el-option v-for="(item, index) in clientList" :key="index" :label="item.name" :value="item.id"></el-option>
-              </el-select> -->
-            </div>
-            <div class="col-lg-4 marginBot4">
-              <!-- <p class="marginBot4">订单日期查询:</p>
-              <el-date-picker
-                style="width:100%; height: 34px !important; line-height: 34px !important;"
-                v-model="select_in_date"
-                value-format="yyyy-MM-dd"
-                format="yyyy-MM-dd"
-                type="daterange"
-                range-separator="-"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-              >
-              </el-date-picker> -->
-            </div>
-            <div class="col-lg-2 marginBot4">
-              <!-- <b-button
-                variant="primary"
-                style="font-size: 14px !important; color: rgb(255, 255, 255) !important; width: 60% !important; padding: 5px 10px !important; margin-top:28px; margin-right: 0px !important;"
-                @click="search('vague')"
-                >点击查询</b-button
-              > -->
-            </div>
-          </div>
-        </div>
-
         <div class="base-align-right" style="margin-bottom: 20px;">
           <a
             class="btn btn-info base-margin-bottom"
@@ -119,6 +81,28 @@
             <el-date-picker style="width: 100%;" v-model="form.send_time" placeholder="发货日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd" type="date">
             </el-date-picker>
           </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">操作人：</div>
+            <b-form-input v-model="form.op"></b-form-input>
+          </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">线路：</div>
+            <b-form-select v-model="form.dly_way_id" @change="subDlyWay()">
+              <option value="" disabled>请选择线路</option>
+              <option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"></option>
+            </b-form-select>
+          </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">状态：</div>
+            <b-form-select v-model="form.status">
+              <option value="" disabled>请选择状态</option>
+              <option v-for="(item, index) in statusList" :key="index" :label="item.text" :value="item.value"></option>
+            </b-form-select>
+          </div>
+          <div class="col-lg-12 mb25">
+            <div class="lh44">运输内容：</div>
+            <b-form-input v-model="form.content"></b-form-input>
+          </div>
           <br />
           <div class="col-lg-12 mb25">
             <el-tabs v-model="tabs" type="card" :stretch="true">
@@ -128,15 +112,19 @@
                     <tr>
                       <td>订单号</td>
                       <td>货物名称</td>
-                      <!-- <td>线路</td> -->
                       <td>运输金额</td>
+                      <td>线路</td>
                       <td>操作</td>
                     </tr>
                     <tr v-for="(item, index) in subForm" :key="index">
                       <td><b-form-input v-model="item.order_no" :disabled="true"></b-form-input></td>
                       <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
-                      <!-- <td><b-form-input v-model="item.content" :disabled="true"></b-form-input></td> -->
                       <td><b-form-input v-model="item.price" :disabled="true"></b-form-input></td>
+                      <td>
+                        <el-select v-model="item.dly_way_id" placeholder="请选择线路" :disabled="true">
+                          <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"> </el-option>
+                        </el-select>
+                      </td>
                       <td>
                         <b-button
                           variant="danger"
@@ -153,27 +141,39 @@
               </el-tab-pane>
               <el-tab-pane label="支出单" name="2">
                 <div class="col-lg-1 mb25">
-                  <el-button size="mini" type="primary" icon="el-icon-plus" circle @click="() => costList.push({})"></el-button>
+                  <el-button size="mini" type="primary" icon="el-icon-plus" circle @click="() => costForm.push({})"></el-button>
                 </div>
-                <div style="padding: 0px 20px;" v-for="(item, index) in costList" :key="index">
-                  <div class="row">
-                    <div class="col-lg-3 mb25">
+                <div style="padding: 0px 20px;" v-for="(item, index) in costForm" :key="index">
+                  <div class="row" style="border-top: 1px solid">
+                    <div class="col-lg-4 mb25">
                       <div class="lh44">供应商</div>
                       <el-select class="marginBot" style="height:40px !important" v-model="item.car_id" filterable placeholder="请选择供应商">
                         <el-option v-for="(car, index) in carList" :key="index" :label="car.car_onwer" :value="car.id"></el-option>
                       </el-select>
                     </div>
-                    <div class="col-lg-3 mb25">
-                      <div class="lh44">支出项</div>
-                      <el-select class="marginBot" style="height:40px !important" v-model="item.car_id" filterable placeholder="请选择支出项">
-                        <el-option v-for="(car, index) in carList" :key="index" :label="car.car_onwer" :value="car.id"></el-option>
+                    <div class="col-lg-4 mb25">
+                      <div class="lh44">司机</div>
+                      <el-select class="marginBot" style="height:40px !important" v-model="item.driver_id" filterable placeholder="请选择司机">
+                        <el-option v-for="(driver, index) in driverList" :key="index" :label="driver.name" :value="driver.id"></el-option>
                       </el-select>
                     </div>
-                    <div class="col-lg-2 mb25">
+                    <div class="col-lg-4 mb25">
+                      <div class="lh44">线路</div>
+                      <el-select class="marginBot" style="height:40px !important" v-model="item.dly_way_id" filterable placeholder="请选择线路">
+                        <el-option v-for="(way, index) in dlyWayList" :key="index" :label="way.name" :value="way.id"></el-option>
+                      </el-select>
+                    </div>
+                    <div class="col-lg-4 mb25">
+                      <div class="lh44">支出项</div>
+                      <el-select class="marginBot" style="height:40px !important" v-model="item.cost_id" filterable placeholder="请选择支出项">
+                        <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
+                      </el-select>
+                    </div>
+                    <div class="col-lg-4 mb25">
                       <div class="lh44">支出金额</div>
                       <b-form-input v-model="item.out_price"></b-form-input>
                     </div>
-                    <div class="col-lg-3 mb25">
+                    <div class="col-lg-11 mb25">
                       <div class="lh44">备注</div>
                       <b-form-input v-model="item.remark"></b-form-input>
                     </div>
@@ -184,7 +184,7 @@
                         type="danger"
                         icon="el-icon-minus"
                         circle
-                        @click="index => costList.splice(index, 1)"
+                        @click="index => costForm.splice(index, 1)"
                       ></el-button>
                     </div>
                   </div>
@@ -226,23 +226,23 @@ export default {
     return {
       list: [],
       subForm: [],
+      costForm: [],
       costList: [],
+      newDlyList: [],
       is_update: true,
       operateId: '',
       currentPage: 1,
       totalRow: 0,
       form: {},
-      updateForm: {},
+      statusList: [{ text: '装车', value: '1' }, { text: '到达', value: '2' }, { text: '支付完成', value: '4' }, { text: '收款完成', value: '5' }],
       mainValidator: new Validator({
-        car_no: [{ required: true, message: '请填写操作人' }],
-        car_onwer: [{ required: true, message: '请选择客户' }],
+        op: [{ required: true, message: '请填写操作人' }],
         send_time: [{ required: true, message: '请选择发货日期' }],
+        dly_way_id: [{ required: true, message: '请选择线路' }],
+        status: [{ required: true, message: '请选择状态' }],
       }),
       th: ['订单号', '订单人', '订单日期', '备注'],
       filterVal: ['order_no', 'user_name', 'in_date', 'remark'],
-      select_order_no: '',
-      select_c_id: '',
-      select_in_date: [],
       skip: 0,
       order_loading_list: [],
       tabs: '1',
@@ -262,10 +262,29 @@ export default {
     await this.getCarList({ skip: 0, limit: 10000 });
     await this.getdly_wayList({ skip: 0, limit: 10000 });
     await this.getDriverList({ skip: 0, limit: 10000 });
+    let { data } = await this.getCostList({ skip: 0, limit: 10000 });
+    (data = data.filter(item => item.cost_type !== '0')), this.$set(this, 'costList', data);
     this.search();
+    this.newDlyList = this.dlyWayList.map(item => {
+      let newObject = {
+        id: item.id,
+        name: item.name,
+        content: item.start_province + '-' + item.start_city + '-' + item.start_site + '至' + item.end_province + '-' + item.end_city + '-' + item.end_site,
+      };
+      return newObject;
+    });
   },
   methods: {
-    ...mapActions(['transportOrderSubList', 'getDriverList', 'getCarList', 'transporSelectOrder', 'transportSave', 'getdly_wayList', 'getTransportNo']),
+    ...mapActions([
+      'transportOrderSubList',
+      'getDriverList',
+      'getCarList',
+      'transporSelectOrder',
+      'transportSave',
+      'getdly_wayList',
+      'getTransportNo',
+      'getCostList',
+    ]),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -285,26 +304,34 @@ export default {
     },
     //验证
     toValidate(type) {
-      this.mainValidator.validate(type === 'add' ? this.form : this.updateForm, (errors, fields) => {
+      this.mainValidator.validate(this.form, (errors, fields) => {
         if (errors) {
           return this.handleErrors(errors, fields);
         }
-        if (type === 'add') {
-          return this.add();
-        } else {
-          return this.update();
-        }
+        return this.add();
       });
+    },
+    //运输子表匹配主表
+    subDlyWay() {
+      let id = this.form.dly_way_id;
+      this.subForm.forEach((item, index) => {
+        this.$set(this.subForm[index], `dly_way_id`, id);
+      });
+      let object = this.newDlyList.filter(item => item.id === id)[0];
+      this.$set(this.form, 'content', object.content);
     },
     //添加
     async add() {
-      for (let index = 0; index < this.subForm.length; index++) {
-        this.subForm[index].status = '1';
+      if (this.costForm.length <= 0) {
+        this.$message.error('请添加支出单');
+        return false;
       }
-      await this.transportSave({ form: this.form, subForm: this.subForm });
+      await this.transportSave({ form: this.form, subForm: this.subForm, costForm: this.costForm });
       this.$refs.addAlert.hide();
       this.form = {};
       this.subForm = [];
+      this.costForm = [];
+      this.order_loading_list = [];
       this.search();
     },
     //打开与关闭修改和删除的弹框
@@ -316,10 +343,13 @@ export default {
       let newList = this.order_loading_list.map(item => `${item}`);
       let result = await this.transporSelectOrder({ ids: newList });
       let transportOrderSubList = result.orderSubList.map(item => {
-        let newObject = { order_no: item.order_no, order_sub_id: item.id, goods_name: item.goods_name, content: item.content, price: item.price, status: '0' };
+        let newObject = { order_no: item.order_no, order_sub_id: item.id, goods_name: item.goods_name, price: item.price, status: '0' };
         return newObject;
       });
+      this.toGetTransportNo();
       this.$set(this, 'subForm', transportOrderSubList);
+      this.form['status'] = '';
+      this.form['dly_way_id'] = '';
       this.$refs.addAlert.show();
     },
     //获得运输单号
@@ -363,61 +393,6 @@ export default {
       this.subForm = [];
       this.form.user_name = this.userInfo.user_name;
       this.form.login_id = this.userInfo.login_id;
-    },
-    //导出
-    exportExcel() {
-      var tableStr = `
-                      <caption><b>订单单</b></caption>
-                      <tr style="text-align:center;">
-                        <th>订单号</th>
-                        <th>操作人</th>
-                        <th>客户</th>
-                        <th>订单日期</th>
-                        <th>操作时间</th>
-                        <th>状态</th>
-                        <th>备注</th>
-                      </tr>
-                      <tr style="text-align: center;">
-                          <td>${this.updateForm.order_num}&nbsp;</td>
-                          <td>${this.updateForm.user_name}</td>
-                          <td>${this.getName(this.updateForm.cus_id)}</td>
-                          <td>${this.updateForm.in_date}</td>
-                          <td>${this.updateForm.create_time}</td>
-                          <td>${this.updateForm.status == '0' ? '未出库' : '已经出库'}</td>
-                          <td>${this.updateForm.remark}</td>
-                      </tr>
-                      <tr></tr>
-                      <tr style="text-align:center;">
-                        <th>型号</th>
-                        <th>数量</th>
-                      </tr>`;
-      for (let item of this.orderSubList) {
-        tableStr += ` <tr style="text-align: center;">
-                        <td>${item.code}</td>
-                        <td>${item.num}</td>
-                      </tr>`;
-      }
-      //Worksheet名
-      var worksheet = 'Sheet1';
-      var uri = 'data:application/vnd.ms-excel;base64,';
-      // 真正要导出（下载）的HTML模板
-      var exportTemplate = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" 
-                      xmlns="http://www.w3.org/TR/REC-html40">
-                          <head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
-                              <x:Name>${worksheet}</x:Name>
-                                  <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
-                              </x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
-                          </head>
-                          <body>
-                              <table border="1" cellspacing="0" cellpadding="0" syle="table-layout: fixed;word-wrap: break-word; word-break: break-all;">${tableStr}</table>
-                          </body>
-                      </html>`;
-      //下载模板
-      window.location.href = uri + this.base64(exportTemplate);
-    },
-    //输出base64编码
-    base64(s) {
-      return window.btoa(unescape(encodeURIComponent(s)));
     },
   },
   filters: {

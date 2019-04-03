@@ -1,59 +1,61 @@
 <template lang="html">
-  <div id="role">
+  <div id="in">
     <!-- 表格 begin -->
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">货物列表</a>
+          <a class="base-margin-left-20">收入单列表</a>
           <div class="button-table"></div>
         </div>
       </div>
       <div class="base-padding-20 base-bg-fff">
         <table>
           <tr>
-            <td>货物名称查询</td>
+            <td>收入单查询</td>
           </tr>
           <tr>
-            <td><b-form-input v-model="select_name" placeholder="输入货物名称"></b-form-input></td>
+            <td><b-form-input v-model="select_main_id" placeholder="输入运输单号"></b-form-input></td>
           </tr>
           <tr>
             <td>
               <b-button
                 variant="primary"
                 style="font-size: 14px !important; color: rgb(255, 255, 255) !important; width: 60% !important; padding: 5px 10px !important; margin-top:28px; margin-right: 0px !important;"
-                @click="searchButton()"
+                @click="search('vague')"
                 >点击查询</b-button
               >
             </td>
           </tr>
         </table>
 
-        <div class="base-align-right" style="margin-bottom:20px;">
-          <a
-            class="btn btn-info base-margin-bottom"
-            data-toggle="tooltip"
-            style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
-            title=""
-            role="button"
-            v-b-modal="'toAdd'"
-          >
-            <i class="base-margin-right-5 fa fa-plus-square"></i>添加货物
-          </a>
-        </div>
+        <b-button v-b-modal.modal-multi-1>Open First Modal</b-button>
+
+        <b-modal id="modal-multi-1" size="lg" title="First Modal" ok-only no-stacking>
+          <p class="my-2">First Modal</p>
+          <b-button v-b-modal.modal-multi-2>Open Second Modal</b-button>
+        </b-modal>
+
+        <b-modal id="modal-multi-2" title="Second Modal" ok-only>
+          <p class="my-2">Second Modal</p>
+          <b-button v-b-modal.modal-multi-3 size="sm">Open Third Modal</b-button>
+        </b-modal>
+
+        <b-modal id="modal-multi-3" size="sm" title="Third Modal" ok-only>
+          <p class="my-1">Third Modal</p>
+        </b-modal>
+
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
             <tr>
-              <th>货物名称</th>
-              <th>数量</th>
-              <th>重量</th>
-              <th>体积</th>
+              <th>单号</th>
+              <th>收入项目</th>
+              <th>收入金额</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
-              <td>{{ item.goods_name }}</td>
-              <td>{{ item.num }}</td>
-              <td>{{ item.weight }}</td>
-              <td>{{ item.volume }}</td>
+              <td>{{ item.order_no }}</td>
+              <td>{{ { data: costList, searchItem: 'id', value: item.cost_id, label: 'cost_name' } | getName }}</td>
+              <td>{{ item.in_price }}</td>
               <td>
                 <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">修&nbsp;&nbsp;改</b-button>
                 <b-button variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
@@ -76,40 +78,15 @@
           @current-change="toSearch"
           :total="totalRow"
         ></el-pagination>
-        <b-modal id="toAdd" title="添加货物" ref="toAdd" hide-footer>
-          <p class="marginBot5">货物名称</p>
-          <b-form-input v-model="form.goods_name" class="marginBot20" placeholder="请填写货物名称"></b-form-input>
-          <p class="marginBot5">数量</p>
-          <b-form-input v-model="form.num" class="marginBot20" placeholder="请填写货物数量"></b-form-input>
-          <p class="marginBot5">重量</p>
-          <b-form-input v-model="form.weight" class="marginBot20" placeholder="请填写货物重量"></b-form-input>
-          <p class="marginBot5">体积</p>
-          <b-form-input v-model="form.volume" class="marginBot20" placeholder="请填写货物体积"></b-form-input>
-          <b-button
-            variant="secondary"
-            @click="form = { p_id: 0 }"
-            style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-          >
-            重&nbsp;&nbsp;置
-          </b-button>
-          <b-button
-            variant="primary"
-            @click="toValidate('add')"
-            style="font-size:16px !important; margin-top:25px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-          >
-            保&nbsp;&nbsp;存
-          </b-button>
-        </b-modal>
-
-        <b-modal id="Edit" title="修改货物" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
-          <p class="marginBot5">货物名称</p>
-          <b-form-input v-model="form.goods_name" class="marginBot20" placeholder="请填写货物名称"></b-form-input>
-          <p class="marginBot5">数量</p>
-          <b-form-input v-model="form.num" class="marginBot20" placeholder="请填写货物数量"></b-form-input>
-          <p class="marginBot5">重量</p>
-          <b-form-input v-model="form.weight" class="marginBot20" placeholder="请填写货物重量"></b-form-input>
-          <p class="marginBot5">体积</p>
-          <b-form-input v-model="form.volume" class="marginBot20" placeholder="请填写货物体积"></b-form-input>
+        <b-modal id="Edit" title="修改收入单" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+          <p class="marginBot5">收入项</p>
+          <el-select class="marginBot" style="height:40px !important" v-model="form.cost_id" filterable placeholder="请选择支出项">
+            <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
+          </el-select>
+          <p class="marginBot5">收入金额</p>
+          <b-form-input v-model="form.in_price"></b-form-input>
+          <p class="marginBot5">备注</p>
+          <b-form-input v-model="form.remark"></b-form-input>
           <b-button
             variant="secondary"
             @click="closeAlert()"
@@ -128,7 +105,7 @@
 
         <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
           <div class="d-block text-center">
-            <b-alert variant="danger" show>确定删除该货物?</b-alert>
+            <b-alert variant="danger" show>确定删除该收入单?</b-alert>
           </div>
           <b-button
             variant="danger"
@@ -154,98 +131,68 @@
 import { mapActions, mapState } from 'vuex';
 import Validator from 'async-validator';
 export default {
-  name: 'goods',
+  name: 'in',
   metaInfo: {
-    title: '货物管理',
+    title: '收入单管理',
   },
   components: {},
   data() {
     return {
       list: [],
-      form: {
-        goods_name: '',
-        num: '',
-        weight: '',
-        volume: '',
-      },
-      is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
+      form: {},
+      costList: [],
       currentPage: 1,
       countNum: 0,
       totalRow: 0,
       deleteItem: '',
-      select_name: '',
-      select_order_no: '',
+      select_main_id: '',
       roleValidator: new Validator({
-        goods_name: [{ required: true, message: '请选择货物名称' }],
-        num: { required: true, message: '请填写货物数量' },
-        weight: { required: true, message: '请填写货物重量' },
-        volume: { required: true, message: '请填写货物体积' },
+        car_id: [{ required: true, message: '请选择供应商' }],
+        driver_id: { required: true, message: '请选择司机' },
+        dly_way_id: { required: true, message: '请选择线路' },
+        cost_id: { required: true, message: '请选择支出项' },
+        out_price: { required: true, message: '请填写支出金额' },
       }),
     };
   },
   computed: {
     ...mapState({
       limit: state => state.publics.limit,
-      goodsList: state => state.self.goodsList,
+      driverList: state => state.personnel.driverList,
+      dlyWayList: state => state.self.dlyWayList,
+      carList: state => state.car.carList,
     }),
   },
-  created() {
-    this.search();
+  async created() {
+    await this.search();
+    await Promise.all([
+      this.getdly_wayList({ skip: 0, limit: 10000 }),
+      this.getDriverList({ skip: 0, limit: 10000 }),
+      this.getCarList({ skip: 0, limit: 10000 }),
+    ]);
+    let { data } = await this.getCostList({ skip: 0, limit: 10000 });
+    (data = data.filter(item => item.cost_type !== '1')), this.$set(this, 'costList', data);
   },
   methods: {
-    ...mapActions(['getGoodslist', 'goodsOperation', 'addGoodslist', 'getGoodslistlike']),
+    ...mapActions(['getInList', 'getDriverList', 'getdly_wayList', 'getCarList', 'getCostList', 'inOperation']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
-      if (this.is_title_search) {
-        this.titlesearch();
-      } else {
-        this.search();
-      }
+      this.search();
     },
     //查询
-    async search() {
-      if (this.is_title_search) {
-        this.is_title_search = false;
-        return;
+    async search(type) {
+      if (type === 'vague') {
+        this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let totalRow = await this.getGoodslist({ skip: skip, limit: this.limit });
-      this.$set(this, 'list', this.goodsList);
+      let { totalRow, data } = await this.getInList({ skip: skip, limit: this.limit, main_id: this.select_main_id });
       this.$set(this, 'totalRow', totalRow);
-    },
-    //模糊查询的方法
-    async titlesearch() {
-      if (!this.is_title_search) {
-        this.is_title_search = true;
-        return;
+      if (totalRow == 0) {
+        this.$set(this, 'list', {});
+      } else {
+        this.$set(this, 'list', data);
       }
-      if (this.select_name === null) this.select_name = '';
-      let skip = (this.currentPage - 1) * this.limit;
-      let totalRow = await this.getGoodslistlike({
-        skip: skip,
-        limit: this.limit,
-        select_name: this.select_name,
-      });
-      this.$set(this, 'list', this.goodsList);
-      this.$set(this, 'totalRow', totalRow);
-    },
-    //模糊查询按钮
-    async searchButton() {
-      this.currentPage = 1;
-      if (this.select_name === null) this.select_name = '';
-      if (!this.is_title_search) {
-        this.is_title_search = true;
-        return;
-      }
-      let skip = 0;
-      let totalRow = await this.getGoodslistlike({
-        skip: skip,
-        limit: this.limit,
-        select_name: this.select_name,
-      });
-      this.$set(this, 'list', this.goodsList);
-      this.$set(this, 'totalRow', totalRow);
     },
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
     async toValidate(type) {
@@ -260,13 +207,6 @@ export default {
         }
       });
     },
-    //添加
-    async add() {
-      await this.addGoodslist({ type: 'goodsSave', data: this.form });
-      this.form = {};
-      this.$refs.toAdd.hide();
-      this.search();
-    },
     //打开删除提示框
     openDeleteAlert(id) {
       this.$refs.deleteAlert.show();
@@ -274,7 +214,7 @@ export default {
     },
     //删除
     async toDelete() {
-      await this.goodsOperation({ type: 'goodsDelete', data: this.deleteItem });
+      await this.inOperation({ type: 'inDelete', data: this.deleteItem });
       this.search();
       this.deleteItem = '';
       this.$refs.deleteAlert.hide();
@@ -283,10 +223,11 @@ export default {
     openUpdateAlert(index) {
       this.$refs.Edit.show();
       this.form = JSON.parse(JSON.stringify(this.list[index]));
+      console.log(Object.keys(this.form));
     },
     //修改
     async update() {
-      await this.goodsOperation({ type: 'goodsEdit', data: this.form });
+      await this.inOperation({ type: 'inEdit', data: this.form });
       this.form = {};
       this.$refs.Edit.hide();
       this.search();

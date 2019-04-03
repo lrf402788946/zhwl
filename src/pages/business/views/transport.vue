@@ -13,18 +13,7 @@
           <div class="row" style="margin-bottom: 15px !important;">
             <div class="col-lg-3 marginBot4">
               <p class="marginBot4">查询运输单号:</p>
-              <b-form-input v-model="select_transport_no" placeholder="输入"></b-form-input>
-            </div>
-            <div class="col-lg-3 marginBot4">
-              <p class="marginBot4">查询车牌号:</p>
-              <b-form-input v-model="select_car_no" placeholder="输入"></b-form-input>
-            </div>
-            <div class="col-lg-3 marginBot4">
-              <p class="marginBot4">查询驾驶员姓名:</p>
-              <el-select class="marginBot" style="height:40px !important" v-model="select_driver_id" filterable placeholder="输入">
-                <el-option value="" label="全部驾驶员">全部驾驶员</el-option>
-                <el-option v-for="item in driverList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-              </el-select>
+              <b-form-input v-model="select_transport_no" placeholder="输入运输单号"></b-form-input>
             </div>
             <div class="col-lg-4 marginBot4">
               <p class="marginBot4">日期查询:</p>
@@ -55,20 +44,16 @@
         <table class="table table-btransported table-striped ">
           <!-- <tbody v-if="transportList.length > 0"> -->
           <tr>
-            <th>车牌号</th>
-            <th>司机</th>
-            <th>发货时间</th>
-            <th>线路</th>
             <th>运输单号</th>
+            <th>发货时间</th>
+            <th>运输内容</th>
             <th>状态</th>
             <th>操作</th>
           </tr>
           <tr v-for="(item, index) in transportList" :key="index">
-            <td>{{ item.car_no }}</td>
-            <td>{{ item.car_onwer }}</td>
+            <td>{{ item.transport_no }}</td>
             <td>{{ item.send_time }}</td>
             <td>{{ item.content }}</td>
-            <td>{{ item.transport_no }}</td>
             <td>{{ item.status | getStatus }}</td>
             <td>
               <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">详&nbsp;&nbsp;情</b-button>
@@ -102,14 +87,8 @@
       <div class="d-block text-center">
         <div class="row">
           <div class="col-lg-4 mb25">
-            <div class="lh44">车牌号：</div>
-            <b-form-input v-model="updateForm.car_no" :disabled="true" placeholder="车牌号"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">司机：</div>
-            <el-select class="marginBot" :disabled="true" style="height:40px !important" v-model="updateForm.car_onwer" filterable placeholder="请选择司机">
-              <el-option v-for="item in driverList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-            </el-select>
+            <div class="lh44">运输单号：</div>
+            <b-form-input v-model="updateForm.transport_no" :disabled="true" placeholder="车牌号"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">发货日期：</div>
@@ -129,33 +108,27 @@
             <b-form-input v-model="updateForm.content" :disabled="true" filterable placeholder="请输入运输线路" />
           </div>
           <div class="col-lg-4 mb25">
-            <div class="lh44">运输单号：</div>
-            <b-form-input v-model="updateForm.transport_no" :disabled="true" filterable placeholder="请输入运输线路" />
-          </div>
-          <div class="col-lg-4 mb25">
             <div class="lh44">状态：</div>
             <b-form-select v-model="updateForm.status" :disabled="is_update" :options="chooseStatus" filterable placeholder="请选择运输状态" />
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">实际金额：</div>
-            <b-form-input v-model="updateForm.r_pay" :disabled="true" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">扣除金额：</div>
-            <b-form-input v-model="updateForm.m_pay" :disabled="true" type="number"></b-form-input>
           </div>
           <br />
           <table class="table table-btransported table-striped ">
             <tbody>
               <tr>
+                <td>订单号</td>
                 <td>货物名称</td>
                 <td>线路</td>
                 <td>运输金额</td>
                 <td>状态</td>
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
+                <td><b-form-input :disabled="true" v-model="item.order_no"></b-form-input></td>
                 <td><b-form-input :disabled="true" v-model="item.goods_name"></b-form-input></td>
-                <td><b-form-input :disabled="true" v-model="item.content"></b-form-input></td>
+                <td>
+                  <el-select v-model="item.dly_way_id" placeholder="请选择线路" :disabled="true">
+                    <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"> </el-option>
+                  </el-select>
+                </td>
                 <td><b-form-input :disabled="true" v-model="item.price"></b-form-input></td>
                 <td>
                   <el-select class="marginBot" style="height:40px !important" v-model="item.status" :disabled="is_update" filterable placeholder="请选择状态">
@@ -274,6 +247,7 @@ export default {
     this.search();
     await this.getdly_wayList({ skip: 0, limit: 10000 });
     await this.getDriverList({ skip: 0, limit: 10000 });
+    await this.getCarList({ skip: 0, limit: 10000 });
   },
   methods: {
     ...mapActions([
@@ -285,6 +259,7 @@ export default {
       'transportEdit',
       'transportDelete',
       'getDriverList',
+      'getCarList',
     ]),
     //分页
     toSearch(currentPage) {
@@ -303,8 +278,8 @@ export default {
         transport_no: this.select_transport_no,
         car_no: this.select_car_no,
         driver_id: this.select_driver_id,
-        start_time: this.select_in_date.length > 0 ? this.select_in_date[0] : '',
-        end_time: this.select_in_date.length > 0 ? this.select_in_date[1] : '',
+        start_time: this.select_in_date === null ? '' : this.select_in_date.length > 0 ? this.select_in_date[0] : '',
+        end_time: this.select_in_date === null ? '' : this.select_in_date.length > 0 ? this.select_in_date[1] : '',
       });
       this.$set(this, 'totalRow', totalRow);
     },

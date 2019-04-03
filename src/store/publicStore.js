@@ -9,6 +9,8 @@ const api = {
   login: '/zhwl/user/login',
   deptList: '/zhwl/dept/dept_list?skip=0&limit=100',
   postList: '/zhwl/post/post_list?skip=0&limit=100',
+  //行政区划
+  region: '/zhwl/district/district_list', //params:pid
 };
 
 export const state = () => ({
@@ -54,7 +56,9 @@ export const actions = {
     } else if (payload !== undefined) {
       const { data } = payload;
       try {
-        let result = await this.$axios.post(api.login, { data: data });
+        let result = await this.$axios.post(api.login, {
+          data: data,
+        });
         if (result.rescode === '0') {
           sessionStorage.setItem('userInfo', JSON.stringify(result.user));
           sessionStorage.setItem('userRoleList', JSON.stringify(result.userRoleList));
@@ -78,10 +82,17 @@ export const actions = {
         let result = await this.$axios.get(_.get(api, type));
         if (result.rescode === '0') {
           let list = _.get(result, `${type}`).map(item => {
-            let newObject = { text: item.dept_name, value: item.id };
+            let newObject = {
+              text: item.dept_name,
+              value: item.id,
+            };
             return newObject;
           });
-          let defalut = { text: '请选择部门', value: null, disabled: true };
+          let defalut = {
+            text: '请选择部门',
+            value: null,
+            disabled: true,
+          };
           list.unshift(defalut);
           commit('setList', { type: type, data: list });
         } else {
@@ -90,6 +101,22 @@ export const actions = {
       } catch (error) {
         console.error(error);
       }
+    }
+  },
+  //省市字典表
+  async getRegion({ commit }, { pid }) {
+    try {
+      let result = await this.$axios.get(`${api.region}?pid=${pid}`);
+      if (result.rescode === '0') {
+        return {
+          data: result.districtList,
+        };
+      } else {
+        return { totalRow: 0, data: null };
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
+      console.error(err);
     }
   },
 };

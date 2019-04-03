@@ -62,6 +62,18 @@ export const BUSINESS = {
   name: '业务管理',
   menu: [
     {
+      name: '收/支项管理',
+      uri: '/business.html#/cost',
+    },
+    {
+      name: '收入单管理',
+      uri: '/business.html#/in_page',
+    },
+    {
+      name: '支出单管理',
+      uri: '/business.html#/out',
+    },
+    {
       name: '订单管理',
       uri: '/business.html#/order',
     },
@@ -74,12 +86,12 @@ export const BUSINESS = {
       uri: '/business.html#/dly_way',
     },
     {
-      name: '货物管理',
-      uri: '/business.html#/goods',
-    },
-    {
       name: '运输管理',
       uri: '/business.html#/transport',
+    },
+    {
+      name: '货物管理',
+      uri: '/business.html#/goods',
     },
   ],
 };
