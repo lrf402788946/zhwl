@@ -171,11 +171,11 @@
                     </div>
                     <div class="col-lg-2 mb25">
                       <div class="lh44">支出金额</div>
-                      <b-form-input v-model="item.out_price" :disabled="true"></b-form-input>
+                      <b-form-input v-model="item.out_price"></b-form-input>
                     </div>
                     <div class="col-lg-3 mb25">
                       <div class="lh44">备注</div>
-                      <b-form-input v-model="item.remark" :disabled="true"></b-form-input>
+                      <b-form-input v-model="item.remark"></b-form-input>
                     </div>
                     <div class="col-lg-1 mb25">
                       <el-button

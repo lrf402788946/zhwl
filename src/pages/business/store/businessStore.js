@@ -23,6 +23,7 @@ const api = {
   orderDelete: '/zhwl/order/order_delete', //params:id
   orderNum: '/zhwl/order/order_no', //query:cus_id
   orderSubSplit: '/zhwl/order/order_sub_split',
+  orderIncome: '/zhwl/in/in_save',
   //货物
   goodsList: '/zhwl/goods/goods_list',
   goodsSave: '/zhwl/goods/goods_save',
@@ -220,6 +221,23 @@ export const actions = {
     try {
       let result = await this.$axios.post(api.orderSubSplit, {
         data: subForm,
+      });
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      console.error(error);
+    }
+  },
+  //添加拆分的收入
+  async orderIncome({ commit }, { slipId, incomeForm }) {
+    try {
+      let result = await this.$axios.post(api.orderIncome, {
+        incomeForm,
+        slipId: slipId,
       });
       if (result.rescode === '0') {
         Message.success('操作成功');

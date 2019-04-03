@@ -9,44 +9,8 @@
           <div class="button-table"></div>
         </div>
       </div>
+      <!-- 展示界面 -->
       <div class="base-padding-20 base-bg-fff">
-        <div>
-          <div class="row" style="margin-bottom: 15px !important;">
-            <div class="col-lg-3 marginBot4">
-              <!-- <p class="marginBot4">订单单号查询:</p>
-              <b-form-input v-model="select_order_no" placeholder="输入订单单号"></b-form-input> -->
-            </div>
-            <div class="col-lg-3 marginBot4">
-              <!-- <p class="marginBot4">订单人查询:</p>
-              <el-select class="marginBot" style="height:40px !important" v-model="select_c_id" filterable placeholder="输入订单人">
-                <el-option value="" label="全部客户">全部客户</el-option>
-                <el-option v-for="(item, index) in clientList" :key="index" :label="item.name" :value="item.id"></el-option>
-              </el-select> -->
-            </div>
-            <div class="col-lg-4 marginBot4">
-              <!-- <p class="marginBot4">订单日期查询:</p>
-              <el-date-picker
-                style="width:100%; height: 34px !important; line-height: 34px !important;"
-                v-model="select_in_date"
-                value-format="yyyy-MM-dd"
-                format="yyyy-MM-dd"
-                type="daterange"
-                range-separator="-"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-              >
-              </el-date-picker> -->
-            </div>
-            <div class="col-lg-2 marginBot4">
-              <!-- <b-button
-                variant="primary"
-                style="font-size: 14px !important; color: rgb(255, 255, 255) !important; width: 60% !important; padding: 5px 10px !important; margin-top:28px; margin-right: 0px !important;"
-                @click="search('vague')"
-                >点击查询</b-button
-              > -->
-            </div>
-          </div>
-        </div>
         <table class="table table-bordered table-striped ">
           <tbody v-if="orderSubList.length > 0">
             <tr>
@@ -109,7 +73,7 @@
       </div>
     </div>
 
-    <!--添加弹框-->
+    <!--拆分弹框-->
     <b-modal id="addAlert" title="拆分订单" ref="addAlert" size="xl" hide-footer>
       <div class="d-block text-center">
         <div class="row">
@@ -142,25 +106,33 @@
                 <td>订单号</td>
                 <td>货物名称</td>
                 <td>线路</td>
+                <td>拆分业务号</td>
+                <td>发货日期</td>
                 <td>数量</td>
                 <td>体积</td>
                 <td>重量</td>
                 <td>操作</td>
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
-                <td><b-form-input v-model="item.order_no" :disabled="true"></b-form-input></td>
+                <td><b-form-input v-model="orderList.order_no" :disabled="true"></b-form-input></td>
                 <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
                 <td><b-form-input v-model="item.content" :disabled="true"></b-form-input></td>
-                <td v-if="item.showDel"><el-input-number :min="0" size="medium" v-model="item.goods_num"></el-input-number></td>
-                <td v-else-if="!item.showDel">{{ item.goods_num }}</td>
-                <td v-if="item.showDel"><el-input-number :min="0" size="medium" v-model="item.goods_volume"></el-input-number></td>
-                <td v-else-if="!item.showDel">{{ item.goods_volume }}</td>
-                <td v-if="item.showDel"><el-input-number :min="0" size="medium" v-model="item.goods_weight"></el-input-number></td>
-                <td v-else-if="!item.showDel">{{ item.goods_weight }}</td>
+                <td><b-form-input v-model="item.slip_no"></b-form-input></td>
+                <td>
+                  <el-date-picker v-model="item.send_time" type="date" placeholder="选择发货日期"></el-date-picker>
+                </td>
+                <td>
+                  <el-input-number @change="changeNum()" :min="0" :max="goods_num" size="medium" v-model="item.goods_num"></el-input-number>
+                </td>
+                <td>
+                  <el-input-number @change="changeNum()" :min="0" :max="goods_volume" size="medium" v-model="item.goods_volume"></el-input-number>
+                </td>
+                <td>
+                  <el-input-number @change="changeNum()" :min="0" :max="goods_weight" size="medium" v-model="item.goods_weight"></el-input-number>
+                </td>
                 <td>
                   <b-button
                     variant="danger"
-                    v-if="item.showDel"
                     :disabled="false"
                     @click="clearSubForm(index)"
                     class="resetButton"
@@ -194,37 +166,52 @@
         <div class="row">
           <table class="table table-bordered table-striped ">
             <tr>
-              <td>费用ID：</td>
+              <td>费用：</td>
+              <td>收入金额：</td>
+              <td>备注：</td>
+              <td>操作</td>
+            </tr>
+            <tr v-for="(item, index) in incomeForm" :key="index">
               <td>
-                <el-select class="marginBot" style="height:40px !important" v-model="incomeList.cost_id" filterable placeholder="输入订单人">
-                  <el-option v-for="(item, index) in costList" :key="index" :label="item.cost_name" :value="item.id"></el-option>
+                <el-select class="marginBot" style="height:26px !important" v-model="item.cost_id" filterable placeholder="输入费用名">
+                  <el-option v-for="(item1, index) in costList" :key="index" :label="item1.cost_name" :value="item1.id"></el-option>
                 </el-select>
               </td>
-            </tr>
-            <tr>
-              <td>收入金额：</td>
-              <td><b-form-input v-model="incomeList.in_price"></b-form-input></td>
-            </tr>
-            <tr>
-              <td>备注：</td>
-              <td><b-form-input v-model="incomeList.remark"></b-form-input></td>
+              <td><b-form-input v-model="item.in_price" placeholder="输入金额"></b-form-input></td>
+              <td><b-form-input v-model="item.remark" placeholder="备注"></b-form-input></td>
+              <td>
+                <b-button
+                  style="margin-top: 23px; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
+                  @click="deleteIncomeForm(index)"
+                  class="resetButton"
+                  variant="danger"
+                  >删&nbsp;&nbsp;除</b-button
+                >
+              </td>
             </tr>
           </table>
         </div>
       </div>
       <b-button
         variant="primary"
+        @click="addIncomeForm()"
+        class="resetButton"
+        style="font-size:16px !important; margin:10px 2% 20px 5% !important; background-color: #17a2b8 !important;  width:25% !important; padding:6px 0px !important;"
+        >添&nbsp;&nbsp;加</b-button
+      >
+      <b-button
+        variant="primary"
         @click="income()"
         class="resetButton"
-        style="font-size:16px !important; margin:25px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
+        style="font-size:16px !important; margin:10px 2% 20px 5% !important; background-color: #17a2b8 !important;  width:25% !important; padding:6px 0px !important;"
         >保&nbsp;&nbsp;存</b-button
       >
       <b-button
         variant="secondary"
         @click="closeIncomeAlert()"
         class="resetButton"
-        style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #ccc !important;  width:30% !important; padding:6px 80px !important;"
-        >返&nbsp;&nbsp;回</b-button
+        style="font-size:16px !important; margin:10px 2% 20px 5% !important; background-color: #cccccc !important;  width:25% !important; padding:6px 0px !important;"
+        >取&nbsp;&nbsp;消</b-button
       >
     </b-modal>
   </div>
@@ -234,6 +221,7 @@
 import { mapActions, mapState } from 'vuex';
 import Validator from 'async-validator';
 import _ from 'lodash';
+import { constants } from 'fs';
 //import exportExcel from '@/components/exportExcel.vue';
 export default {
   name: 'car_loading',
@@ -244,7 +232,7 @@ export default {
     return {
       list: [],
       subForm: [],
-      incomeList: {},
+      incomeForm: [],
       slipId: '',
       is_update: true,
       operateId: '',
@@ -263,6 +251,11 @@ export default {
       skip: 0,
       orderList: {},
       costList: [],
+      incomeFormContent: {},
+      goods_num: 0,
+      goods_volume: 0,
+      goods_weight: 0,
+      addOrRevise: 0, //0添加，1修改（收入方法区分）
     };
   },
   computed: {
@@ -292,17 +285,16 @@ export default {
       'getdly_wayList',
       'getTransportNo',
       'orderSubSplit',
+      'orderIncome',
     ]),
     //拆分
     addOrderSublist() {
       let newArray = {};
-      newArray.order_no = this.orderList.order_no;
-      newArray.goods_name = this.orderList.goods_name;
-      newArray.content = this.orderList.content;
-      newArray.goods_num = 0;
-      newArray.goods_weight = 0;
       this.subForm.splice(this.subForm.length, 0, newArray);
-      this.subForm[this.subForm.length - 1].showDel = true;
+      this.subForm[this.subForm.length - 1] = JSON.parse(JSON.stringify(this.orderList));
+      this.subForm[this.subForm.length - 1].goods_num = 0;
+      this.subForm[this.subForm.length - 1].goods_volume = 0;
+      this.subForm[this.subForm.length - 1].goods_weight = 0;
     },
     //分页
     toSearch(currentPage) {
@@ -328,6 +320,17 @@ export default {
           return this.handleErrors(errors, fields);
         }
         if (type === 'add') {
+          let num_sum = 0;
+          let volume_sum = 0;
+          let weight_sum = 0;
+          for (let index = 0; index < this.subForm.length; index++) {
+            num_sum += this.subForm[index].goods_num;
+            volume_sum += this.subForm[index].goods_volume;
+            weight_sum += this.subForm[index].goods_weight;
+          }
+          if ((this.goods_num < num_sum) | (this.goods_volume < volume_sum) | (this.goods_weight < weight_sum)) {
+            return this.$message.error('请重新核对数量！！！');
+          }
           return this.add();
         } else {
           return this.update();
@@ -338,11 +341,17 @@ export default {
     async add() {
       try {
         for (let index = 0; index < this.subForm.length; index++) {
-          this.subForm[index].status = '1';
-          if (index != 0) {
-            this.subForm[index].order_no = '';
-          }
+          delete this.subForm[index].order_no;
+          delete this.subForm[index].id;
+          delete this.subForm[index].wayname;
+          delete this.subForm[index].dly_way_id;
         }
+        this.subForm.splice(0, 0, this.orderList);
+        delete this.subForm[0].order_no;
+        // delete this.subForm[0].id;
+        delete this.subForm[0].wayname;
+        delete this.subForm[0].dly_way_id;
+        // console.log(this.subForm)
         await this.orderSubSplit({ form: this.form, subForm: this.subForm });
         this.$refs.addAlert.hide();
         this.subForm = [];
@@ -350,6 +359,27 @@ export default {
       } catch (error) {
         console.error('error in line 269');
       }
+    },
+    changeNum() {
+      let sum1 = 0;
+      let sum2 = 0;
+      let sum3 = 0;
+      for (let index = 0; index < this.subForm.length; index++) {
+        sum1 += this.subForm[index].goods_num;
+        sum2 += this.subForm[index].goods_volume;
+        sum3 += this.subForm[index].goods_weight;
+      }
+      this.orderList.goods_num = this.goods_num - sum1;
+      this.orderList.goods_volume = this.goods_volume - sum2;
+      this.orderList.goods_weight = this.goods_weight - sum3;
+    },
+    //添加收费项
+    addIncomeForm() {
+      this.incomeForm.push(JSON.parse(JSON.stringify(this.incomeFormContent)));
+    },
+    //删除收费项
+    deleteIncomeForm(i) {
+      this.incomeForm.splice(i, 1);
     },
     //打开添加的弹框
     async openAlert(index) {
@@ -359,42 +389,50 @@ export default {
         limit: 100000000,
       });
       this.$set(this, 'orderList', this.orderSubList[index]);
+      this.goods_num = this.orderList.goods_num;
+      this.goods_volume = this.orderList.goods_volume;
+      this.goods_weight = this.orderList.goods_weight;
       this.$refs.addAlert.show();
     },
     //打开收入的弹框
     async openIncomeAlert(slip_id) {
-      let result = await this.$axios.get(`/zhwl/zhwl_in/zhwl_in_list?slip_id=${slip_id}`);
+      // let result = await this.$axios.get(`/zhwl/zhwl_in/zhwl_in_list?slip_id=${slip_id}`);
       // if (result.rescode === '0') {
-      //   this.$set(this, 'incomeList', result.zhwl_in_list);
+      //   this.$set(this, 'incomeForm', result.zhwl_in_list);
+      //   this.addOrRevise = 1;
+      // } else {
+      //   this.incomeForm = [{}];
+      //   this.addOrRevise = 0;
       // }
+      this.incomeForm = [{}];
       this.slipId = slip_id;
       this.$refs.incomeAlert.show();
     },
     //获取cost费用名称字段
     async getCostList() {
-      let result = await this.$axios.get(`/zhwl/cost/cost_list?skip=0&limit=1000000`);
+      let result = await this.$axios.get(`/zhwl/cost/cost_list?skip=0&limit=1000000&cost_type=0`);
       if (result.rescode === '0') {
         this.$set(this, 'costList', result.clientPactList);
       }
     },
     //添加收入
     async income() {
-      this.incomeList.slip_id = this.slipId;
-      let result = await this.$axios.post('/zhwl/zhwl_in/zhwl_in_save', { data: this.incomeList });
-      if (result.data.rescode === '0') {
-        this.$message.success('修改' + result.data.msg);
-        this.closeIncomeAlert();
-        this.incomeList = {};
-        this.search();
+      // for (let index = 0; index < this.incomeForm.length; index++) {
+      //   this.incomeForm[index].slipId = this.slipId;
+      // }
+      if (this.addOrRevise === 1) {
+        //修改方法
+        await this.updateIncome({ slipId: this.slipId, incomeForm: this.incomeForm });
       } else {
-        this.$message.error(result.data.msg);
+        //保存方法
+        await this.orderIncome({ slipId: this.slipId, incomeForm: this.incomeForm });
       }
       this.slipId = '';
     },
     //关闭添加收入弹框
     closeIncomeAlert() {
       this.$refs.incomeAlert.hide();
-      this.incomeList = {};
+      this.incomeForm = [];
       this.search();
     },
     //获得运输单号
@@ -407,6 +445,7 @@ export default {
       if (type === 'update') {
         this.$refs.addAlert.hide();
       }
+      this.search();
       this.is_update = true;
       this.operateId = '';
       this.reset();
