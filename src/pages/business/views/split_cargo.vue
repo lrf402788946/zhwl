@@ -293,13 +293,11 @@ export default {
     ]),
     //拆分
     addOrderSublist() {
-      let newArray = {};
+      let newArray = JSON.parse(JSON.stringify(this.orderList));
+      newArray.goods_num = 0;
+      newArray.goods_volume = 0;
+      newArray.goods_weight = 0;
       this.subForm.splice(this.subForm.length, 0, newArray);
-      this.subForm[this.subForm.length - 1] = JSON.parse(JSON.stringify(this.orderList));
-      this.subForm[this.subForm.length - 1].goods_num = 0;
-      this.subForm[this.subForm.length - 1].goods_volume = 0;
-      this.subForm[this.subForm.length - 1].goods_weight = 0;
-      this.subForm[this.subForm.length - 1].send_time = '';
     },
     //分页
     toSearch(currentPage) {
