@@ -1,11 +1,11 @@
 <template lang="html">
-  <div id="sideMenu" style="height: 100vh; display: block; background: #1c2b36;overflow-y: scroll !important;">
+  <div id="sideMenu" style="height: 100vh; display: block; background: #1c2b36;overflow-y: scroll !important;" class="rowBar">
     <div class="base-main-left" id="menuBox">
-      <div class="base-sidebar-menu">
+      <!-- <div class="base-sidebar-menu">
         <span class="title">操作面板</span>
         <ul class="mainmenu">
           <span v-for="(item, index) in menu" :key="index">
-            <div @click="openMenuList(index)" class="tit"><i class="fa-stack fa fa-cogs"></i>{{ item.name }}</div>
+            <div :id="`menu` + index" @click="openMenuList(index)" class="tit"><i class="fa-stack fa fa-cogs"></i>{{ item.name }}</div>
             <b-collapse id="collapse" class="mainmenu" ref="collapse">
               <b-card style="background-color:#1c2b36;">
                 <b-list-group>
@@ -27,6 +27,34 @@
           Compyright © 2019-2020 <br />
           当前版本：1.0
         </div>
+      </div> -->
+      <el-col :span="24" style="margin-bottom: 70px;">
+        <span class="title">操作面板</span>
+        <el-menu
+          default-active="1"
+          class="el-menu-vertical-demo"
+          @open="handleOpen"
+          @close="handleClose"
+          background-color="#1c2b36"
+          text-color="#7ba0bb"
+          active-text-color="#ffd04b"
+          :unique-opened="true"
+        >
+          <el-submenu v-for="(item, index) in menu" :key="index" :index="index">
+            <template slot="title">
+              <i class="fa-stack fa fa-cogs"></i>
+              <span>{{ item.name }}</span>
+            </template>
+            <a v-for="(menu_item, menu_index) in item.menu" :key="menu_index" :href="menu_item.uri">
+              <el-menu-item :index="`${index}-${menu_index}`">{{ menu_item.name }}</el-menu-item>
+            </a>
+          </el-submenu>
+        </el-menu>
+      </el-col>
+      <div class="base-footer">
+        智慧物流管理平台 <br />
+        Compyright © 2019-2020 <br />
+        当前版本：1.0
       </div>
     </div>
   </div>
@@ -172,6 +200,9 @@ a:hover{
 .list-group-item:hover{
   border-left: solid 6px #325671 !important;
 	color:#fff !important;
+}
+.rowBar::-webkit-scrollbar{
+  display: none;
 }
 </style>
 
