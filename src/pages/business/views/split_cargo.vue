@@ -299,6 +299,7 @@ export default {
       this.subForm[this.subForm.length - 1].goods_num = 0;
       this.subForm[this.subForm.length - 1].goods_volume = 0;
       this.subForm[this.subForm.length - 1].goods_weight = 0;
+      this.subForm[this.subForm.length - 1].send_time = '';
     },
     //分页
     toSearch(currentPage) {
@@ -380,6 +381,7 @@ export default {
     //添加收费项
     addIncomeForm() {
       this.isShow = false;
+      this.send_time = '';
       this.incomeForm.push(JSON.parse(JSON.stringify(this.incomeFormContent)));
     },
     //删除收费项
