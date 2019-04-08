@@ -78,6 +78,10 @@ export const BUSINESS = {
       uri: '/business.html#/order',
     },
     {
+      name: '拆分管理',
+      uri: '/business.html#/split_cargo',
+    },
+    {
       name: '装车',
       uri: '/business.html#/car_loading',
     },
