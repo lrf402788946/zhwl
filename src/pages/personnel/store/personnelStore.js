@@ -414,6 +414,7 @@ export const actions = {
       });
       if (result.rescode === '0') {
         commit(types.STAFF_LIST, result.staffList);
+        Message.success('操作成功');
         return result.totalRow;
       }
     } catch (err) {

@@ -315,7 +315,7 @@ export default {
         drive_card: { type: 'string', required: true, message: '请填写驾驶证号' },
         fhc_time: { type: 'string', required: true, message: '请填写初次领证时间' },
         car_type: { type: 'string', required: true, message: '请填写准驾车型' },
-        ccu_time: { type: 'string', required: true, message: '请选择驾驶证有效日期' },
+        ccu_time: { required: true, message: '请选择驾驶证有效日期' },
         cc_time: { type: 'string', required: true, message: '请选择驾驶证年检日期' },
         qc_time: { type: 'string', required: true, message: '请选择资格证年检日期' },
       }),
@@ -405,7 +405,6 @@ export default {
     },
     //修改
     async update() {
-      this.updateForm.ccu_time = this.updateForm.ccu_time[0] + '至' + this.updateForm.ccu_time[1];
       await this.driverOperation({ type: 'update', data: this.updateForm });
       this.updateForm = {};
       this.$refs.updateAlert.hide();
@@ -446,8 +445,8 @@ export default {
     openAlert(type, id) {
       if (type === 'update') {
         this.$refs.updateAlert.show();
-        this.timeValue[0] = this.list[id].ccu_time.substring(0, 10);
-        this.timeValue[1] = this.list[id].ccu_time.substring(11, 22);
+        this.timeValue[0] = JSON.parse(JSON.stringify(this.list[id].ccu_time.substring(0, 10)));
+        this.timeValue[1] = JSON.parse(JSON.stringify(this.list[id].ccu_time.substring(11, 22)));
         this.updateForm = JSON.parse(JSON.stringify(this.list[id]));
         this.updateForm.ccu_time = this.timeValue;
       } else if (type === 'delete') {
@@ -473,7 +472,7 @@ export default {
         } else if (this.timeValues === null) {
           this.form.ccu_time = null;
         } else {
-          let date = this.timeValues[0] + '至' + this.timeValues[1];
+          let date = this.timeValues[0] + '-' + this.timeValues[1];
           this.form.ccu_time = date;
         }
         this.lzValidator.validate(this.form, (errors, fields) => {
@@ -483,6 +482,7 @@ export default {
           return this.add();
         });
       } else {
+        this.updateForm.ccu_time = this.updateForm.ccu_time[0] + '-' + this.updateForm.ccu_time[1];
         this.lzValidator.validate(this.updateForm, (errors, fields) => {
           if (errors) {
             return this.handleErrors(errors, fields);

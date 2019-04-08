@@ -90,8 +90,8 @@
     </div>
     <b-modal id="toAdd" title="添加客户" ref="toAdd" hide-footer>
       <div style="margin-bottom: 7px;">所属人:</div>
-      <el-select class="marginBot" style="height:40px !important" v-model="form.s_id" filterable placeholder="请选择所属员工">
-        <el-option v-for="(staff, index) in staffList" :key="index" :label="staff.name" :value="staff.id"></el-option>
+      <el-select class="marginBot" style="height:40px !important" v-model="form.login_id" filterable placeholder="请选择所属员工">
+        <el-option v-for="(user, index) in userList" :key="index" :label="user.user_name" :value="user.login_id"></el-option>
       </el-select>
       <div style="margin-bottom: 7px;">客户名称:</div>
       <b-form-input v-model="form.name"></b-form-input>
@@ -99,6 +99,8 @@
       <b-form-input v-model="form.address"></b-form-input>
       <div style="margin-bottom: 7px;">法人:</div>
       <b-form-input v-model="form.legal_person"></b-form-input>
+      <div style="margin-bottom: 7px;">联系电话:</div>
+      <b-form-input v-model="form.tel"></b-form-input>
       <div style="margin-bottom: 7px;">开户行:</div>
       <b-form-input v-model="form.bank"></b-form-input>
       <div style="margin-bottom: 7px;">银行账号:</div>
@@ -147,8 +149,8 @@
         <div class="row">
           <div class="col-lg-12 marginBot4">
             <p class="marginBot4">所属人</p>
-            <el-select class="marginBot" style="height:40px !important" v-model="updateForm.s_id" filterable placeholder="请选择所属员工">
-              <el-option v-for="(staff, index) in staffList" :key="index" :label="staff.name" :value="staff.id"></el-option>
+            <el-select class="marginBot" style="height:40px !important" v-model="updateForm.login_id" filterable placeholder="请选择所属员工">
+              <el-option v-for="(user, index) in userList" :key="index" :label="user.user_name" :value="user.login_id"></el-option>
             </el-select>
           </div>
           <div class="col-lg-12 marginBot4">
@@ -162,6 +164,10 @@
           <div class="col-lg-12 marginBot4">
             <p class="marginBot4">法人</p>
             <b-form-input v-model="updateForm.legal_person"></b-form-input>
+          </div>
+          <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">联系电话</p>
+            <b-form-input v-model="updateForm.tel"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
             <p class="marginBot4">开户行</p>
@@ -245,12 +251,12 @@ export default {
     ...mapState({
       limit: state => state.publics.limit,
       clientList: state => state.self.clientList,
-      staffList: state => state.self.staffList,
+      userList: state => state.system.userList,
     }),
   },
   async created() {
     this.search();
-    await this.getStaffList({ skip: 0, limit: 10000 });
+    await this.getUserList({ skip: 0, limit: 10000 });
   },
   watch: {
     is_title_search: {
@@ -265,7 +271,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['getClientList', 'getClientListLike', 'addClientlist', 'clientOperation', 'getStaffList']),
+    ...mapActions(['getClientList', 'getClientListLike', 'addClientlist', 'clientOperation', 'getUserList']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;

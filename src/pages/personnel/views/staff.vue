@@ -62,7 +62,7 @@
               <th>身份证号</th>
               <th>部门</th>
               <th>岗位</th>
-              <th>在职状态:0 在职;1 离职;2 退休</th>
+              <th>在职状态</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
@@ -122,11 +122,11 @@
       ></el-date-picker>
       <div style="margin-bottom: 7px;">身份证号:</div>
       <b-form-input v-model="form.id_number"></b-form-input>
-      <div style="margin-bottom: 7px;">部门 id:</div>
+      <div style="margin-bottom: 7px;">部门:</div>
       <b-form-select v-model="form.dept_id" :options="deptList" class="marginBot" />
-      <div style="margin-bottom: 7px;">岗位 id:</div>
+      <div style="margin-bottom: 7px;">岗位:</div>
       <b-form-select v-model="form.post_id" placeholder="岗位" :options="postList" class="marginBot" />
-      <div style="margin-bottom: 7px;">在职状态:0 在职;1 离职;2 退休:</div>
+      <div style="margin-bottom: 7px;">在职状态:</div>
       <b-form-select v-model="form.status" :options="status" class="marginBot" />
       <b-button
         variant="secondary"
@@ -204,15 +204,15 @@
             <b-form-input v-model="updateForm.id_number"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">部门 id</p>
+            <p class="marginBot4">部门</p>
             <b-form-select v-model="updateForm.dept_id" :options="deptList" class="marginBot" />
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">岗位 id</p>
+            <p class="marginBot4">岗位</p>
             <b-form-select v-model="updateForm.post_id" placeholder="岗位" :options="postList" class="marginBot" />
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">在职状态:0 在职;1 离职;2 退休</p>
+            <p class="marginBot4">在职状态</p>
             <b-form-select v-model="updateForm.status" :options="status" class="marginBot" />
           </div>
           <div class="col-lg-12 marginBot4">

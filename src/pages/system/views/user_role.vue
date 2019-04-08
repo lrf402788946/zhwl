@@ -121,6 +121,10 @@ export default {
     },
     //修改
     async toSave() {
+      if (!this.form.role_id.length > 0) {
+        this.$message.error('请最少添加一个身份权限');
+        return false;
+      }
       this.form['id'] = this.operateId;
       this.updateUserRoleList({ data: this.form });
       this.form = {};
