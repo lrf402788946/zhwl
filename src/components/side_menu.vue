@@ -30,17 +30,8 @@
       </div> -->
       <el-col :span="24" style="margin-bottom: 70px;">
         <span class="title">操作面板</span>
-        <el-menu
-          default-active="1"
-          class="el-menu-vertical-demo"
-          @open="handleOpen"
-          @close="handleClose"
-          background-color="#1c2b36"
-          text-color="#7ba0bb"
-          active-text-color="#ffd04b"
-          :unique-opened="true"
-        >
-          <el-submenu v-for="(item, index) in menu" :key="index" :index="index">
+        <el-menu class="el-menu-vertical-demo" background-color="#1c2b36" text-color="#7ba0bb" active-text-color="#ffd04b" :unique-opened="true">
+          <el-submenu v-for="(item, index) in menu" :key="index" :index="`${index}`">
             <template slot="title">
               <i class="fa-stack fa fa-cogs"></i>
               <span>{{ item.name }}</span>
