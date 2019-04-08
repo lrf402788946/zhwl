@@ -14,7 +14,7 @@
             <td>收入单查询</td>
           </tr>
           <tr>
-            <td><b-form-input v-model="select_main_id" placeholder="输入运输单号"></b-form-input></td>
+            <td><b-form-input v-model="select_order_no" placeholder="输入运输单号"></b-form-input></td>
           </tr>
           <tr>
             <td>
@@ -27,22 +27,6 @@
             </td>
           </tr>
         </table>
-
-        <b-button v-b-modal.modal-multi-1>Open First Modal</b-button>
-
-        <b-modal id="modal-multi-1" size="lg" title="First Modal" ok-only no-stacking>
-          <p class="my-2">First Modal</p>
-          <b-button v-b-modal.modal-multi-2>Open Second Modal</b-button>
-        </b-modal>
-
-        <b-modal id="modal-multi-2" title="Second Modal" ok-only>
-          <p class="my-2">Second Modal</p>
-          <b-button v-b-modal.modal-multi-3 size="sm">Open Third Modal</b-button>
-        </b-modal>
-
-        <b-modal id="modal-multi-3" size="sm" title="Third Modal" ok-only>
-          <p class="my-1">Third Modal</p>
-        </b-modal>
 
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
@@ -57,7 +41,7 @@
               <td>{{ { data: costList, searchItem: 'id', value: item.cost_id, label: 'cost_name' } | getName }}</td>
               <td>{{ item.in_price }}</td>
               <td>
-                <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">修&nbsp;&nbsp;改</b-button>
+                <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index, item.slip_id)">修&nbsp;&nbsp;改</b-button>
                 <b-button variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
               </td>
             </tr>
@@ -145,14 +129,15 @@ export default {
       countNum: 0,
       totalRow: 0,
       deleteItem: '',
-      select_main_id: '',
+      select_order_no: '',
       roleValidator: new Validator({
-        car_id: [{ required: true, message: '请选择供应商' }],
-        driver_id: { required: true, message: '请选择司机' },
-        dly_way_id: { required: true, message: '请选择线路' },
-        cost_id: { required: true, message: '请选择支出项' },
-        out_price: { required: true, message: '请填写支出金额' },
+        // car_id: [{ required: true, message: '请选择供应商' }],
+        // driver_id: { required: true, message: '请选择司机' },
+        // dly_way_id: { required: true, message: '请选择线路' },
+        // cost_id: { required: true, message: '请选择支出项' },
+        // out_price: { required: true, message: '请填写支出金额' },
       }),
+      slipId: '',
     };
   },
   computed: {
@@ -174,7 +159,7 @@ export default {
     (data = data.filter(item => item.cost_type !== '1')), this.$set(this, 'costList', data);
   },
   methods: {
-    ...mapActions(['getInList', 'getDriverList', 'getdly_wayList', 'getCarList', 'getCostList', 'inOperation']),
+    ...mapActions(['getInList', 'getDriverList', 'getdly_wayList', 'getCarList', 'getCostList', 'inOperation', 'updateIncome']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -186,7 +171,7 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let { totalRow, data } = await this.getInList({ skip: skip, limit: this.limit, main_id: this.select_main_id });
+      let { totalRow, data } = await this.getInList({ skip: skip, limit: this.limit, order_no: this.select_order_no });
       this.$set(this, 'totalRow', totalRow);
       if (totalRow == 0) {
         this.$set(this, 'list', {});
@@ -214,21 +199,24 @@ export default {
     },
     //删除
     async toDelete() {
-      await this.inOperation({ type: 'inDelete', data: this.deleteItem });
+      await this.$axios.get(`/zhwl/in/in_delete?id=${this.deleteItem}`);
       this.search();
       this.deleteItem = '';
       this.$refs.deleteAlert.hide();
     },
     //打开修改提示框
-    openUpdateAlert(index) {
+    openUpdateAlert(index, slip_id) {
       this.$refs.Edit.show();
       this.form = JSON.parse(JSON.stringify(this.list[index]));
-      console.log(Object.keys(this.form));
+      this.slipId = slip_id;
     },
     //修改
     async update() {
-      await this.inOperation({ type: 'inEdit', data: this.form });
+      let form1 = [];
+      form1[0] = this.form;
+      await this.updateIncome({ slipId: this.slipId, data: form1 });
       this.form = {};
+      this.slipId = '';
       this.$refs.Edit.hide();
       this.search();
     },

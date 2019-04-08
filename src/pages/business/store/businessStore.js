@@ -24,6 +24,7 @@ const api = {
   orderNum: '/zhwl/order/order_no', //query:cus_id
   orderSubSplit: '/zhwl/order/order_sub_split',
   orderIncome: '/zhwl/in/in_save',
+  updateIncome: '/zhwl/in/in_edit',
   //货物
   goodsList: '/zhwl/goods/goods_list',
   goodsSave: '/zhwl/goods/goods_save',
@@ -243,11 +244,28 @@ export const actions = {
     }
   },
   //添加拆分的收入
-  async orderIncome({ commit }, { slipId, incomeForm }) {
+  async orderIncome({ commit }, { slipId, data }) {
     try {
       let result = await this.$axios.post(api.orderIncome, {
-        incomeForm,
-        slipId: slipId,
+        data,
+        slip_id: slipId,
+      });
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      console.error(error);
+    }
+  },
+  //修改拆分的收入
+  async updateIncome({ commit }, { slipId, data }) {
+    try {
+      let result = await this.$axios.post(api.updateIncome, {
+        data,
+        slip_id: slipId,
       });
       if (result.rescode === '0') {
         Message.success('操作成功');
@@ -592,13 +610,19 @@ export const actions = {
     }
   },
   //收入单列表
-  async getInList({ commit }, { skip, limit, main_id }) {
+  async getInList({ commit }, { skip, limit, slip_id, order_no }) {
     try {
-      let result = await this.$axios.get(`${api.inList}?skip=${skip}&limit=${limit}&transport_main_id=${main_id}`);
+      if (slip_id === undefined) {
+        slip_id = '';
+      }
+      if (order_no === undefined) {
+        order_no = '';
+      }
+      let result = await this.$axios.get(`${api.inList}?skip=${skip}&limit=${limit}&slip_id=${slip_id}&order_no=${order_no}`);
       if (result.rescode === '0') {
         return {
           totalRow: result.totalRow,
-          data: result.outList,
+          data: result.inList,
         };
       } else {
         return { totalRow: 0, data: null };

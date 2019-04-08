@@ -46,7 +46,7 @@
                   data-toggle="tooltip"
                   title=""
                   role="button"
-                  @click="openIncomeAlert(item.id)"
+                  @click="openIncomeAlert(index, item.id)"
                 >
                   <i class="base-margin-right-5 fa"></i>添加/修改收入
                 </a>
@@ -81,12 +81,12 @@
           <table class="table table-bordered table-striped ">
             <tbody>
               <tr>
-                <td>订单号</td>
-                <td>货物名称</td>
-                <td>线路</td>
-                <td>数量</td>
-                <td>体积</td>
-                <td>重量</td>
+                <td style="width:15%">订单号</td>
+                <td style="width:10%">货物名称</td>
+                <td style="width:10%">线路</td>
+                <td style="width:10%">数量</td>
+                <td style="width:10%">体积</td>
+                <td style="width:10%">重量</td>
               </tr>
               <tr>
                 <td>{{ orderList.order_no }}</td>
@@ -103,10 +103,7 @@
           <table class="table table-bordered table-striped ">
             <tbody>
               <tr>
-                <td>订单号</td>
-                <td>货物名称</td>
-                <td>线路</td>
-                <td>拆分业务号</td>
+                <td style="width:20%">拆分业务号</td>
                 <td>发货日期</td>
                 <td>数量</td>
                 <td>体积</td>
@@ -114,21 +111,20 @@
                 <td>操作</td>
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
-                <td><b-form-input v-model="orderList.order_no" :disabled="true"></b-form-input></td>
-                <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
-                <td><b-form-input v-model="item.content" :disabled="true"></b-form-input></td>
+                <td v-if="false"><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
+                <td v-if="false"><b-form-input v-model="item.content" :disabled="true"></b-form-input></td>
                 <td><b-form-input v-model="item.slip_no"></b-form-input></td>
                 <td>
-                  <el-date-picker v-model="item.send_time" type="date" placeholder="选择发货日期"></el-date-picker>
+                  <el-date-picker v-model="item.send_time" size="large" type="date" placeholder="选择发货日期"></el-date-picker>
                 </td>
                 <td>
-                  <el-input-number @change="changeNum()" :min="0" :max="goods_num" size="medium" v-model="item.goods_num"></el-input-number>
+                  <el-input-number @change="changeNum()" :min="0" :max="goods_num" size="small" v-model="item.goods_num"></el-input-number>
                 </td>
                 <td>
-                  <el-input-number @change="changeNum()" :min="0" :max="goods_volume" size="medium" v-model="item.goods_volume"></el-input-number>
+                  <el-input-number @change="changeNum()" :min="0" :max="goods_volume" size="small" v-model="item.goods_volume"></el-input-number>
                 </td>
                 <td>
-                  <el-input-number @change="changeNum()" :min="0" :max="goods_weight" size="medium" v-model="item.goods_weight"></el-input-number>
+                  <el-input-number @change="changeNum()" :min="0" :max="goods_weight" size="small" v-model="item.goods_weight"></el-input-number>
                 </td>
                 <td>
                   <b-button
@@ -173,7 +169,14 @@
             </tr>
             <tr v-for="(item, index) in incomeForm" :key="index">
               <td>
-                <el-select class="marginBot" style="height:26px !important" v-model="item.cost_id" filterable placeholder="输入费用名">
+                <el-select
+                  @change="chooseFreight(item.cost_id, index)"
+                  class="marginBot"
+                  style="height:26px !important"
+                  v-model="item.cost_id"
+                  filterable
+                  placeholder="输入费用名"
+                >
                   <el-option v-for="(item1, index) in costList" :key="index" :label="item1.cost_name" :value="item1.id"></el-option>
                 </el-select>
               </td>
@@ -181,7 +184,7 @@
               <td><b-form-input v-model="item.remark" placeholder="备注"></b-form-input></td>
               <td>
                 <b-button
-                  style="margin-top: 23px; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
+                  style="margin-top: 5%; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
                   @click="deleteIncomeForm(index)"
                   class="resetButton"
                   variant="danger"
@@ -256,6 +259,9 @@ export default {
       goods_volume: 0,
       goods_weight: 0,
       addOrRevise: 0, //0添加，1修改（收入方法区分）
+      freight: '',
+      isShow: false,
+      deleteList: [],
     };
   },
   computed: {
@@ -269,9 +275,6 @@ export default {
     }),
   },
   async created() {
-    await this.getCarList({ skip: 0, limit: 10000 });
-    await this.getdly_wayList({ skip: 0, limit: 10000 });
-    await this.getDriverList({ skip: 0, limit: 10000 });
     this.search();
     this.getCostList();
   },
@@ -286,6 +289,7 @@ export default {
       'getTransportNo',
       'orderSubSplit',
       'orderIncome',
+      'updateIncome',
     ]),
     //拆分
     addOrderSublist() {
@@ -375,13 +379,19 @@ export default {
     },
     //添加收费项
     addIncomeForm() {
+      this.isShow = false;
       this.incomeForm.push(JSON.parse(JSON.stringify(this.incomeFormContent)));
     },
     //删除收费项
-    deleteIncomeForm(i) {
-      this.incomeForm.splice(i, 1);
+    async deleteIncomeForm(i) {
+      if (this.incomeForm[i].id === undefined) {
+        this.incomeForm.splice(i, 1);
+      } else {
+        this.deleteList.push(this.incomeForm[i].id);
+        this.incomeForm.splice(i, 1);
+      }
     },
-    //打开添加的弹框
+    //打开拆分的弹框
     async openAlert(index) {
       this.subForm = [];
       await this.transportOrderSubList({
@@ -395,44 +405,65 @@ export default {
       this.$refs.addAlert.show();
     },
     //打开收入的弹框
-    async openIncomeAlert(slip_id) {
-      // let result = await this.$axios.get(`/zhwl/zhwl_in/zhwl_in_list?slip_id=${slip_id}`);
-      // if (result.rescode === '0') {
-      //   this.$set(this, 'incomeForm', result.zhwl_in_list);
-      //   this.addOrRevise = 1;
-      // } else {
-      //   this.incomeForm = [{}];
-      //   this.addOrRevise = 0;
-      // }
-      this.incomeForm = [{}];
+    async openIncomeAlert(index, slip_id) {
+      let result = await this.$axios.get(`/zhwl/in/in_list?skip=0&limit=1000&slip_id=${slip_id}&order_no=`);
+      let result1 = await this.$axios.get(`/zhwl/clientpact/client_pact_list?skip=0&limit=100000&cus_id=this.orderSubList[index].cus_id`);
+      if (result.rescode === '0') {
+        this.$set(this, 'incomeForm', result.inList);
+        this.addOrRevise = 1;
+      } else {
+        this.incomeForm = [{}];
+        this.addOrRevise = 0;
+        if (result1.totalRow === 1) {
+          this.freight = result1.clientPactList[0].price * this.orderSubList[index].goods_num;
+        } else {
+          this.freight = 0;
+        }
+      }
       this.slipId = slip_id;
       this.$refs.incomeAlert.show();
+    },
+    chooseFreight(cost_id, index) {
+      if (cost_id == 5) {
+        this.incomeForm[index].in_price = this.freight;
+      }
     },
     //获取cost费用名称字段
     async getCostList() {
       let result = await this.$axios.get(`/zhwl/cost/cost_list?skip=0&limit=1000000&cost_type=0`);
       if (result.rescode === '0') {
         this.$set(this, 'costList', result.clientPactList);
+        for (let index = 0; index < result.totalRow; index++) {
+          if (this.costList[index].cost_type === '1') {
+            this.costList.splice(index, 1);
+          }
+        }
       }
     },
     //添加收入
     async income() {
-      // for (let index = 0; index < this.incomeForm.length; index++) {
-      //   this.incomeForm[index].slipId = this.slipId;
-      // }
+      let result = '';
+      for (let index = 0; index < this.deleteList.length; index++) {
+        await this.$axios.get(`/zhwl/in/in_delete?id=${this.deleteList[index]}`);
+      }
       if (this.addOrRevise === 1) {
         //修改方法
-        await this.updateIncome({ slipId: this.slipId, incomeForm: this.incomeForm });
+        result = await this.updateIncome({ slipId: this.slipId, data: this.incomeForm });
+        this.slipId = '';
+        this.closeIncomeAlert();
       } else {
         //保存方法
-        await this.orderIncome({ slipId: this.slipId, incomeForm: this.incomeForm });
+        result = await this.orderIncome({ slipId: this.slipId, data: this.incomeForm });
+        this.slipId = '';
+        this.closeIncomeAlert();
       }
-      this.slipId = '';
     },
     //关闭添加收入弹框
     closeIncomeAlert() {
       this.$refs.incomeAlert.hide();
       this.incomeForm = [];
+      this.isShow = false;
+      this.deleteList = [];
       this.search();
     },
     //获得运输单号
