@@ -195,6 +195,12 @@ a:hover{
 .rowBar::-webkit-scrollbar{
   display: none;
 }
+.el-submenu__title{
+  width: 240px;
+}
+.el-submenu .el-menu-item{
+  width: 240px;
+}
 </style>
 
 <style scoped>
