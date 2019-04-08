@@ -399,9 +399,9 @@ export default {
         limit: 100000000,
       });
       this.$set(this, 'orderList', this.orderSubList[index]);
-      this.goods_num = this.orderList.goods_num;
-      this.goods_volume = this.orderList.goods_volume;
-      this.goods_weight = this.orderList.goods_weight;
+      this.goods_num = this.orderList.goods_num * 1;
+      this.goods_volume = this.orderList.goods_volume * 1;
+      this.goods_weight = this.orderList.goods_weight * 1;
       this.$refs.addAlert.show();
     },
     //打开收入的弹框
