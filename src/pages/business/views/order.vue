@@ -101,7 +101,7 @@
     </div>
 
     <!--添加弹框-->
-    <b-modal id="addAlert" title="新添订单" ref="addAlert" size="xl" hide-footer>
+    <el-dialog title="新添订单" :visible.sync="dialogAdd" :fullscreen="true">
       <div class="d-block text-center">
         <div class="row">
           <!--line1-->
@@ -181,56 +181,67 @@
             <b-form-input v-model="form.r_pay" type="number"></b-form-input>
           </div>
           <br />
-          <table class="table table-bordered table-striped ">
-            <tbody>
-              <tr>
-                <td>产品名称</td>
-                <td>数量</td>
-                <td>发货数量</td>
-                <td colspan="3">包装数量</td>
-                <td>重量</td>
-                <td>体积</td>
-                <td>线路</td>
-                <td>运输金额</td>
-                <td>操作</td>
-              </tr>
-              <tr v-for="(item, index) in subForm" :key="index">
-                <td><b-form-input v-model="item.goods_name"></b-form-input></td>
-                <td><b-form-input v-model="item.goods_num" type="number"></b-form-input></td>
-                <td><b-form-input v-model="item.sent_num" type="number"></b-form-input></td>
-                <!--拼起来-->
-                <td>桶装:<b-form-input v-model="item.tong_num" type="number"></b-form-input></td>
-                <td>箱装数<b-form-input v-model="item.xiang_num" type="number"></b-form-input></td>
-                <td>托装数<b-form-input v-model="item.tuo_num" type="number"></b-form-input></td>
-
-                <td><b-form-input v-model="item.goods_weight" type="number"></b-form-input></td>
-                <td><b-form-input v-model="item.goods_volume" type="number"></b-form-input></td>
-                <td>
-                  <el-select class="marginBot" style="height:40px !important" v-model="item.dly_way_id" filterable placeholder="请选择物流方式">
-                    <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"></el-option>
-                  </el-select>
-                </td>
-                <td><b-form-input v-model="item.price" type="number"></b-form-input></td>
-                <td>
-                  <b-button
-                    variant="danger"
-                    @click="closeSubForm(index)"
-                    class="resetButton"
-                    style="margin-top: 23px; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
-                    >删&nbsp;&nbsp;除</b-button
-                  >
-                </td>
-              </tr>
-            </tbody>
-          </table>
         </div>
+        <el-tabs v-model="tabs" type="card">
+          <el-tab-pane v-for="(item, index) in subForm" :key="index" :label="`货物${index + 1}`" :name="`${index}`">
+            <div class="row">
+              <div class="col-lg-12 mb25" style="text-align: right;">
+                <el-button type="danger" icon="el-icon-delete" circle @click="closeSubForm(index)"></el-button>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">产品名称:</div>
+                <b-form-input v-model="item.goods_name"></b-form-input>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">数量:</div>
+                <b-form-input v-model="item.goods_num" type="number"></b-form-input>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">发货数量:</div>
+                <b-form-input v-model="item.sent_num" type="number"></b-form-input>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">运输金额:</div>
+                <b-form-input v-model="item.price" type="number"></b-form-input>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">桶装:</div>
+                <b-form-input v-model="item.tong_num" type="number"></b-form-input>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">箱装数:</div>
+                <b-form-input v-model="item.xiang_num" type="number"></b-form-input>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">托装数:</div>
+                <b-form-input v-model="item.tuo_num" type="number"></b-form-input>
+              </div>
+
+              <div class="col-lg-3 mb25">
+                <div class="lh44">重量:</div>
+                <b-form-input v-model="item.goods_weight" type="number"></b-form-input>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">体积:</div>
+                <b-form-input v-model="item.goods_volume" type="number"></b-form-input>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">线路:</div>
+                <b-form-select v-model="item.dly_way_id" class="marginBot" style="height:40px !important">
+                  <option :value="undefined" disabled>请选择线路</option>
+                  <option v-for="(item, index) in dlyWayList" :key="index" :value="item.id">{{ item.name }}</option>
+                </b-form-select>
+              </div>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
       </div>
       <b-button
         variant="primary"
         @click="addSubForm('add')"
         class="resetButton"
         style="font-size:16px !important; margin-top:25px; width:30% !important; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-        >添&nbsp;&nbsp;加</b-button
+        >添加商品</b-button
       >
       <b-button
         variant="primary"
@@ -246,7 +257,7 @@
         style="font-size:16px !important; margin-top:25px; margin-bottom:30px !important; width:30% !important; margin-right: 0 !important; padding:6px 80px !important;"
         >重&nbsp;&nbsp;置</b-button
       >
-    </b-modal>
+    </el-dialog>
 
     <!--详情-->
     <b-modal id="updateAlert" title="订单详情" ref="updateAlert" size="xl" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
@@ -341,48 +352,59 @@
             <b-form-select v-model="updateForm.status" :disabled="true" :options="chooseStatus" filterable />
           </div>
           <br />
-          <table class="table table-bordered table-striped ">
-            <tbody>
-              <tr>
-                <td>产品名称</td>
-                <td>数量</td>
-                <td>发货数量</td>
-                <td colspan="3">包装数量</td>
-                <td>重量</td>
-                <td>体积</td>
-                <td>线路</td>
-                <td>运输金额</td>
-                <td>操作</td>
-              </tr>
-              <tr v-for="(item, index) in subForm" :key="index">
-                <td><b-form-input v-model="item.goods_name"></b-form-input></td>
-                <td><b-form-input v-model="item.goods_num" type="number"></b-form-input></td>
-                <td><b-form-input v-model="item.sent_num" type="number"></b-form-input></td>
-                <!--拼起来-->
-                <td>桶装:<b-form-input v-model="item.tong_num" type="number"></b-form-input></td>
-                <td>箱装数<b-form-input v-model="item.xiang_num" type="number"></b-form-input></td>
-                <td>托装数<b-form-input v-model="item.tuo_num" type="number"></b-form-input></td>
+          <el-tabs v-model="tabs" type="card">
+            <el-tab-pane v-for="(item, index) in subForm" :key="index" :label="`货物${index + 1}`" :name="`${index}`">
+              <div class="row">
+                <div class="col-lg-12 mb25" style="text-align: right;">
+                  <el-button type="danger" icon="el-icon-delete" circle @click="closeSubForm(index)"></el-button>
+                </div>
+                <div class="col-lg-3 mb25">
+                  <div class="lh44">产品名称:</div>
+                  <b-form-input v-model="item.goods_name"></b-form-input>
+                </div>
+                <div class="col-lg-3 mb25">
+                  <div class="lh44">数量:</div>
+                  <b-form-input v-model="item.goods_num" type="number"></b-form-input>
+                </div>
+                <div class="col-lg-3 mb25">
+                  <div class="lh44">发货数量:</div>
+                  <b-form-input v-model="item.sent_num" type="number"></b-form-input>
+                </div>
+                <div class="col-lg-3 mb25">
+                  <div class="lh44">桶装:</div>
+                  <b-form-input v-model="item.tong_num" type="number"></b-form-input>
+                </div>
+                <div class="col-lg-3 mb25">
+                  <div class="lh44">箱装数:</div>
+                  <b-form-input v-model="item.xiang_num" type="number"></b-form-input>
+                </div>
+                <div class="col-lg-3 mb25">
+                  <div class="lh44">托装数:</div>
+                  <b-form-input v-model="item.tuo_num" type="number"></b-form-input>
+                </div>
 
-                <td><b-form-input v-model="item.goods_weight" type="number"></b-form-input></td>
-                <td><b-form-input v-model="item.goods_volume" type="number"></b-form-input></td>
-                <td>
-                  <el-select class="marginBot" style="height:40px !important" v-model="item.dly_way_id" filterable placeholder="请选择物流方式">
-                    <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"></el-option>
-                  </el-select>
-                </td>
-                <td><b-form-input v-model="item.price" type="number"></b-form-input></td>
-                <td>
-                  <b-button
-                    variant="danger"
-                    @click="closeSubForm(index)"
-                    class="resetButton"
-                    style="margin-top: 23px; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
-                    >删&nbsp;&nbsp;除</b-button
-                  >
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                <div class="col-lg-3 mb25">
+                  <div class="lh44">重量:</div>
+                  <b-form-input v-model="item.goods_weight" type="number"></b-form-input>
+                </div>
+                <div class="col-lg-3 mb25">
+                  <div class="lh44">体积:</div>
+                  <b-form-input v-model="item.goods_volume" type="number"></b-form-input>
+                </div>
+                <div class="col-lg-3 mb25">
+                  <div class="lh44">线路:</div>
+                  <b-form-select v-model="item.dly_way_id" class="marginBot" style="height:40px !important">
+                    <option :value="undefined" disabled>请选择线路</option>
+                    <option v-for="(item, index) in dlyWayList" :key="index" :value="item.id">{{ item.name }}</option>
+                  </b-form-select>
+                </div>
+                <div class="col-lg-3 mb25">
+                  <div class="lh44">运输金额:</div>
+                  <b-form-input v-model="item.price" type="number"></b-form-input>
+                </div>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
         </div>
       </div>
       <b-button
@@ -489,6 +511,9 @@ export default {
         // { text: '支付完成', value: '3' },
         // { text: '收款完成', value: '4' },
       ],
+      dialogAdd: false,
+      dialogUpdate: false,
+      tabs: '0',
     };
   },
   watch: {
@@ -511,9 +536,9 @@ export default {
     }),
   },
   async created() {
-    this.search();
-    await this.getClientList({ skip: 0, limit: 10000 });
-    await this.getdly_wayList({ skip: 0, limit: 10000 });
+    // this.search();
+    // await this.getClientList({ skip: 0, limit: 10000 });
+    // await this.getdly_wayList({ skip: 0, limit: 10000 });
   },
   methods: {
     ...mapActions([
@@ -662,7 +687,8 @@ export default {
         this.form.user_name = this.userInfo.user_name;
         this.addSubForm('open');
         this.getOrderNum();
-        this.$refs.addAlert.show();
+        // this.$refs.addAlert.show();
+        this.dialogAdd = true;
       }
     },
     //关闭弹框
@@ -687,6 +713,7 @@ export default {
     },
     //删除表单中内容
     closeSubForm(i) {
+      this.tabs = this.subForm.length - 1 === i ? (i !== 0 ? `${i - 1}` : `${i}`) : this.tabs;
       this.subForm.splice(i, 1);
     },
     //添加字表数据
@@ -785,6 +812,13 @@ export default {
 </script>
 
 <style scoped>
+.el-tabs__item is-top {
+  background-color: #5bc0de;
+}
+.el-button.is-circle {
+  border-radius: 50%;
+  padding: 5px;
+}
 .marginBot4 {
   margin-bottom: 4px;
 }
