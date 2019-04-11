@@ -15,41 +15,40 @@
           <tbody v-if="orderSubList.length > 0">
             <tr>
               <th>订单号</th>
+              <th>拆分单号</th>
               <th>货物</th>
-              <th>运输路线</th>
               <th>数量</th>
               <th>体积</th>
               <th>重量</th>
-              <th>操作</th>
+              <th width="25%">操作</th>
             </tr>
             <tr v-for="(item, index) in orderSubList" :key="index">
               <td>{{ item.order_no }}</td>
+              <td>{{ item.slip_no }}</td>
               <td>{{ item.goods_name }}</td>
-              <td>{{ item.content }}</td>
               <td>{{ item.goods_num }}</td>
               <td>{{ item.goods_volume }}</td>
               <td>{{ item.goods_weight }}</td>
               <td>
-                <a
-                  class="btn btn-info base-margin-bottom"
-                  style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
-                  data-toggle="tooltip"
-                  title=""
-                  role="button"
-                  @click="openAlert(index)"
-                >
-                  <i class="base-margin-right-5 fa"></i>拆分货物
-                </a>
-                <a
-                  class="btn btn-info base-margin-bottom"
-                  style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
-                  data-toggle="tooltip"
-                  title=""
-                  role="button"
+                <b-button
+                  v-if="item.is_in === '1'"
                   @click="openIncomeAlert(index, item.id)"
+                  style="font-size:14px !important; color:#efe !important; background-color:#6b0 !important; padding: 6px 12px !important;"
+                  >添加/修改收入</b-button
                 >
-                  <i class="base-margin-right-5 fa"></i>添加/修改收入
-                </a>
+                <b-button
+                  v-if="item.is_in === '0'"
+                  @click="openIncomeAlert(index, item.id)"
+                  style="font-size:14px !important; color:#efe !important; background-color:#ff8800 !important; padding: 6px 12px !important;"
+                  >添加收入</b-button
+                >
+                <b-button
+                  v-if="item.is_in === '0'"
+                  class="btn btn-info base-margin-bottom"
+                  @click="openAlert(index)"
+                  style="font-size:14px !important; color:#efe !important; padding: 6px 12px !important;margin-left: 42px !important;"
+                  >拆分货物</b-button
+                >
               </td>
             </tr>
           </tbody>
@@ -82,16 +81,16 @@
             <tbody>
               <tr>
                 <td style="width:15%">订单号</td>
+                <td style="width:15%">拆分单号</td>
                 <td style="width:10%">货物名称</td>
-                <td style="width:10%">线路</td>
                 <td style="width:10%">数量</td>
                 <td style="width:10%">体积</td>
                 <td style="width:10%">重量</td>
               </tr>
               <tr>
                 <td>{{ orderList.order_no }}</td>
+                <td>{{ orderList.slip_no }}</td>
                 <td>{{ orderList.goods_name }}</td>
-                <td>{{ orderList.content }}</td>
                 <td>{{ orderList.goods_num }}</td>
                 <td>{{ orderList.goods_volume }}</td>
                 <td>{{ orderList.goods_weight }}</td>
@@ -103,7 +102,7 @@
           <table class="table table-bordered table-striped ">
             <tbody>
               <tr>
-                <td style="width:20%">拆分业务号</td>
+                <td style="width:20%">拆分单号</td>
                 <td>发货日期</td>
                 <td>数量</td>
                 <td>体积</td>
@@ -161,6 +160,30 @@
       <div class="d-block text-center">
         <div class="row">
           <table class="table table-bordered table-striped ">
+            <tbody>
+              <tr>
+                <td style="width:10%">合同</td>
+                <td style="width:10%">数量</td>
+                <td style="width:10%">单价</td>
+                <td style="width:10%">应收运费</td>
+                <td style="width:10%">实收运费</td>
+                <td style="width:10%">备注</td>
+              </tr>
+              <tr>
+                <td>
+                  <el-select @change="getFreight(pact_no)" class="marginBot" style="height:40px !important" v-model="pact_no" filterable placeholder="合同号">
+                    <el-option v-for="item in clientPactList" :key="item.id" :label="item.pact_no" :value="item.pact_no"> </el-option>
+                  </el-select>
+                </td>
+                <td>{{ yunfeiList.num }}</td>
+                <td>{{ yunfeiList.price }}</td>
+                <td>{{ yunfeiList.y_price }}</td>
+                <td><b-form-input v-model="yunfeiList.in_price" placeholder="请输入费用"></b-form-input></td>
+                <td><b-form-input v-model="yunfeiList.remark" placeholder="备注"></b-form-input></td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="table table-bordered table-striped ">
             <tr>
               <td>费用：</td>
               <td>收入金额：</td>
@@ -169,14 +192,7 @@
             </tr>
             <tr v-for="(item, index) in incomeForm" :key="index">
               <td>
-                <el-select
-                  @change="chooseFreight(item.cost_id, index)"
-                  class="marginBot"
-                  style="height:26px !important"
-                  v-model="item.cost_id"
-                  filterable
-                  placeholder="输入费用名"
-                >
+                <el-select class="marginBot" style="height:26px !important" v-model="item.cost_id" filterable placeholder="输入费用名">
                   <el-option v-for="(item1, index) in costList" :key="index" :label="item1.cost_name" :value="item1.id"></el-option>
                 </el-select>
               </td>
@@ -259,9 +275,11 @@ export default {
       goods_volume: 0,
       goods_weight: 0,
       addOrRevise: 0, //0添加，1修改（收入方法区分）
-      freight: '',
       isShow: false,
       deleteList: [],
+      clientPactList: [],
+      yunfeiList: {},
+      pact_no: '',
     };
   },
   computed: {
@@ -291,12 +309,19 @@ export default {
       'orderIncome',
       'updateIncome',
     ]),
+    //获取拆分单号
+    async getSlipNo() {
+      let result = await this.$axios.get(`/zhwl/order/slip_no?id=1&order_no=order0001`);
+    },
     //拆分
-    addOrderSublist() {
+    async addOrderSublist() {
+      let result = await this.$axios.get(`/zhwl/order/slip_no?id=${this.orderList.id}&order_no=${this.orderList.order_no}`);
+      this.slip_no = JSON.parse(JSON.stringify(result.slip_no));
       let newArray = JSON.parse(JSON.stringify(this.orderList));
       newArray.goods_num = 0;
       newArray.goods_volume = 0;
       newArray.goods_weight = 0;
+      newArray.slip_no = this.slip_no;
       this.subForm.splice(this.subForm.length, 0, newArray);
     },
     //分页
@@ -348,14 +373,15 @@ export default {
           delete this.subForm[index].id;
           delete this.subForm[index].wayname;
           delete this.subForm[index].dly_way_id;
+          delete this.subForm[0].cus_id;
         }
-        this.subForm.splice(0, 0, this.orderList);
-        delete this.subForm[0].order_no;
-        // delete this.subForm[0].id;
-        delete this.subForm[0].wayname;
-        delete this.subForm[0].dly_way_id;
-        // console.log(this.subForm)
-        await this.orderSubSplit({ form: this.form, subForm: this.subForm });
+        let subFormCopy = JSON.parse(JSON.stringify(this.subForm));
+        subFormCopy.splice(0, 0, this.orderList);
+        delete subFormCopy[0].order_no;
+        delete subFormCopy[0].wayname;
+        delete subFormCopy[0].dly_way_id;
+        delete subFormCopy[0].cus_id;
+        await this.orderSubSplit({ form: this.form, subForm: subFormCopy });
         this.$refs.addAlert.hide();
         this.subForm = [];
         this.search();
@@ -398,6 +424,10 @@ export default {
         skip: 0,
         limit: 100000000,
       });
+      if (this.orderSubList[index].is_in === '1') {
+        this.$message.error('添加完收入的订单不能继续拆分！！！');
+        return;
+      }
       this.$set(this, 'orderList', this.orderSubList[index]);
       this.goods_num = this.orderList.goods_num * 1;
       this.goods_volume = this.orderList.goods_volume * 1;
@@ -406,36 +436,72 @@ export default {
     },
     //打开收入的弹框
     async openIncomeAlert(index, slip_id) {
+      this.yunfeiList.num = this.orderSubList[index].goods_num;
       let result = await this.$axios.get(`/zhwl/in/in_list?skip=0&limit=1000&slip_id=${slip_id}&order_no=`);
-      let result1 = await this.$axios.get(`/zhwl/clientpact/client_pact_list?skip=0&limit=100000&cus_id=this.orderSubList[index].cus_id`);
+      let result1 = await this.$axios.get(`/zhwl/clientpact/client_pact_list?skip=0&limit=100000&cus_id=${this.orderSubList[index].cus_id}`);
       if (result.rescode === '0') {
+        this.clientPactList = result1.clientPactList;
+        this.pact_no = result1.clientPactList[0].pact_no;
         this.$set(this, 'incomeForm', result.inList);
+        this.yunfeiList = this.incomeForm[0];
+        this.yunfeiList.num = this.orderSubList[index].goods_num;
+        this.incomeForm.splice(0, 1);
         this.addOrRevise = 1;
       } else {
+        this.$confirm('添加收入后不可再拆分, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        })
+          .then(() => {
+            this.$message({
+              type: 'success',
+              message: '继续添加',
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消添加',
+            });
+            this.closeIncomeAlert();
+          });
+        this.yunfeiList.price = '';
+        this.yunfeiList.y_price = 0;
+        this.yunfeiList.in_price = 0;
+        this.yunfeiList.remark = '';
+        this.pact_no = '';
         this.incomeForm = [{}];
         this.addOrRevise = 0;
-        if (result1.totalRow === 1) {
-          this.freight = result1.clientPactList[0].price * this.orderSubList[index].goods_num;
+        if (result1.totalRow != 0) {
+          this.clientPactList = result1.clientPactList;
         } else {
-          this.freight = 0;
+          this.yunfeiList.y_price = 0;
         }
       }
       this.slipId = slip_id;
       this.$refs.incomeAlert.show();
     },
-    chooseFreight(cost_id, index) {
-      if (cost_id == 5) {
-        this.incomeForm[index].in_price = this.freight;
+    //计算运费
+    getFreight(pact_no) {
+      let price = 0;
+      for (let index = 0; index < this.clientPactList.length; index++) {
+        if (this.clientPactList[index].pact_no === pact_no) {
+          this.yunfeiList.price = this.clientPactList[index].price;
+        }
       }
+      this.yunfeiList.y_price = this.yunfeiList.price * this.yunfeiList.num;
     },
     //获取cost费用名称字段
     async getCostList() {
-      let result = await this.$axios.get(`/zhwl/cost/cost_list?skip=0&limit=1000000&cost_type=0`);
+      let result = await this.$axios.get(`/zhwl/cost/cost_list?skip=0&limit=1000000`);
       if (result.rescode === '0') {
-        this.$set(this, 'costList', result.clientPactList);
+        // this.$set(this, 'yunfeiList', result.clientPactList[0]);
+        let i = 0;
         for (let index = 0; index < result.totalRow; index++) {
-          if (this.costList[index].cost_type === '1') {
-            this.costList.splice(index, 1);
+          if (result.clientPactList[index].cost_type === '0') {
+            this.costList[i] = result.clientPactList[index];
+            i++;
           }
         }
       }
@@ -443,20 +509,40 @@ export default {
     //添加收入
     async income() {
       let result = '';
+      this.yunfeiList.pact_id = this.pact_id;
+      this.yunfeiList.cost_id = 2;
+      delete this.yunfeiList.pact_no;
+      // for (let index = 0; index < this.incomeForm.length; index++) {
+      //   this.incomeForm[index].slip_id = this.slipId;
+      // }
+      if (this.incomeForm.length > 8) {
+        for (let index = 1; index < this.incomeForm.length; index++) {
+          delete this.incomeForm[index].create_time;
+          delete this.incomeForm[index].id;
+          delete this.incomeForm[index].order_no;
+          delete this.incomeForm[index].slip_id;
+        }
+      }
+      let incomeFormCopy = JSON.parse(JSON.stringify(this.incomeForm));
+      incomeFormCopy.push(this.yunfeiList);
       for (let index = 0; index < this.deleteList.length; index++) {
         await this.$axios.get(`/zhwl/in/in_delete?id=${this.deleteList[index]}`);
       }
       if (this.addOrRevise === 1) {
         //修改方法
-        result = await this.updateIncome({ slipId: this.slipId, data: this.incomeForm });
+        result = await this.updateIncome({ slipId: this.slipId, data: incomeFormCopy });
         this.slipId = '';
         this.closeIncomeAlert();
       } else {
         //保存方法
-        result = await this.orderIncome({ slipId: this.slipId, data: this.incomeForm });
+        result = await this.orderIncome({ slipId: this.slipId, data: incomeFormCopy });
         this.slipId = '';
         this.closeIncomeAlert();
       }
+    },
+    //获取合同号
+    getPact_no(id) {
+      this.pact_id = id;
     },
     //关闭添加收入弹框
     closeIncomeAlert() {
