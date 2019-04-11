@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 /**
  * data:要筛选的数据集 array
- * searchItem: 需要信息的属性名,使用它取出的值要与value进行对比 string
+ * searchItem: 需要信息的属性名,使用它取出属性要与value进行对比 string
  * value:当前的值 any
  * label:需要显示的信息 string
  */

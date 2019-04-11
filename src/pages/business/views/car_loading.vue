@@ -26,26 +26,26 @@
         <table class="table table-bordered table-striped ">
           <tbody v-if="orderSubList.length > 0">
             <tr>
-              <th>选择货物</th>
+              <th style="width: 8%;">选择货物</th>
               <th>订单号</th>
+              <th>拆分单号</th>
               <th>货物</th>
-              <th>运输路线</th>
               <th>数量</th>
               <th>重量</th>
-              <!-- <th>操作</th> -->
+              <th>体积</th>
             </tr>
             <tr v-for="(item, index) in orderSubList" :key="index">
-              <td>
+              <td style="width: 8%; text-align:center;">
                 <b-form-checkbox-group id="order_loading_list" name="order_loading_list" v-model="order_loading_list">
                   <b-form-checkbox :value="item.id"></b-form-checkbox>
                 </b-form-checkbox-group>
               </td>
               <td>{{ item.order_no }}</td>
+              <td>{{ item.slip_no }}</td>
               <td>{{ item.goods_name }}</td>
-              <td>{{ item.content }}</td>
               <td>{{ item.goods_num }}</td>
               <td>{{ item.goods_weight }}</td>
-              <!-- <td><b-button variant="danger" style="color:white;" @click="addOrderSublist(index)">拆&nbsp;&nbsp;分</b-button></td> -->
+              <td>{{ item.goods_volume }}</td>
             </tr>
           </tbody>
           <tbody v-else>
@@ -92,14 +92,7 @@
               <option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"></option>
             </b-form-select>
           </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">状态：</div>
-            <b-form-select v-model="form.status">
-              <option value="" disabled>请选择状态</option>
-              <option v-for="(item, index) in statusList" :key="index" :label="item.text" :value="item.value"></option>
-            </b-form-select>
-          </div>
-          <div class="col-lg-12 mb25">
+          <div class="col-lg-8 mb25">
             <div class="lh44">运输内容：</div>
             <b-form-input v-model="form.content"></b-form-input>
           </div>
@@ -107,18 +100,26 @@
           <div class="col-lg-12 mb25">
             <el-tabs v-model="tabs" type="card" :stretch="true" closable @tab-remove="clearSubForm">
               <el-tab-pane v-for="(item, index) in subForm" :key="index" :label="`货物${index + 1}`" :name="`${index}`">
-                <table class="table ">
+                <table class="table table-btransported table-striped">
                   <tbody>
                     <tr>
                       <td>订单号</td>
+                      <td>拆分单号</td>
                       <td>货物名称</td>
-                      <td>运输金额</td>
+                      <td>件数</td>
+                      <td>数量</td>
+                      <td>重量</td>
+                      <td>体积</td>
                       <td>线路</td>
                     </tr>
                     <tr>
-                      <td><b-form-input v-model="item.order_no" :disabled="true"></b-form-input></td>
-                      <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
-                      <td><b-form-input v-model="item.price" :disabled="true"></b-form-input></td>
+                      <td>{{ item.order_no }}</td>
+                      <td>{{ item.slip_no }}</td>
+                      <td>{{ item.goods_name }}</td>
+                      <td>{{ item.item_num }}</td>
+                      <td>{{ item.goods_num }}</td>
+                      <td>{{ item.goods_weight }}</td>
+                      <td>{{ item.goods_volume }}</td>
                       <td>
                         <el-select v-model="item.dly_way_id" placeholder="请选择线路" :disabled="true">
                           <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"> </el-option>
@@ -163,7 +164,7 @@
                       </div>
                       <div class="col-lg-4 mb25">
                         <div class="lh44">支出金额</div>
-                        <b-form-input v-model="out.out_price"></b-form-input>
+                        <b-form-input v-model="out.out_price" type="number"></b-form-input>
                       </div>
                       <div class="col-lg-11 mb25">
                         <div class="lh44">备注</div>
@@ -307,7 +308,6 @@ export default {
         op: [{ required: true, message: '请填写操作人' }],
         send_time: [{ required: true, message: '请选择发货日期' }],
         dly_way_id: [{ required: true, message: '请选择线路' }],
-        status: [{ required: true, message: '请选择状态' }],
       }),
       th: ['订单号', '订单人', '订单日期', '备注'],
       filterVal: ['order_no', 'user_name', 'in_date', 'remark'],
@@ -382,9 +382,10 @@ export default {
     //运输子表匹配主表
     subDlyWay() {
       let id = this.form.dly_way_id;
-      this.subForm.forEach((item, index) => {
-        this.$set(this.subForm[index], `dly_way_id`, id);
-      });
+      //更改子运输单的线路
+      // this.subForm.forEach((item, index) => {
+      //   this.$set(this.subForm[index], `dly_way_id`, id);
+      // });
       let object = this.newDlyList.filter(item => item.id === id)[0];
       this.$set(this.form, 'content', object.content);
     },
@@ -404,19 +405,22 @@ export default {
 
       let mid = JSON.parse(JSON.stringify(this.subForm));
       newSubForm = mid.map(item => {
-        delete item.tabs;
-        delete item.costForm;
-        return item;
+        let newObject = {};
+        newObject['order_no'] = item.order_no;
+        newObject['order_sub_id'] = item.id;
+        newObject['goods_name'] = item.goods_name;
+        newObject['dly_way_id'] = item.dly_way_id;
+        newObject['price'] = item.price;
+        newObject['status'] = 0;
+        return newObject;
       });
-      console.log(newCostForm);
-      console.log(newSubForm);
-      // await this.transportSave({ form: this.form, subForm: newSubForm, costForm: newCostForm });
-      // this.$refs.addAlert.hide();
-      // this.form = {};
-      // this.subForm = [];
-      // this.costForm = [];
-      // this.order_loading_list = [];
-      // this.search();
+      await this.transportSave({ form: this.form, subForm: newSubForm, costForm: newCostForm });
+      this.$refs.addAlert.hide();
+      this.form = {};
+      this.subForm = [];
+      this.costForm = [];
+      this.order_loading_list = [];
+      this.search();
     },
     //打开与关闭修改和删除的弹框
     async openAlert(type, id) {
@@ -427,8 +431,7 @@ export default {
       let newList = this.order_loading_list.map(item => `${item}`);
       let result = await this.transporSelectOrder({ ids: newList });
       let transportOrderSubList = result.orderSubList.map(item => {
-        let newObject = { order_no: item.order_no, order_sub_id: item.id, goods_name: item.goods_name, price: item.price, status: '0' };
-        return newObject;
+        return item;
       });
       this.toGetTransportNo();
       transportOrderSubList.map(item => {

@@ -83,7 +83,7 @@
     </div>
 
     <!--详情-->
-    <b-modal id="updateAlert" title="运输详情" ref="updateAlert" size="xl" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+    <el-dialog :visible.sync="dialogDetail" title="运输详情" width="90%" close-on-click-modal close-on-press-escape center>
       <div class="d-block text-center">
         <div class="row">
           <div class="col-lg-4 mb25">
@@ -114,27 +114,18 @@
                 <td>订单号</td>
                 <td>货物名称</td>
                 <td>线路</td>
-                <td>运输金额</td>
                 <td>状态</td>
-                <!-- <td>操作</td> -->
+                <td>操作</td>
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
-                <td><b-form-input :disabled="true" v-model="item.order_no"></b-form-input></td>
-                <td><b-form-input :disabled="true" v-model="item.goods_name"></b-form-input></td>
+                <td>{{ item.order_no }}</td>
+                <td>{{ item.goods_name }}</td>
                 <td>
-                  <el-select v-model="item.dly_way_id" placeholder="请选择线路" :disabled="true">
-                    <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"> </el-option>
-                  </el-select>
+                  {{ { data: dlyWayList, searchItem: 'id', value: item.dly_way_id, label: 'name' } | getName }}
                 </td>
-                <td><b-form-input :disabled="true" v-model="item.price"></b-form-input></td>
-                <!-- <td>
-                  <el-select class="marginBot" style="height:40px !important" v-model="item.status" :disabled="true" filterable placeholder="请选择状态">
-                    <el-option :value="1" label="未到达" :selected="true"></el-option>
-                    <el-option :value="2" label="已到达"></el-option>
-                  </el-select>
-                </td> -->
+                <td>{{ item.status === 1 ? '未到达' : '已到达' }}</td>
                 <td>
-                  <el-button v-if="item.status === 1" type="primary" icon="el-icon-edit" @click="toSign(item.id)">签收</el-button>
+                  <el-button v-if="item.status === 1" type="primary" icon="el-icon-edit" @click="openAlert('sign', item.id)">签收</el-button>
                   <p v-else>已签收</p>
                 </td>
               </tr>
@@ -172,7 +163,7 @@
         style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #ccc !important;  width:30% !important; padding:6px 80px !important;"
         >返&nbsp;&nbsp;回</b-button
       >
-    </b-modal>
+    </el-dialog>
     <!--删除弹框-->
     <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block text-center">
@@ -193,7 +184,39 @@
       >
     </b-modal>
 
-    <el-dialog title="签收" :visible.sync="dialogSign"> </el-dialog>
+    <el-dialog title="签收" :visible.sync="dialogSign" width="50%" close-on-click-modal close-on-press-escape center>
+      <div class="row">
+        <div class="col-lg-12 mb25">
+          <div class="lh44">签收人：</div>
+          <b-form-input v-model="signForm.sign_name" placeholder="请填写签收人"></b-form-input>
+        </div>
+        <div class="col-lg-12 mb25">
+          <div class="lh44">签收日期：</div>
+          <el-date-picker
+            style="width: 100%;"
+            v-model="signForm.sign_time"
+            placeholder="请选择签收日期"
+            value-format="yyyy-MM-dd"
+            format="yyyy-MM-dd"
+            type="date"
+          >
+          </el-date-picker>
+        </div>
+      </div>
+      <b-button
+        variant="success"
+        style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+        @click="toValidate('sign')"
+        >签&nbsp;&nbsp;收</b-button
+      >
+      <b-button
+        variant="primary"
+        style="font-size:16px !important; margin-top:25px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+        class="resetButton"
+        @click="closeAlert('sign')"
+        >返&nbsp;&nbsp;回</b-button
+      >
+    </el-dialog>
   </div>
 </template>
 
@@ -211,6 +234,7 @@ export default {
     return {
       list: [],
       subForm: [],
+      signForm: {},
       is_update: true,
       operateId: '',
       currentPage: 1,
@@ -219,6 +243,10 @@ export default {
       updateForm: {},
       mainValidator: new Validator({
         // op: [{ required: true, message: '请填写操作人' }],
+      }),
+      signValidator: new Validator({
+        sign_name: { required: true, message: '请填写签收人' },
+        sign_time: { required: true, message: '请选择签收日期' },
       }),
       th: ['订单号', '订单人', '订单日期', '备注'],
       filterVal: ['transport_no', 'user_name', 'in_date', 'remark'],
@@ -233,6 +261,7 @@ export default {
         // { text: '支付完成', value: '3' },
         // { text: '收款完成', value: '4' },
       ],
+      dialogDetail: false,
       dialogSign: false,
     };
   },
@@ -264,6 +293,8 @@ export default {
       'transportDelete',
       'getDriverList',
       'getCarList',
+      'transporSelectOrder',
+      'orderSign',
     ]),
     //分页
     toSearch(currentPage) {
@@ -289,6 +320,14 @@ export default {
     },
     //验证
     toValidate(type) {
+      if (type === 'sign') {
+        this.signValidator.validate(this.signForm, (errors, fields) => {
+          if (errors) {
+            return this.handleErrors(errors, fields);
+          }
+          return this.toSign();
+        });
+      }
       this.mainValidator.validate(type === 'add' ? this.form : this.updateForm, (errors, fields) => {
         if (errors) {
           return this.handleErrors(errors, fields);
@@ -326,9 +365,9 @@ export default {
     },
     //打开与关闭修改和删除的弹框
     async openAlert(type, id) {
-      this.subForm = [];
       if (type === 'update') {
-        this.$refs.updateAlert.show();
+        // this.$refs.updateAlert.show();
+        this.dialogDetail = true;
         this.updateForm = JSON.parse(JSON.stringify(this.transportList[id]));
         await this.getTransportSubList({ id: this.updateForm.id });
         this.$set(this, 'subForm', this.transportSubListVuex);
@@ -340,14 +379,19 @@ export default {
         this.form.user_name = this.userInfo.user_name;
         this.addSubForm('open');
         this.$refs.addAlert.show();
+      } else if (type === 'sign') {
+        this.signForm['id'] = id;
+        this.dialogSign = true;
       }
     },
     //关闭弹框
     closeAlert(type) {
       if (type === 'update') {
-        this.$refs.updateAlert.hide();
+        this.dialogDetail = false;
       } else if (type === 'delete') {
         this.$refs.deleteAlert.hide();
+      } else if (type === 'sign') {
+        this.dialogSign = false;
       }
       this.is_update = true;
       this.operateId = '';
@@ -362,15 +406,19 @@ export default {
       }, {});
       console.debug(errors, fields);
     },
-    //删除表单中内容
-    clearSubForm(i) {
-      this.subForm.splice(i, 1);
-    },
     //添加字表数据
     addSubForm(type) {
       this.subForm.push({});
     },
-    //打开签收框
+    //签收
+    async toSign() {
+      await this.orderSign({ signForm: this.signForm });
+      this.search();
+      await this.getTransportSubList({ id: this.updateForm.id });
+      this.$set(this, 'subForm', this.transportSubListVuex);
+      this.signForm = {};
+      this.dialogSign = false;
+    },
     reset() {
       this.form = {};
       this.subForm = [];

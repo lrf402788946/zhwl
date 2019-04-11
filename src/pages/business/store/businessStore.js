@@ -393,7 +393,7 @@ export const actions = {
   //装车,查询订单子表
   async transportOrderSubList({ commit }, { skip, limit }) {
     try {
-      let result = await this.$axios.get(`${api.transportOrderSubList}?skip=${skip}&limit=${limit}`);
+      let result = await this.$axios.get(`${api.transportOrderSubList}?skip=${skip}&limit=${limit}&is_in=1`);
       if (result.rescode === '0') {
         commit(types.ORDER_SUB_LIST, result.orderSubList);
         return result.totalRow;
@@ -654,13 +654,13 @@ export const actions = {
     }
   },
   //签收
-  async rderSign({ commit }, { id, sign_name, sign_time }) {
-    if (id === undefined || id === null) {
+  async orderSign({ commit }, { signForm }) {
+    if (signForm.id === undefined || signForm.id === null) {
       Message.error('id为空');
       throw new Error('id为空');
     }
     try {
-      let result = await this.$axios.post(api.orderSign, { id: id, sign_name: sign_name, sign_time: sign_time });
+      let result = await this.$axios.post(api.orderSign, { data: signForm });
       if (result.rescode === '0') {
         Message.success('操作成功');
       } else {
