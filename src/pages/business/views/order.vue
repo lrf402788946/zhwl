@@ -64,14 +64,14 @@
             <tr>
               <th>订单号</th>
               <th>客户</th>
-              <th>订单日期</th>
+              <th>要求发货日期</th>
               <th>状态</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in orderList" :key="index">
               <td>{{ item.order_no }}</td>
               <td>{{ getC_name(item.c_id) }}</td>
-              <td>{{ item.send_time }}</td>
+              <td>{{ item.send_time_hp }}</td>
               <td>{{ item.status | getStatus }}</td>
               <td>
                 <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">详&nbsp;&nbsp;情</b-button>
