@@ -101,6 +101,8 @@
       </el-select>
       <div style="margin-bottom: 7px;">合同编号:</div>
       <b-form-input v-model="form.pact_no"></b-form-input>
+      <div style="margin-bottom: 7px;">项目名称:</div>
+      <b-form-input v-model="form.item_name"></b-form-input>
       <div style="margin-bottom: 7px;">甲方:</div>
       <b-form-input v-model="form.jf"></b-form-input>
       <div style="margin-bottom: 7px;">乙方:</div>
@@ -164,6 +166,10 @@
           <div class="col-lg-12 marginBot4">
             <p class="marginBot4">合同编号</p>
             <b-form-input v-model="updateForm.pact_no"></b-form-input>
+          </div>
+          <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">项目名称</p>
+            <b-form-input v-model="updateForm.item_name"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
             <p class="marginBot4">甲方</p>
@@ -247,6 +253,7 @@ export default {
       contractValidator: new Validator({
         cus_id: { required: true, message: '请选择此合同的客户' },
         pact_no: { type: 'string', required: true, message: '请填写合同编号' },
+        item_name: { type: 'string', required: true, message: '请填写项目名称' },
         jf: { type: 'string', required: true, message: '请填写甲方' },
         yf: { type: 'string', required: true, message: '请填写乙方' },
         cycle: { type: 'string', required: true, message: '请填写合同周期' },

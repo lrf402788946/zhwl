@@ -105,8 +105,77 @@
           </div>
           <br />
           <div class="col-lg-12 mb25">
-            <el-tabs v-model="tabs" type="card" :stretch="true">
-              <el-tab-pane label="所装货物" name="1">
+            <el-tabs v-model="tabs" type="card" :stretch="true" closable @tab-remove="clearSubForm">
+              <el-tab-pane v-for="(item, index) in subForm" :key="index" :label="`货物${index + 1}`" :name="`${index}`">
+                <table class="table ">
+                  <tbody>
+                    <tr>
+                      <td>订单号</td>
+                      <td>货物名称</td>
+                      <td>运输金额</td>
+                      <td>线路</td>
+                    </tr>
+                    <tr>
+                      <td><b-form-input v-model="item.order_no" :disabled="true"></b-form-input></td>
+                      <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
+                      <td><b-form-input v-model="item.price" :disabled="true"></b-form-input></td>
+                      <td>
+                        <el-select v-model="item.dly_way_id" placeholder="请选择线路" :disabled="true">
+                          <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"> </el-option>
+                        </el-select>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="col-lg-1 mb25">
+                  <el-button size="mini" type="primary" icon="el-icon-plus" @click="() => item.costForm.push({})">支出单</el-button>
+                </div>
+                <el-tabs v-model="item.tabs" tab-position="left">
+                  <el-tab-pane v-for="(out, outIndex) in item.costForm" :key="outIndex" :label="`支出单${outIndex + 1}`" :name="`${outIndex}`">
+                    <div class="row">
+                      <div class="col-lg-12 mb25" style="text-align: right;">
+                        <el-button size="mini" type="danger" icon="el-icon-delete" circle @click="deleteCostForm(index, outIndex)"></el-button>
+                      </div>
+                      <div class="col-lg-4 mb25">
+                        <div class="lh44">供应商</div>
+                        <el-select class="marginBot" style="height:40px !important" v-model="out.car_id" filterable placeholder="请选择供应商">
+                          <el-option v-for="(car, index) in carList" :key="index" :label="car.car_onwer" :value="car.id"></el-option>
+                        </el-select>
+                      </div>
+                      <div class="col-lg-4 mb25">
+                        <div class="lh44">司机</div>
+                        <el-select class="marginBot" style="height:40px !important" v-model="out.driver_id" filterable placeholder="请选择司机">
+                          <el-option v-for="(driver, index) in driverList" :key="index" :label="driver.name" :value="driver.id"></el-option>
+                        </el-select>
+                      </div>
+                      <div class="col-lg-4 mb25">
+                        <div class="lh44">线路</div>
+                        <el-select class="marginBot" style="height:40px !important" v-model="out.dly_way_id" filterable placeholder="请选择线路">
+                          <el-option v-for="(way, index) in dlyWayList" :key="index" :label="way.name" :value="way.id"></el-option>
+                        </el-select>
+                      </div>
+                      <div class="col-lg-4 mb25">
+                        <div class="lh44">支出项</div>
+                        <el-select class="marginBot" style="height:40px !important" v-model="out.cost_id" filterable placeholder="请选择支出项">
+                          <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
+                        </el-select>
+                      </div>
+                      <div class="col-lg-4 mb25">
+                        <div class="lh44">支出金额</div>
+                        <b-form-input v-model="out.out_price"></b-form-input>
+                      </div>
+                      <div class="col-lg-11 mb25">
+                        <div class="lh44">备注</div>
+                        <b-form-input v-model="out.remark"></b-form-input>
+                      </div>
+                    </div>
+                  </el-tab-pane>
+                </el-tabs>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+          <!-- <el-tab-pane label="所装货物" name="1">
                 <table class="table table-bordered table-striped ">
                   <tbody>
                     <tr>
@@ -189,9 +258,7 @@
                     </div>
                   </div>
                 </div>
-              </el-tab-pane>
-            </el-tabs>
-          </div>
+              </el-tab-pane> -->
         </div>
       </div>
       <b-button
@@ -216,6 +283,7 @@
 import { mapActions, mapState } from 'vuex';
 import Validator from 'async-validator';
 import _ from 'lodash';
+import { throws } from 'assert';
 //import exportExcel from '@/components/exportExcel.vue';
 export default {
   name: 'car_loading',
@@ -245,7 +313,7 @@ export default {
       filterVal: ['order_no', 'user_name', 'in_date', 'remark'],
       skip: 0,
       order_loading_list: [],
-      tabs: '1',
+      tabs: '0',
     };
   },
   computed: {
@@ -322,17 +390,33 @@ export default {
     },
     //添加
     async add() {
-      if (this.costForm.length <= 0) {
-        this.$message.error('请添加支出单');
-        return false;
-      }
-      await this.transportSave({ form: this.form, subForm: this.subForm, costForm: this.costForm });
-      this.$refs.addAlert.hide();
-      this.form = {};
-      this.subForm = [];
-      this.costForm = [];
-      this.order_loading_list = [];
-      this.search();
+      let newSubForm = [];
+      let newCostForm = [];
+      this.subForm.map((item, index) => {
+        if (!item.costForm.length > 0) {
+          this.$message.error(`货物${index + 1}没有支出单`);
+          throw new Error(`货物${index + 1}没有支出单`);
+        }
+        return item.costForm.map(item => {
+          newCostForm.push(item);
+        });
+      });
+
+      let mid = JSON.parse(JSON.stringify(this.subForm));
+      newSubForm = mid.map(item => {
+        delete item.tabs;
+        delete item.costForm;
+        return item;
+      });
+      console.log(newCostForm);
+      console.log(newSubForm);
+      // await this.transportSave({ form: this.form, subForm: newSubForm, costForm: newCostForm });
+      // this.$refs.addAlert.hide();
+      // this.form = {};
+      // this.subForm = [];
+      // this.costForm = [];
+      // this.order_loading_list = [];
+      // this.search();
     },
     //打开与关闭修改和删除的弹框
     async openAlert(type, id) {
@@ -347,6 +431,11 @@ export default {
         return newObject;
       });
       this.toGetTransportNo();
+      transportOrderSubList.map(item => {
+        item['costForm'] = [];
+        item['tabs'] = '0';
+        return item;
+      });
       this.$set(this, 'subForm', transportOrderSubList);
       this.form['status'] = '';
       this.form['dly_way_id'] = '';
@@ -379,7 +468,14 @@ export default {
     },
     //删除表单中内容
     clearSubForm(i) {
+      this.tabs = this.subForm.length - 1 === i ? (i !== 0 ? `${i - 1}` : `${i}`) : this.tabs;
       this.subForm.splice(i, 1);
+    },
+    //删除支出单
+    deleteCostForm(index, outIndex) {
+      this.subForm[index].tabs =
+        this.subForm[index].costForm.length - 1 === outIndex ? (outIndex !== 0 ? `${outIndex - 1}` : `${outIndex}`) : this.subForm[index].tabs;
+      this.subForm[index].costForm.splice(outIndex, 1);
     },
     transportType() {
       if (this.form.tt === '0' || this.form.tt === '1') {

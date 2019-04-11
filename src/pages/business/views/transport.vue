@@ -107,10 +107,6 @@
             <div class="lh44">线路：</div>
             <b-form-input v-model="updateForm.content" :disabled="true" filterable placeholder="请输入运输线路" />
           </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">状态：</div>
-            <b-form-select v-model="updateForm.status" :disabled="is_update" :options="chooseStatus" filterable placeholder="请选择运输状态" />
-          </div>
           <br />
           <table class="table table-btransported table-striped ">
             <tbody>
@@ -120,6 +116,7 @@
                 <td>线路</td>
                 <td>运输金额</td>
                 <td>状态</td>
+                <!-- <td>操作</td> -->
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
                 <td><b-form-input :disabled="true" v-model="item.order_no"></b-form-input></td>
@@ -130,11 +127,15 @@
                   </el-select>
                 </td>
                 <td><b-form-input :disabled="true" v-model="item.price"></b-form-input></td>
-                <td>
-                  <el-select class="marginBot" style="height:40px !important" v-model="item.status" :disabled="is_update" filterable placeholder="请选择状态">
+                <!-- <td>
+                  <el-select class="marginBot" style="height:40px !important" v-model="item.status" :disabled="true" filterable placeholder="请选择状态">
                     <el-option :value="1" label="未到达" :selected="true"></el-option>
                     <el-option :value="2" label="已到达"></el-option>
                   </el-select>
+                </td> -->
+                <td>
+                  <el-button v-if="item.status === 1" type="primary" icon="el-icon-edit" @click="toSign(item.id)">签收</el-button>
+                  <p v-else>已签收</p>
                 </td>
               </tr>
             </tbody>
@@ -191,6 +192,8 @@
         >返&nbsp;&nbsp;回</b-button
       >
     </b-modal>
+
+    <el-dialog title="签收" :visible.sync="dialogSign"> </el-dialog>
   </div>
 </template>
 
@@ -230,6 +233,7 @@ export default {
         // { text: '支付完成', value: '3' },
         // { text: '收款完成', value: '4' },
       ],
+      dialogSign: false,
     };
   },
   watch: {},
@@ -366,6 +370,7 @@ export default {
     addSubForm(type) {
       this.subForm.push({});
     },
+    //打开签收框
     reset() {
       this.form = {};
       this.subForm = [];

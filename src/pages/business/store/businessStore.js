@@ -41,6 +41,7 @@ const api = {
   transportSubEdit: '/zhwl/transport/transport_sub_edit', //params:id,subForm
   transportDelete: '/zhwl/transport/transport_delete', //params:id
   transportNO: '/zhwl/transport/transport_no', //query:car_no
+  orderSign: '/zhwl/transport/transport_sub_sign', //params:拆分单id, sign_name,sign_time
   //费用
   costList: '/zhwl/cost/cost_list',
   costSave: '/zhwl/cost/cost_save',
@@ -56,6 +57,8 @@ const api = {
   inSave: '/zhwl/in/in_save',
   inEdit: '/zhwl/in/in_edit',
   inDelete: '/zhwl/in/in_delete',
+  //请求收费,支出,拆分的订单号
+  orderBus: '/zhwl/order/bus_no', //query:type: 1拆分,2支出,3收费
 };
 
 export const state = () => ({
@@ -100,9 +103,9 @@ export const actions = {
       } else {
         commit(types.DLY_WAY_LIST, []);
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('接口加载失败');
-      console.error(err);
+      console.error(error);
       commit(types.DLY_WAY_LIST, []);
     }
   },
@@ -119,9 +122,9 @@ export const actions = {
       } else {
         commit(types.DLY_WAY_LIST, []);
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('接口加载失败');
-      console.error(err);
+      console.error(error);
       commit(types.DLY_WAY_LIST, []);
     }
   },
@@ -133,9 +136,9 @@ export const actions = {
         commit(types.DLY_WAY_LIST, result.dlyWayList);
         return result.totalRow;
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('接口加载失败');
-      console.error(err);
+      console.error(error);
     }
   },
   //路线操作
@@ -153,9 +156,9 @@ export const actions = {
         Message.error('操作失败');
         console.warn(`error in:${type}`);
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('操作失败');
-      console.error(err);
+      console.error(error);
     }
   },
   //订单查询
@@ -330,9 +333,9 @@ export const actions = {
         commit(types.GOODS_LIST, []);
         return 0;
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('接口加载失败');
-      console.error(err);
+      console.error(error);
       commit(types.GOODS_LIST, []);
     }
   },
@@ -348,9 +351,9 @@ export const actions = {
         commit(types.GOODS_LIST, []);
         return 0;
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('接口加载失败');
-      console.error(err);
+      console.error(error);
       commit(types.GOODS_LIST, []);
     }
   },
@@ -362,9 +365,9 @@ export const actions = {
         commit(types.GOODS_LIST, result.goodsList);
         return result.totalRow;
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('接口加载失败');
-      console.error(err);
+      console.error(error);
     }
   },
   //货物操作删除，修改
@@ -382,9 +385,9 @@ export const actions = {
         Message.error('操作失败');
         console.warn(`error in:${type}`);
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('操作失败');
-      console.error(err);
+      console.error(error);
     }
   },
   //装车,查询订单子表
@@ -552,9 +555,9 @@ export const actions = {
       } else {
         return { totalRow: 0, data: null };
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('接口加载失败');
-      console.error(err);
+      console.error(error);
     }
   },
   //费用操作
@@ -569,9 +572,9 @@ export const actions = {
         Message.error('操作失败');
         console.warn(`error in:${type}`);
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('操作失败');
-      console.error(err);
+      console.error(error);
     }
   },
   //支出单列表
@@ -586,9 +589,9 @@ export const actions = {
       } else {
         return { totalRow: 0, data: null };
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('接口加载失败');
-      console.error(err);
+      console.error(error);
     }
   },
   //支出表操作
@@ -604,9 +607,9 @@ export const actions = {
         console.warn(`error in:${type}`);
         throw new Error('操作失败');
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('操作失败');
-      console.error(err);
+      console.error(error);
     }
   },
   //收入单列表
@@ -627,9 +630,9 @@ export const actions = {
       } else {
         return { totalRow: 0, data: null };
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('接口加载失败');
-      console.error(err);
+      console.error(error);
     }
   },
   //收入表操作
@@ -645,9 +648,49 @@ export const actions = {
         console.warn(`error in:${type}`);
         throw new Error('操作失败');
       }
-    } catch (err) {
+    } catch (error) {
       Message.error('操作失败');
-      console.error(err);
+      console.error(error);
+    }
+  },
+  //签收
+  async rderSign({ commit }, { id, sign_name, sign_time }) {
+    if (id === undefined || id === null) {
+      Message.error('id为空');
+      throw new Error('id为空');
+    }
+    try {
+      let result = await this.$axios.post(api.orderSign, { id: id, sign_name: sign_name, sign_time: sign_time });
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+        console.warn(`error in method:orderSign`);
+        throw new Error('操作失败');
+      }
+    } catch (error) {
+      Message.error('操作失败');
+      console.error(error);
+    }
+  },
+  //请求单号
+  async orderBus({ commit }, { type, ...args }) {
+    if (type === undefined || type === null) {
+      Message.error('type为空');
+      throw new Error('type为空');
+    }
+    try {
+      let result = await this.$axios.post(api.orderBus, { type: type });
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+        console.warn(`error in method:orderBus`);
+        throw new Error('操作失败');
+      }
+    } catch (error) {
+      Message.error('操作失败');
+      console.error(error);
     }
   },
 };

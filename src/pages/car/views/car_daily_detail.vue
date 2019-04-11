@@ -37,16 +37,14 @@
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
             <tr>
+              <th>单号</th>
               <th>车牌号</th>
-              <!-- <th>收支</th>
-              <th>明细</th> -->
               <th>支出/收入的钱</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
+              <td>{{ item.order_no }}</td>
               <td>{{ item.car_no }}</td>
-              <!-- <td>{{ item.is_get }}</td>
-              <td>{{ item.detail }}</td> -->
               <td>{{ item.money }}</td>
               <td>
                 <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">详&nbsp;&nbsp;情</b-button>
@@ -74,26 +72,30 @@
       </div>
     </div>
     <!--添加弹框-->
-    <b-modal id="addAlert" title="添加车辆明细" ref="addAlert" hide-footer>
+    <b-modal id="addAlert" title="添加车辆明细" ref="addAlert" hide-footer no-close-on-backdrop>
       <div class="d-block text-center">
         <div class="row">
+          <div class="col-lg-6">
+            <b-form-input v-model="addForm.order_no" placeholder="单号" class="marginBot"></b-form-input>
+          </div>
           <div class="col-lg-6">
             <b-form-input v-model="addForm.car_no" placeholder="车号" class="marginBot"></b-form-input>
           </div>
           <div class="col-lg-6">
-            <b-form-input v-model="addForm.money" placeholder="支出/收入的钱" class="marginBot"></b-form-input>
+            <b-form-input v-model="addForm.money" placeholder="金额" class="marginBot"></b-form-input>
           </div>
           <div class="col-lg-6">
-            <b-form-input v-model="addForm.detail" placeholder="明细" class="marginBot"></b-form-input>
+            <b-form-input v-model="addForm.content" placeholder="内容" class="marginBot"></b-form-input>
           </div>
           <div class="col-lg-6">
-            <b-form-select v-model="addForm.is_get" :options="is_get" class="marginBot" />
+            <el-date-picker style="width: 100%;" v-model="addForm.create_time" placeholder="日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd" type="date">
+            </el-date-picker>
           </div>
         </div>
       </div>
       <b-button
         variant="secondary"
-        @click="addForm = { is_get: null, detail: null, money: null, car_no: null }"
+        @click="addForm = {}"
         class="resetButton"
         style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
         >重&nbsp;&nbsp;置</b-button
@@ -111,20 +113,33 @@
       <div class="d-block">
         <div class="row">
           <div class="col-lg-6 marginBot4">
+            <p class="marginBot4">单号</p>
+            <b-form-input v-model="updateForm.order_no" :disabled="is_update"></b-form-input>
+          </div>
+          <div class="col-lg-6 marginBot4">
             <p class="marginBot4">车号</p>
             <b-form-input v-model="updateForm.car_no" :disabled="is_update"></b-form-input>
           </div>
           <div class="col-lg-6 marginBot4">
-            <p class="marginBot4">明细:收入/支出项目</p>
-            <b-form-input v-model="updateForm.detail" :disabled="is_update"></b-form-input>
+            <p class="marginBot4">内容</p>
+            <b-form-input v-model="updateForm.content" :disabled="is_update"></b-form-input>
           </div>
           <div class="col-lg-6 marginBot4">
-            <p class="marginBot4">收支</p>
-            <b-form-select v-model="updateForm.is_get" :options="is_get" :disabled="is_update" />
-          </div>
-          <div class="col-lg-6 marginBot4">
-            <p class="marginBot4">支出/收入的钱</p>
+            <p class="marginBot4">金额</p>
             <b-form-input v-model="updateForm.money" :disabled="is_update"></b-form-input>
+          </div>
+          <div class="col-lg-6 marginBot4">
+            <p class="marginBot4">日期</p>
+            <el-date-picker
+              style="width: 100%;"
+              v-model="updateForm.create_time"
+              placeholder="日期"
+              value-format="yyyy-MM-dd"
+              format="yyyy-MM-dd"
+              type="date"
+              :disabled="is_update"
+            >
+            </el-date-picker>
           </div>
         </div>
       </div>
@@ -189,31 +204,26 @@ export default {
       is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
       skip: 0,
       countNum: 0,
-      list: [{ car_no: 1235478, is_get: 1, detail: '收入', money: 120 }],
+      list: [],
       is_update: true,
-      addForm: {
-        is_get: null,
-        dept_id: null,
-      },
-      updateForm: {
-        is_get: null,
-        dept_id: null,
-      },
+      addForm: {},
+      updateForm: {},
       operateId: {},
-      is_get: [{ text: '请选择收支情况', value: null, disabled: true }, { text: '支出', value: 1 }, { text: '收入', value: 0 }],
       currentPage: 1,
       totalRow: 0,
       addUserValidator: new Validator({
+        order_no: [{ required: true, message: '请填写单号' }],
         car_no: [{ type: 'string', required: true, message: '请填写车号' }],
-        detail: [{ type: 'string', required: true, message: '请填写明细:收入/支出项目' }],
-        money: [{ type: 'string', required: true, message: '请填写支出/收入的钱' }],
-        is_get: [{ required: true, message: '请选择收支情况' }],
+        content: [{ type: 'string', required: true, message: '请填写支出内容' }],
+        money: [{ required: true, message: '请填写金额' }],
+        create_time: [{ required: true, message: '请填选择日期' }],
       }),
       updateUserValidator: new Validator({
+        order_no: [{ required: true, message: '请填写单号' }],
         car_no: [{ type: 'string', required: true, message: '请填写车号' }],
-        detail: [{ type: 'string', required: true, message: '请填写明细:收入/支出项目' }],
-        money: [{ type: 'string', required: true, message: '请填写支出/收入的钱' }],
-        is_get: [{ required: true, message: '请选择收支情况' }],
+        content: [{ type: 'string', required: true, message: '请填写支出内容' }],
+        money: [{ required: true, message: '请填写金额' }],
+        create_time: [{ required: true, message: '请填选择日期' }],
       }),
     };
   },

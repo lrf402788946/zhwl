@@ -133,7 +133,16 @@ export default {
 };
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
+.el-menu {
+    border-right: solid 1px #e6e6e6;
+    list-style: none;
+    position: relative;
+    margin: 0;
+    padding-left: 0;
+    background-color: rgb(28, 43, 54);
+    margin-bottom: 80px;
+}
 a {
     color: #7ba0bb !important;
 }

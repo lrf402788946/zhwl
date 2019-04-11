@@ -56,7 +56,6 @@
             role="button"
             @click="openAlert('add')"
           >
-            <!-- v-b-modal="'addAlert'"-->
             <i class="base-margin-right-5 fa fa-plus-square"></i>新建订单
           </a>
         </div>
@@ -76,7 +75,10 @@
               <td>{{ item.status | getStatus }}</td>
               <td>
                 <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">详&nbsp;&nbsp;情</b-button>
-                <b-button variant="danger" style="color:white;" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button>
+                <b-button variant="success" style="color:white;margin-right:5px;" v-if="item.status === 1" @click="openAlert('sign', item.id)"
+                  >签&nbsp;&nbsp;收</b-button
+                >
+                <b-button variant="danger" style="color:white;" v-if="item.status <= 2" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button>
               </td>
             </tr>
           </tbody>
@@ -107,35 +109,73 @@
           <!--line1-->
           <div class="col-lg-3 mb25">
             <div class="lh44">订单号：</div>
-            <b-form-input :disabled="true" v-model="form.order_no" placeholder="订单号"></b-form-input>
+            <b-form-input v-model="form.order_no" placeholder="订单号"></b-form-input>
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">操作人：</div>
             <b-form-input v-model="form.op" placeholder="操作人"></b-form-input>
           </div>
           <div class="col-lg-3 mb25">
-            <div class="lh44">物流方式：</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.dly_type" filterable placeholder="请选择物流方式">
-              <el-option :value="0" label="自运"></el-option>
-              <el-option :value="1" label="他运"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-3 mb25">
-            <div class="lh44">发货日期：</div>
-            <el-date-picker style="width: 100%;" v-model="form.send_time" placeholder="订单日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd" type="date">
-            </el-date-picker>
-          </div>
-          <div class="col-lg-6 mb25">
             <div class="lh44">客户:</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.c_id" @change="getPact()" filterable placeholder="请选择客户">
+            <el-select class="marginBot" style="height:40px !important" v-model="form.c_id" filterable placeholder="请选择客户">
               <el-option v-for="(item, index) in clientList" :key="index" :value="item.id" :label="item.name"></el-option>
             </el-select>
           </div>
-          <div class="col-lg-6 mb25">
+          <div class="col-lg-3 mb25">
             <div class="lh44">合同:</div>
             <el-select class="marginBot" style="height:40px !important" v-model="form.pact_id" filterable placeholder="请选择合同">
               <el-option v-for="(item, index) in contractList" :key="index" :value="item.id" :label="item.pact_no"></el-option>
             </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">要求发货日期：</div>
+            <el-date-picker
+              style="width: 100%;"
+              v-model="form.send_time_hp"
+              placeholder="要求发货日期"
+              value-format="yyyy-MM-dd"
+              format="yyyy-MM-dd"
+              type="date"
+            >
+            </el-date-picker>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">发货日期：</div>
+            <el-date-picker
+              style="width: 100%;"
+              v-model="form.send_time"
+              placeholder="发货日期"
+              value-format="yyyy-MM-dd"
+              format="yyyy-MM-dd"
+              type="date"
+              :disabled="true"
+            >
+            </el-date-picker>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">要求到达日期：</div>
+            <el-date-picker
+              style="width: 100%;"
+              v-model="form.reach_time_hp"
+              placeholder="要求到达日期"
+              value-format="yyyy-MM-dd"
+              format="yyyy-MM-dd"
+              type="date"
+            >
+            </el-date-picker>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">实际到达日期：</div>
+            <el-date-picker
+              style="width: 100%;"
+              :disabled="true"
+              v-model="form.sign_time"
+              placeholder="实际到达日期"
+              value-format="yyyy-MM-dd"
+              format="yyyy-MM-dd"
+              type="date"
+            >
+            </el-date-picker>
           </div>
           <!--line2-->
           <div class="col-lg-4 mb25">
@@ -163,23 +203,6 @@
             <div class="lh44">收货人联系方式：</div>
             <b-form-input v-model="form.take_tel" placeholder="请填写收货人联系方式"></b-form-input>
           </div>
-          <!--line4-->
-          <div class="col-lg-3 mb25">
-            <div class="lh44">应收运费：</div>
-            <b-form-input v-model="form.s_dp" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-3 mb25">
-            <div class="lh44">实收运费：</div>
-            <b-form-input v-model="form.r_dp" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-3 mb25">
-            <div class="lh44">应付合计：</div>
-            <b-form-input v-model="form.s_pay" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-3 mb25">
-            <div class="lh44">实收合计：</div>
-            <b-form-input v-model="form.r_pay" type="number"></b-form-input>
-          </div>
           <br />
         </div>
         <el-tabs v-model="tabs" type="card">
@@ -190,31 +213,24 @@
               </div>
               <div class="col-lg-3 mb25">
                 <div class="lh44">产品名称:</div>
-                <b-form-input v-model="item.goods_name"></b-form-input>
+                <b-form-input v-model="item.goods_name" placeholder="请填写产品名称"></b-form-input>
               </div>
               <div class="col-lg-3 mb25">
                 <div class="lh44">数量:</div>
                 <b-form-input v-model="item.goods_num" type="number"></b-form-input>
               </div>
+              <!--new-->
               <div class="col-lg-3 mb25">
-                <div class="lh44">发货数量:</div>
-                <b-form-input v-model="item.sent_num" type="number"></b-form-input>
+                <div class="lh44">件数:</div>
+                <b-form-input v-model="item.item_num" type="number"></b-form-input>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">运输金额:</div>
-                <b-form-input v-model="item.price" type="number"></b-form-input>
+                <div class="lh44">发货件数:</div>
+                <b-form-input v-model="item.sent_num" type="number" :disabled="true"></b-form-input>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">桶装:</div>
-                <b-form-input v-model="item.tong_num" type="number"></b-form-input>
-              </div>
-              <div class="col-lg-3 mb25">
-                <div class="lh44">箱装数:</div>
-                <b-form-input v-model="item.xiang_num" type="number"></b-form-input>
-              </div>
-              <div class="col-lg-3 mb25">
-                <div class="lh44">托装数:</div>
-                <b-form-input v-model="item.tuo_num" type="number"></b-form-input>
+                <div class="lh44">包装:</div>
+                <b-form-input v-model="item.pack" placeholder="请填写包装信息"></b-form-input>
               </div>
 
               <div class="col-lg-3 mb25">
@@ -238,7 +254,7 @@
       </div>
       <b-button
         variant="primary"
-        @click="addSubForm('add')"
+        @click="addSubForm()"
         class="resetButton"
         style="font-size:16px !important; margin-top:25px; width:30% !important; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
         >添加商品</b-button
@@ -260,7 +276,7 @@
     </el-dialog>
 
     <!--详情-->
-    <b-modal id="updateAlert" title="订单详情" ref="updateAlert" size="xl" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+    <el-dialog title="订单详情" :visible.sync="dialogUpdate" :fullscreen="true">
       <div class="d-block text-center">
         <div class="row">
           <!--line1-->
@@ -273,11 +289,29 @@
             <b-form-input v-model="updateForm.op" :disabled="true" placeholder="操作人"></b-form-input>
           </div>
           <div class="col-lg-3 mb25">
-            <div class="lh44">物流方式：</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="updateForm.dly_type" :disabled="true" filterable placeholder="请选择物流方式">
-              <el-option :value="0" label="自运"></el-option>
-              <el-option :value="1" label="他运"></el-option>
+            <div class="lh44">客户:</div>
+            <el-select class="marginBot" style="height:40px !important" :disabled="is_update" v-model="updateForm.c_id" filterable placeholder="请选择客户">
+              <el-option v-for="(item, index) in clientList" :key="index" :value="item.id" :label="item.name"></el-option>
             </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">合同:</div>
+            <el-select class="marginBot" style="height:40px !important" :disabled="is_update" v-model="updateForm.pact_id" filterable placeholder="请选择合同">
+              <el-option v-for="(item, index) in contractList" :key="index" :value="item.id" :label="item.pact_no"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">要求发货日期：</div>
+            <el-date-picker
+              style="width: 100%;"
+              :disabled="is_update"
+              v-model="updateForm.send_time_hp"
+              placeholder="要求发货日期"
+              value-format="yyyy-MM-dd"
+              format="yyyy-MM-dd"
+              type="date"
+            >
+            </el-date-picker>
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">发货日期：</div>
@@ -292,64 +326,60 @@
             >
             </el-date-picker>
           </div>
-          <div class="col-lg-6 mb25">
-            <div class="lh44">客户:</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="updateForm.c_id" @change="getPact()" filterable placeholder="请选择客户">
-              <el-option v-for="(item, index) in clientList" :key="index" :value="item.id" :label="item.name"></el-option>
-            </el-select>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">要求到达日期：</div>
+            <el-date-picker
+              :disabled="is_update"
+              v-model="updateForm.reach_time_hp"
+              placeholder="要求到达日期"
+              value-format="yyyy-MM-dd"
+              format="yyyy-MM-dd"
+              type="date"
+            >
+            </el-date-picker>
           </div>
-          <div class="col-lg-6 mb25">
-            <div class="lh44">合同:</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="updateForm.pact_id" filterable placeholder="请选择合同">
-              <el-option v-for="(item, index) in contractList" :key="index" :value="item.id" :label="item.pact_no"></el-option>
-            </el-select>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">实际到达日期：</div>
+            <el-date-picker
+              style="width: 100%;"
+              :disabled="is_update"
+              v-model="updateForm.sign_time"
+              placeholder="实际到达日期"
+              value-format="yyyy-MM-dd"
+              format="yyyy-MM-dd"
+              type="date"
+            >
+            </el-date-picker>
           </div>
           <!--line2-->
           <div class="col-lg-4 mb25">
             <div class="lh44">发货地址：</div>
-            <b-form-input v-model="updateForm.send_address" placeholder="请填写发货地址"></b-form-input>
+            <b-form-input v-model="updateForm.send_address" :disabled="is_update" placeholder="请填写发货地址"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">发货人：</div>
-            <b-form-input v-model="updateForm.send_name" placeholder="请填写发货人"></b-form-input>
+            <b-form-input v-model="updateForm.send_name" :disabled="is_update" placeholder="请填写发货人"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">发货人联系方式：</div>
-            <b-form-input v-model="updateForm.send_tel" placeholder="请填写发货人联系方式"></b-form-input>
+            <b-form-input v-model="updateForm.send_tel" :disabled="is_update" placeholder="请填写发货人联系方式"></b-form-input>
           </div>
           <!--line3-->
           <div class="col-lg-4 mb25">
             <div class="lh44">收货地址：</div>
-            <b-form-input v-model="updateForm.take_address" placeholder="请填写收货地址"></b-form-input>
+            <b-form-input v-model="updateForm.take_address" :disabled="is_update" placeholder="请填写收货地址"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">收货人：</div>
-            <b-form-input v-model="updateForm.take_name" placeholder="请填写收货人"></b-form-input>
+            <b-form-input v-model="updateForm.take_name" :disabled="is_update" placeholder="请填写收货人"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">收货人联系方式：</div>
-            <b-form-input v-model="updateForm.take_tel" placeholder="请填写收货人联系方式"></b-form-input>
-          </div>
-          <!--line4-->
-          <div class="col-lg-3 mb25">
-            <div class="lh44">应收运费：</div>
-            <b-form-input v-model="updateForm.s_dp" :disabled="is_update" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-3 mb25">
-            <div class="lh44">实收运费：</div>
-            <b-form-input v-model="updateForm.r_dp" :disabled="is_update" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-3 mb25">
-            <div class="lh44">应付合计：</div>
-            <b-form-input v-model="updateForm.s_pay" :disabled="is_update" type="number"></b-form-input>
-          </div>
-          <div class="col-lg-3 mb25">
-            <div class="lh44">实收合计：</div>
-            <b-form-input v-model="updateForm.r_pay" :disabled="is_update" type="number"></b-form-input>
+            <b-form-input v-model="updateForm.take_tel" :disabled="is_update" placeholder="请填写收货人联系方式"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
-            <div class="lh44">状态：</div>
-            <b-form-select v-model="updateForm.status" :disabled="true" :options="chooseStatus" filterable />
+            <div class="lh44">签收人：</div>
+            <b-form-input v-model="updateForm.sign_name" :disabled="true" placeholder="请填写签收人"></b-form-input>
           </div>
           <br />
           <el-tabs v-model="tabs" type="card">
@@ -360,93 +390,94 @@
                 </div>
                 <div class="col-lg-3 mb25">
                   <div class="lh44">产品名称:</div>
-                  <b-form-input v-model="item.goods_name"></b-form-input>
+                  <b-form-input v-model="item.goods_name" :disabled="is_update" placeholder="请填写产品名称"></b-form-input>
                 </div>
                 <div class="col-lg-3 mb25">
                   <div class="lh44">数量:</div>
-                  <b-form-input v-model="item.goods_num" type="number"></b-form-input>
+                  <b-form-input v-model="item.goods_num" :disabled="is_update" type="number"></b-form-input>
+                </div>
+                <!--new-->
+                <div class="col-lg-3 mb25">
+                  <div class="lh44">件数:</div>
+                  <b-form-input v-model="item.goods_num" :disabled="is_update" type="number"></b-form-input>
                 </div>
                 <div class="col-lg-3 mb25">
-                  <div class="lh44">发货数量:</div>
-                  <b-form-input v-model="item.sent_num" type="number"></b-form-input>
+                  <div class="lh44">发货件数:</div>
+                  <b-form-input v-model="item.sent_num" :disabled="is_update" type="number"></b-form-input>
                 </div>
                 <div class="col-lg-3 mb25">
-                  <div class="lh44">桶装:</div>
-                  <b-form-input v-model="item.tong_num" type="number"></b-form-input>
-                </div>
-                <div class="col-lg-3 mb25">
-                  <div class="lh44">箱装数:</div>
-                  <b-form-input v-model="item.xiang_num" type="number"></b-form-input>
-                </div>
-                <div class="col-lg-3 mb25">
-                  <div class="lh44">托装数:</div>
-                  <b-form-input v-model="item.tuo_num" type="number"></b-form-input>
+                  <div class="lh44">包装:</div>
+                  <b-form-input v-model="item.pack" :disabled="is_update"></b-form-input>
                 </div>
 
                 <div class="col-lg-3 mb25">
                   <div class="lh44">重量:</div>
-                  <b-form-input v-model="item.goods_weight" type="number"></b-form-input>
+                  <b-form-input v-model="item.goods_weight" :disabled="is_update" type="number"></b-form-input>
                 </div>
                 <div class="col-lg-3 mb25">
                   <div class="lh44">体积:</div>
-                  <b-form-input v-model="item.goods_volume" type="number"></b-form-input>
+                  <b-form-input v-model="item.goods_volume" :disabled="is_update" type="number"></b-form-input>
                 </div>
                 <div class="col-lg-3 mb25">
                   <div class="lh44">线路:</div>
-                  <b-form-select v-model="item.dly_way_id" class="marginBot" style="height:40px !important">
+                  <b-form-select v-model="item.dly_way_id" :disabled="is_update" class="marginBot" style="height:40px !important">
                     <option :value="undefined" disabled>请选择线路</option>
                     <option v-for="(item, index) in dlyWayList" :key="index" :value="item.id">{{ item.name }}</option>
                   </b-form-select>
-                </div>
-                <div class="col-lg-3 mb25">
-                  <div class="lh44">运输金额:</div>
-                  <b-form-input v-model="item.price" type="number"></b-form-input>
                 </div>
               </div>
             </el-tab-pane>
           </el-tabs>
         </div>
       </div>
-      <b-button
-        variant="primary"
-        :disabled="is_update"
-        @click="addSubForm('update')"
-        class="resetButton"
-        style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
-        >添&nbsp;&nbsp;加</b-button
-      >
-
-      <b-button
-        v-if="is_update"
-        variant="primary"
-        @click="is_update = false"
-        class="resetButton"
-        style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
-        >修&nbsp;&nbsp;改</b-button
-      >
-      <!-- <b-button
+      <div class="row">
+        <div class="col-lg-4">
+          <b-button
+            variant="primary"
+            :disabled="is_update"
+            @click="addSubForm()"
+            class="resetButton"
+            style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:70% !important; padding:6px 80px !important;"
+            >添&nbsp;&nbsp;加</b-button
+          >
+        </div>
+        <div class="col-lg-4" v-if="is_update">
+          <b-button
+            variant="primary"
+            @click="is_update = false"
+            class="resetButton"
+            style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:70% !important; padding:6px 80px !important;"
+            >修&nbsp;&nbsp;改</b-button
+          >
+        </div>
+        <!-- <b-button
         variant="primary"
         @click="exportExcel()"
         class="resetButton"
         style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
         >导&nbsp;&nbsp;出</b-button
       > -->
-      <b-button
-        v-if="!is_update"
-        variant="primary"
-        @click="toValidate('update')"
-        class="resetButton"
-        style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
-        >保&nbsp;&nbsp;存</b-button
-      >
-      <b-button
-        variant="secondary"
-        @click="closeAlert('update')"
-        class="resetButton"
-        style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #ccc !important;  width:30% !important; padding:6px 80px !important;"
-        >返&nbsp;&nbsp;回</b-button
-      >
-    </b-modal>
+        <div class="col-lg-4" v-if="!is_update">
+          <b-button
+            v-if="!is_update"
+            variant="primary"
+            @click="toValidate('update')"
+            class="resetButton"
+            style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:70% !important; padding:6px 80px !important;"
+            >保&nbsp;&nbsp;存</b-button
+          >
+        </div>
+        <div class="col-lg-4">
+          <b-button
+            variant="secondary"
+            @click="closeAlert('update')"
+            class="resetButton"
+            style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #ccc !important;  width:70% !important; padding:6px 80px !important;"
+            >返&nbsp;&nbsp;回</b-button
+          >
+        </div>
+      </div>
+    </el-dialog>
     <!--删除弹框-->
     <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block text-center">
@@ -466,6 +497,33 @@
         >返&nbsp;&nbsp;回</b-button
       >
     </b-modal>
+
+    <!--签收-->
+    <el-dialog title="订单签收" :visible.sync="dialogSign" :close-on-click-modal="false">
+      <div class="col-lg-12 mb25">
+        <div class="lh44">签收人:</div>
+        <b-form-input v-model="signForm.sign_name" placeholder="请填写签收人"></b-form-input>
+      </div>
+      <div class="col-lg-12 mb25">
+        <div class="lh44">到达日期：</div>
+        <el-date-picker style="width: 100%;" v-model="signForm.sign_time" placeholder="到达日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd" type="date">
+        </el-date-picker>
+      </div>
+      <b-button
+        variant="primary"
+        @click="toValidate('add')"
+        class="resetButton"
+        style="font-size:16px !important; margin:25px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
+        >保&nbsp;&nbsp;存</b-button
+      >
+      <b-button
+        variant="secondary"
+        @click="reset()"
+        class="resetButton"
+        style="font-size:16px !important; margin: 25px 0 30px 15% !important;width:30% !important; margin-right: 0 !important; padding:6px 80px !important;"
+        >重&nbsp;&nbsp;置</b-button
+      >
+    </el-dialog>
   </div>
 </template>
 
@@ -483,6 +541,7 @@ export default {
     return {
       list: [],
       subForm: [],
+      signForm: {},
       is_update: true,
       operateId: '',
       currentPage: 1,
@@ -491,13 +550,14 @@ export default {
       updateForm: {},
       mainValidator: new Validator({
         op: [{ required: true, message: '请填写操作人' }],
-        dly_type: [{ required: true, message: '请选择物流方式' }],
-        send_time: [{ required: true, message: '请选择发货日期' }],
-        send_address: [{ required: true, message: '请选择发货日期' }],
-        send_name: [{ required: true, message: '请选择发货日期' }],
-        take_address: [{ required: true, message: '请选择发货日期' }],
-        take_name: [{ required: true, message: '请选择发货日期' }],
-        take_tel: [{ required: true, message: '请选择发货日期' }],
+        send_time_hp: [{ required: true, message: '请选择要求发货日期' }],
+        reach_time_hp: [{ required: true, message: '请选择要求到达日期' }],
+        send_address: [{ required: true, message: '请选择发货地址' }],
+        send_name: [{ required: true, message: '请填写发货人' }],
+        send_tel: [{ required: true, message: '请填写发货人联系方式' }],
+        take_address: [{ required: true, message: '请选择收货地址' }],
+        take_name: [{ required: true, message: '请选择收货人姓名' }],
+        take_tel: [{ required: true, message: '请选择收货人联系方式' }],
       }),
       th: ['订单号', '订单人', '订单日期', '备注'],
       filterVal: ['order_no', 'user_name', 'in_date', 'remark'],
@@ -513,15 +573,43 @@ export default {
       ],
       dialogAdd: false,
       dialogUpdate: false,
+      dialogSign: false,
       tabs: '0',
+      signValidator: new Validator({
+        sign_name: [{ required: true, message: '请填写操作人' }],
+        sign_time: [{ required: true, message: '请选择物流方式' }],
+      }),
     };
   },
   watch: {
-    'form.c_id'(newValue) {
+    async 'form.c_id'(newValue) {
       if (newValue !== undefined) {
         let c_name = this.clientList.filter(item => item.id === newValue)[0].name;
         this.form.c_name = c_name;
+        await this.getContractList({ skip: 0, limit: 10000, pact_no: '', cus_id: newValue });
+        console.log(this.form.pact_id);
+        this.form.pact_id === undefined
+          ? ''
+          : this.contractList.filter(item => item.id === this.form.pact_id).length > 0
+          ? ''
+          : this.$set(this.form, 'pact_id', '');
       }
+    },
+    async 'updateForm.c_id'(newValue) {
+      if (newValue !== undefined) {
+        let c_name = this.clientList.filter(item => item.id === newValue)[0].name;
+        this.updateForm.c_name = c_name;
+        await this.getContractList({ skip: 0, limit: 10000, pact_no: '', cus_id: newValue });
+        this.updateForm.pact_id === undefined
+          ? ''
+          : this.contractList.filter(item => item.id === this.updateForm.pact_id).length > 0
+          ? ''
+          : this.$set(this.updateForm, 'pact_id', '');
+      }
+    },
+    is_update(newValue) {
+      if (this.updateForm.status <= 2) return false;
+      else return true;
     },
   },
   computed: {
@@ -536,9 +624,9 @@ export default {
     }),
   },
   async created() {
-    // this.search();
-    // await this.getClientList({ skip: 0, limit: 10000 });
-    // await this.getdly_wayList({ skip: 0, limit: 10000 });
+    this.search();
+    await this.getClientList({ skip: 0, limit: 10000 });
+    await this.getdly_wayList({ skip: 0, limit: 10000 });
   },
   methods: {
     ...mapActions([
@@ -585,10 +673,6 @@ export default {
       let content = this.dlyWayList.filter(item => item.id === id)[0].content;
       this.subForm[index]['content'] = content;
     },
-    //获取合同
-    async getPact() {
-      await this.getContractList({ skip: 0, limit: 10000, pact_no: '', cus_id: this.form.c_id });
-    },
     //显示名字
     getC_name(id) {
       try {
@@ -616,34 +700,18 @@ export default {
     async add() {
       try {
         this.form.status = 0;
-        this.subForm.map(item => {
-          let pack = `${item.tong_num};${item.xiang_num};${item.tuo_num}`;
-          item.pack = pack;
-          delete item.tong_num;
-          delete item.xiang_num;
-          delete item.tuo_num;
-          return item;
-        });
         await this.orderSave({ form: this.form, subForm: this.subForm });
-        this.$refs.addAlert.hide();
+        this.dialogAdd = false;
         this.form = {};
         this.subForm = [];
         this.search();
       } catch (error) {
-        console.error('error in line 489');
+        console.error('error in add');
       }
     },
     //修改
     async update() {
       try {
-        this.subForm.map(item => {
-          let pack = `${item.tong_num};${item.xiang_num};${item.tuo_num}`;
-          item.pack = pack;
-          delete item.tong_num;
-          delete item.xiang_num;
-          delete item.tuo_num;
-          return item;
-        });
         await this.orderEdit({ form: this.updateForm, subForm: this.subForm });
         this.closeAlert('update');
         this.updateForm = [];
@@ -668,33 +736,29 @@ export default {
     async openAlert(type, id) {
       this.subForm = [];
       if (type === 'update') {
-        this.$refs.updateAlert.show();
         this.updateForm = JSON.parse(JSON.stringify(this.orderList[id]));
         await this.getOrderSubList({ id: this.updateForm.id });
-        let newList = this.orderSubListVuex.map(item => {
-          let nums = item.pack.split(';');
-          item.tong_num = nums[0];
-          item.xiang_num = nums[1];
-          item.tuo_num = nums[2];
-          return item;
-        });
-        this.$set(this, 'subForm', newList);
+        this.$set(this, 'subForm', this.orderSubListVuex);
+        this.dialogUpdate = true;
       } else if (type === 'delete') {
         this.$refs.deleteAlert.show();
         this.operateId = id;
       } else if (type === 'add') {
         this.form.login_id = this.userInfo.login_id;
         this.form.user_name = this.userInfo.user_name;
-        this.addSubForm('open');
-        this.getOrderNum();
-        // this.$refs.addAlert.show();
+        this.addSubForm();
+        // this.getOrderNum();
         this.dialogAdd = true;
+      } else if (type === 'sign') {
+        this.dialogSign = true;
+        this.operateId = id;
       }
+      this.tabs = `0`;
     },
     //关闭弹框
     closeAlert(type) {
       if (type === 'update') {
-        this.$refs.updateAlert.hide();
+        this.dialogUpdate = false;
       } else if (type === 'delete') {
         this.$refs.deleteAlert.hide();
       }
@@ -718,7 +782,13 @@ export default {
     },
     //添加字表数据
     addSubForm(type) {
-      this.subForm.push({});
+      this.subForm.push({
+        goods_num: 0,
+        sent_num: 0,
+        goods_weight: 0,
+        goods_volume: 0,
+        item_num: 0,
+      });
     },
     reset() {
       this.form = {};
@@ -790,7 +860,7 @@ export default {
           text = '待发';
           break;
         case 1:
-          text = '装车';
+          text = '发车';
           break;
         case 2:
           text = '到达';
@@ -812,13 +882,6 @@ export default {
 </script>
 
 <style scoped>
-.el-tabs__item is-top {
-  background-color: #5bc0de;
-}
-.el-button.is-circle {
-  border-radius: 50%;
-  padding: 5px;
-}
 .marginBot4 {
   margin-bottom: 4px;
 }

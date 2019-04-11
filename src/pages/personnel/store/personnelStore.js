@@ -452,7 +452,7 @@ export const actions = {
     try {
       let result = await this.$axios.get(`${api.contractList}?skip=${skip}&limit=${limit}&pact_no=${pact_no}&cus_id=${cus_id}`);
       if (result.rescode === '0') {
-        commit(types.CONTRACT_LIST, result.clientPactList);
+        result.totalRow > 0 ? commit(types.CONTRACT_LIST, result.clientPactList) : commit(types.CONTRACT_LIST, []);
         return result.totalRow;
       } else {
         commit(types.CONTRACT_LIST, []);
