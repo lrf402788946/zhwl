@@ -398,11 +398,12 @@ export default {
           this.$message.error(`货物${index + 1}没有支出单`);
           throw new Error(`货物${index + 1}没有支出单`);
         }
-        return item.costForm.map(item => {
-          newCostForm.push(item);
+        return item.costForm.map(costItem => {
+          costItem['order_no'] = item.order_no;
+          costItem['slip_no'] = item.slip_no;
+          newCostForm.push(costItem);
         });
       });
-
       let mid = JSON.parse(JSON.stringify(this.subForm));
       newSubForm = mid.map(item => {
         let newObject = {};

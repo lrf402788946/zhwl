@@ -39,6 +39,7 @@
               <th>司机</th>
               <th>线路</th>
               <th>支出金额</th>
+              <th>状态</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
@@ -48,6 +49,7 @@
               <td>{{ { data: driverList, searchItem: 'id', value: item.driver_id, label: 'name' } | getName }}</td>
               <td>{{ { data: dlyWayList, searchItem: 'id', value: item.dly_way_id, label: 'name' } | getName }}</td>
               <td>{{ item.out_price }}</td>
+              <td>{{ item.status >= 2 ? '到达' : '未到达' }}</td>
               <td>
                 <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">详&nbsp;&nbsp;情</b-button>
                 <b-button variant="danger" v-if="item.status < 2" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
