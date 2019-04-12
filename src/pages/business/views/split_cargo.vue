@@ -338,7 +338,7 @@ export default {
       let totalRow = await this.transportOrderSubList({
         skip: skip,
         limit: this.limit,
-        is_in: 0,
+        is_in: '',
       });
       this.$set(this, 'totalRow', totalRow);
     },
@@ -374,7 +374,7 @@ export default {
           delete this.subForm[index].id;
           delete this.subForm[index].wayname;
           delete this.subForm[index].dly_way_id;
-          delete this.subForm[0].cus_id;
+          delete this.subForm[index].cus_id;
         }
         let subFormCopy = JSON.parse(JSON.stringify(this.subForm));
         subFormCopy.splice(0, 0, this.orderList);
@@ -424,6 +424,7 @@ export default {
       await this.transportOrderSubList({
         skip: 0,
         limit: 100000000,
+        is_in: '',
       });
       if (this.orderSubList[index].is_in === '1') {
         this.$message.error('添加完收入的订单不能继续拆分！！！');
