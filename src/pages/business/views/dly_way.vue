@@ -206,7 +206,7 @@ import Validator from 'async-validator';
 export default {
   name: 'dly_way',
   metaInfo: {
-    title: '角色管理',
+    title: '线路管理',
   },
   components: {},
   data() {

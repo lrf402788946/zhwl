@@ -228,7 +228,7 @@ import _ from 'lodash';
 export default {
   name: 'transport',
   metaInfo: {
-    title: '订单管理',
+    title: '运输管理',
   },
   data() {
     return {

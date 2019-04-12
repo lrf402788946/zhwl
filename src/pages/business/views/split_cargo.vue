@@ -245,7 +245,7 @@ import { constants } from 'fs';
 export default {
   name: 'car_loading',
   metaInfo: {
-    title: '装车管理',
+    title: '拆分管理',
   },
   data() {
     return {
@@ -338,6 +338,7 @@ export default {
       let totalRow = await this.transportOrderSubList({
         skip: skip,
         limit: this.limit,
+        is_in: 0,
       });
       this.$set(this, 'totalRow', totalRow);
     },

@@ -146,7 +146,7 @@
 import { mapActions, mapState } from 'vuex';
 import Validator from 'async-validator';
 export default {
-  name: 'cost',
+  name: '收/支管理',
   components: {},
   data() {
     return {
