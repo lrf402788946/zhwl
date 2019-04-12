@@ -518,33 +518,51 @@ export default {
       // for (let index = 0; index < this.incomeForm.length; index++) {
       //   this.incomeForm[index].slip_id = this.slipId;
       // }
-      if (this.incomeForm[0].create_time != null) {
-        for (let index = 0; index < this.incomeForm.length; index++) {
-          delete this.incomeForm[index].create_time;
-          // delete this.incomeForm[index].id;
-          delete this.incomeForm[index].order_no;
-          delete this.incomeForm[index].slip_id;
-          delete this.incomeForm[index].status;
-          this.incomeForm[index].slip_no = JSON.parse(JSON.stringify(this.yunfeiList.slip_no));
-        }
-      }
-      delete this.yunfeiList.create_time;
-      // delete this.yunfeiList.id;
-      delete this.yunfeiList.order_no;
-      delete this.yunfeiList.slip_id;
-      delete this.yunfeiList.status;
-      let incomeFormCopy = JSON.parse(JSON.stringify(this.incomeForm));
-      incomeFormCopy.push(this.yunfeiList);
       for (let index = 0; index < this.deleteList.length; index++) {
         await this.$axios.get(`/zhwl/in/in_delete?id=${this.deleteList[index]}`);
       }
       if (this.addOrRevise === 1) {
         //修改方法
+        if (this.incomeForm[0].create_time != null) {
+          for (let index = 0; index < this.incomeForm.length; index++) {
+            delete this.incomeForm[index].create_time;
+            // delete this.incomeForm[index].id;
+            delete this.incomeForm[index].order_no;
+            delete this.incomeForm[index].slip_id;
+            delete this.incomeForm[index].status;
+            this.incomeForm[index].slip_no = JSON.parse(JSON.stringify(this.yunfeiList.slip_no));
+          }
+        }
+        delete this.yunfeiList.create_time;
+        // delete this.yunfeiList.id;
+        delete this.yunfeiList.order_no;
+        delete this.yunfeiList.slip_id;
+        delete this.yunfeiList.status;
+        let incomeFormCopy = JSON.parse(JSON.stringify(this.incomeForm));
+        incomeFormCopy.push(this.yunfeiList);
         result = await this.updateIncome({ slipId: this.slipId, data: incomeFormCopy });
         this.slipId = '';
         this.closeIncomeAlert();
       } else {
         //保存方法
+        if (this.incomeForm[0].create_time != null) {
+          for (let index = 0; index < this.incomeForm.length; index++) {
+            delete this.incomeForm[index].create_time;
+            // delete this.incomeForm[index].id;
+            delete this.incomeForm[index].order_no;
+            delete this.incomeForm[index].slip_id;
+            delete this.incomeForm[index].status;
+            this.incomeForm[index].slip_no = JSON.parse(JSON.stringify(this.yunfeiList.slip_no));
+          }
+        }
+        delete this.yunfeiList.create_time;
+        // delete this.yunfeiList.id;
+        delete this.yunfeiList.order_no;
+        delete this.yunfeiList.slip_id;
+        delete this.yunfeiList.status;
+        delete this.yunfeiList.id;
+        let incomeFormCopy = JSON.parse(JSON.stringify(this.incomeForm));
+        incomeFormCopy.push(this.yunfeiList);
         result = await this.orderIncome({ slipId: this.slipId, data: incomeFormCopy });
         this.slipId = '';
         this.closeIncomeAlert();
