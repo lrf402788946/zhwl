@@ -611,7 +611,7 @@ export const actions = {
     }
   },
   //收入单列表
-  async getInList({ commit }, { skip, limit, slip_id, order_no }) {
+  async getInList({ commit }, { skip, limit, slip_id, order_no, slip_no }) {
     try {
       if (slip_id === undefined) {
         slip_id = '';
@@ -619,7 +619,7 @@ export const actions = {
       if (order_no === undefined) {
         order_no = '';
       }
-      let result = await this.$axios.get(`${api.inList}?skip=${skip}&limit=${limit}&slip_id=${slip_id}&order_no=${order_no}`);
+      let result = await this.$axios.get(`${api.inList}?skip=${skip}&limit=${limit}&slip_id=${slip_id}&order_no=${order_no}&slip_no=${slip_no}`);
       if (result.rescode === '0') {
         return {
           totalRow: result.totalRow,

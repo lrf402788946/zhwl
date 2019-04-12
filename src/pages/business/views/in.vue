@@ -11,10 +11,12 @@
       <div class="base-padding-20 base-bg-fff">
         <table>
           <tr>
-            <td>收入单查询</td>
+            <td>单号查询</td>
+            <td>拆分单号查询</td>
           </tr>
           <tr>
-            <td><b-form-input v-model="select_order_no" placeholder="输入运输单号"></b-form-input></td>
+            <td><b-form-input v-model="select_order_no" placeholder="输入单号"></b-form-input></td>
+            <td><b-form-input v-model="select_slip_no" placeholder="输入拆分单号"></b-form-input></td>
           </tr>
           <tr>
             <td>
@@ -32,17 +34,23 @@
           <tbody v-if="list.length > 0">
             <tr>
               <th>单号</th>
+              <th>拆分单号</th>
               <th>收入项目</th>
               <th>收入金额</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.order_no }}</td>
+              <td>{{ item.slip_no }}</td>
               <td>{{ { data: costList, searchItem: 'id', value: item.cost_id, label: 'cost_name' } | getName }}</td>
               <td>{{ item.in_price }}</td>
               <td>
-                <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index, item.slip_id)">修&nbsp;&nbsp;改</b-button>
-                <b-button variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
+                <b-button variant="danger" @click="openDetailsAlert(item.id)">详&nbsp;&nbsp;情</b-button>
+                <front v-if="item.status === 2">已经签收的订单无法更改</front>
+                <b-button v-if="item.status != 2" variant="primary" style="color:white;" @click="openUpdateAlert(index, item.slip_id)"
+                  >修&nbsp;&nbsp;改</b-button
+                >
+                <b-button v-if="item.status != 2" variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
               </td>
             </tr>
           </tbody>
@@ -62,6 +70,66 @@
           @current-change="toSearch"
           :total="totalRow"
         ></el-pagination>
+        <!-- 详情 -->
+        <el-dialog width="60%" title="订单详情" :visible.sync="dialogUpdate" :fullscreen="false">
+          <div class="d-block text-center">
+            <div class="row">
+              <div class="col-lg-3 mb25">
+                <div class="lh44">单号：{{ inList.order_no }}</div>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">拆分单号：{{ inList.slip_no }}</div>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">收入项目：{{ inList.cost_name }}</div>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">件数：{{ inList.num }}</div>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">单价：{{ inList.price }}</div>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">应收金额：{{ inList.y_price }}</div>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">实收金额：{{ inList.in_price }}</div>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">状态：{{ inList.status === 2 ? '已送达' : '未送达' }}</div>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">创建日期：</div>
+                <el-date-picker
+                  style="width: 100%;"
+                  :disabled="true"
+                  v-model="inList.create_time"
+                  placeholder="要求发货日期"
+                  value-format="yyyy-MM-dd"
+                  format="yyyy-MM-dd"
+                  type="date"
+                >
+                </el-date-picker>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">备注：{{ inList.remark }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <b-button
+                variant="secondary"
+                @click="closeDetailsAlert()"
+                class="resetButton"
+                style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+                >返&nbsp;&nbsp;回</b-button
+              >
+            </div>
+          </div>
+        </el-dialog>
+
+        <!-- 修改收入单 -->
         <b-modal id="Edit" title="修改收入单" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
           <p class="marginBot5">收入项</p>
           <el-select class="marginBot" style="height:40px !important" v-model="form.cost_id" filterable placeholder="请选择支出项">
@@ -130,6 +198,7 @@ export default {
       totalRow: 0,
       deleteItem: '',
       select_order_no: '',
+      select_slip_no: '',
       roleValidator: new Validator({
         // car_id: [{ required: true, message: '请选择供应商' }],
         // driver_id: { required: true, message: '请选择司机' },
@@ -138,6 +207,8 @@ export default {
         // out_price: { required: true, message: '请填写支出金额' },
       }),
       slipId: '',
+      inList: {},
+      dialogUpdate: false,
     };
   },
   computed: {
@@ -171,13 +242,23 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let { totalRow, data } = await this.getInList({ skip: skip, limit: this.limit, order_no: this.select_order_no });
+      let { totalRow, data } = await this.getInList({ skip: skip, limit: this.limit, order_no: this.select_order_no, slip_no: this.select_slip_no });
       this.$set(this, 'totalRow', totalRow);
       if (totalRow == 0) {
         this.$set(this, 'list', {});
       } else {
         this.$set(this, 'list', data);
       }
+    },
+    //打开详情
+    async openDetailsAlert(id) {
+      let result = await this.$axios.get(`/zhwl/in/in_info?id=${id}`);
+      this.$set(this, 'inList', result.inInfo);
+      this.dialogUpdate = true;
+    },
+    //关闭详情
+    closeDetailsAlert() {
+      this.dialogUpdate = false;
     },
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
     async toValidate(type) {
