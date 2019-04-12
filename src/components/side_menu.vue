@@ -1,33 +1,6 @@
 <template lang="html">
   <div id="sideMenu" style="height: 100vh; display: block; background: #1c2b36;overflow-y: scroll !important;" class="rowBar">
     <div class="base-main-left" id="menuBox">
-      <!-- <div class="base-sidebar-menu">
-        <span class="title">操作面板</span>
-        <ul class="mainmenu">
-          <span v-for="(item, index) in menu" :key="index">
-            <div :id="`menu` + index" @click="openMenuList(index)" class="tit"><i class="fa-stack fa fa-cogs"></i>{{ item.name }}</div>
-            <b-collapse id="collapse" class="mainmenu" ref="collapse">
-              <b-card style="background-color:#1c2b36;">
-                <b-list-group>
-                  <div class="expand-triangle"></div>
-                  <b-list-group-item v-for="(menu_item, menu_index) in item.menu" :key="menu_index">
-                    <a :href="menu_item.uri">
-                      <li>
-                        <span> {{ menu_item.name }}</span>
-                      </li>
-                    </a>
-                  </b-list-group-item>
-                </b-list-group>
-              </b-card>
-            </b-collapse>
-          </span>
-        </ul>
-        <div class="base-footer">
-          智慧物流管理平台 <br />
-          Compyright © 2019-2020 <br />
-          当前版本：1.0
-        </div>
-      </div> -->
       <el-col :span="24" style="margin-bottom: 70px;">
         <span class="title">操作面板</span>
         <el-menu class="el-menu-vertical-demo" background-color="#1c2b36" text-color="#7ba0bb" active-text-color="#ffd04b" :unique-opened="true">
@@ -135,7 +108,7 @@ export default {
 
 <style lang="css" scoped>
 .el-menu {
-    border-right: solid 1px #e6e6e6;
+    border-right: solid 1px rgb(28, 43, 54);
     list-style: none;
     position: relative;
     margin: 0;
