@@ -57,7 +57,7 @@
             <td>{{ item.status | getStatus }}</td>
             <td>
               <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">详&nbsp;&nbsp;情</b-button>
-              <b-button variant="danger" style="color:white;" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button>
+              <b-button v-if="!(item.status === 2)" variant="danger" style="color:white;" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button>
             </td>
           </tr>
           <!-- </tbody>
@@ -134,7 +134,7 @@
         </div>
       </div>
       <b-button
-        v-if="is_update"
+        v-if="is_update && updateForm.status === 1"
         variant="primary"
         @click="is_update = false"
         class="resetButton"
@@ -417,6 +417,7 @@ export default {
       await this.getTransportSubList({ id: this.updateForm.id });
       this.$set(this, 'subForm', this.transportSubListVuex);
       this.signForm = {};
+      this.dialogDetail = true;
       this.dialogSign = false;
     },
     reset() {

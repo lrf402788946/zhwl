@@ -78,7 +78,7 @@
                 <b-button variant="success" style="color:white;margin-right:5px;" v-if="item.status === 1" @click="openAlert('sign', item.id)"
                   >签&nbsp;&nbsp;收</b-button
                 >
-                <b-button variant="danger" style="color:white;" v-if="item.status <= 2" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button>
+                <b-button variant="danger" style="color:white;" v-if="item.status < 2" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button>
               </td>
             </tr>
           </tbody>
@@ -386,7 +386,7 @@
             <el-tab-pane v-for="(item, index) in subForm" :key="index" :label="`货物${index + 1}`" :name="`${index}`">
               <div class="row">
                 <div class="col-lg-12 mb25" style="text-align: right;">
-                  <el-button type="danger" icon="el-icon-delete" circle @click="closeSubForm(index)"></el-button>
+                  <el-button type="danger" icon="el-icon-delete" circle @click="closeSubForm(index)" v-if="is_update && updateForm.status < 2"></el-button>
                 </div>
                 <div class="col-lg-3 mb25">
                   <div class="lh44">产品名称:</div>
@@ -434,6 +434,7 @@
         <div class="col-lg-4">
           <b-button
             variant="primary"
+            v-if="updateForm.status < 2"
             :disabled="is_update"
             @click="addSubForm()"
             class="resetButton"
@@ -441,9 +442,10 @@
             >添&nbsp;&nbsp;加</b-button
           >
         </div>
-        <div class="col-lg-4" v-if="is_update">
+        <div class="col-lg-4">
           <b-button
             variant="primary"
+            v-if="is_update && updateForm.status < 2"
             @click="is_update = false"
             class="resetButton"
             style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:70% !important; padding:6px 80px !important;"

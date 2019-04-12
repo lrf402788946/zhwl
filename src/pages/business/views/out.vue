@@ -14,7 +14,9 @@
             <td>支出单查询</td>
           </tr>
           <tr>
-            <td><b-form-input v-model="select_main_id" placeholder="输入运输单号"></b-form-input></td>
+            <td style="padding-right: 10px;"><b-form-input v-model="select_sub_id" placeholder="输入运输单号"></b-form-input></td>
+            <td style="padding-right: 10px;"><b-form-input v-model="select_order_no" placeholder="输入订单号"></b-form-input></td>
+            <td style="padding-right: 10px;"><b-form-input v-model="select_slip_no" placeholder="输入拆分单号"></b-form-input></td>
           </tr>
           <tr>
             <td>
@@ -31,6 +33,8 @@
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
             <tr>
+              <th>订单号</th>
+              <th>拆分单号</th>
               <th>供应商</th>
               <th>司机</th>
               <th>线路</th>
@@ -38,13 +42,15 @@
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
+              <td>{{ item.order_no }}</td>
+              <td>{{ item.slip_no }}</td>
               <td>{{ { data: carList, searchItem: 'id', value: item.car_id, label: 'car_onwer' } | getName }}</td>
               <td>{{ { data: driverList, searchItem: 'id', value: item.driver_id, label: 'name' } | getName }}</td>
               <td>{{ { data: dlyWayList, searchItem: 'id', value: item.dly_way_id, label: 'name' } | getName }}</td>
               <td>{{ item.out_price }}</td>
               <td>
-                <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">修&nbsp;&nbsp;改</b-button>
-                <b-button variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
+                <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">详&nbsp;&nbsp;情</b-button>
+                <b-button variant="danger" v-if="item.status < 2" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
               </td>
             </tr>
           </tbody>
@@ -65,26 +71,30 @@
           :total="totalRow"
         ></el-pagination>
         <b-modal id="Edit" title="修改支出单" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+          <p class="marginBot5">订单号</p>
+          <b-form-input v-model="form.order_no" :disabled="is_update"></b-form-input>
+          <p class="marginBot5">拆分单号</p>
+          <b-form-input v-model="form.slip_no" :disabled="is_update"></b-form-input>
           <p class="marginBot5">供应商</p>
-          <el-select class="marginBot" style="height:40px !important" v-model="form.car_id" filterable placeholder="请选择供应商">
+          <el-select class="marginBot" style="height:40px !important" v-model="form.car_id" :disabled="is_update" filterable placeholder="请选择供应商">
             <el-option v-for="(car, index) in carList" :key="index" :label="car.car_onwer" :value="car.id"></el-option>
           </el-select>
           <p class="marginBot5">司机</p>
-          <el-select class="marginBot" style="height:40px !important" v-model="form.driver_id" filterable placeholder="请选择司机">
+          <el-select class="marginBot" style="height:40px !important" v-model="form.driver_id" :disabled="is_update" filterable placeholder="请选择司机">
             <el-option v-for="(driver, index) in driverList" :key="index" :label="driver.name" :value="driver.id"></el-option>
           </el-select>
           <p class="marginBot5">线路</p>
-          <el-select class="marginBot" style="height:40px !important" v-model="form.dly_way_id" filterable placeholder="请选择线路">
+          <el-select class="marginBot" style="height:40px !important" v-model="form.dly_way_id" :disabled="is_update" filterable placeholder="请选择线路">
             <el-option v-for="(way, index) in dlyWayList" :key="index" :label="way.name" :value="way.id"></el-option>
           </el-select>
           <p class="marginBot5">支出项</p>
-          <el-select class="marginBot" style="height:40px !important" v-model="form.cost_id" filterable placeholder="请选择支出项">
+          <el-select class="marginBot" style="height:40px !important" v-model="form.cost_id" :disabled="is_update" filterable placeholder="请选择支出项">
             <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
           </el-select>
           <p class="marginBot5">支出金额</p>
-          <b-form-input v-model="form.out_price"></b-form-input>
+          <b-form-input v-model="form.out_price" :disabled="is_update"></b-form-input>
           <p class="marginBot5">备注</p>
-          <b-form-input v-model="form.remark"></b-form-input>
+          <b-form-input v-model="form.remark" :disabled="is_update"></b-form-input>
           <b-button
             variant="secondary"
             @click="closeAlert()"
@@ -94,10 +104,19 @@
           </b-button>
           <b-button
             variant="primary"
-            @click="toValidate('update')"
+            v-if="is_update && form.status < 2"
+            @click="is_update = false"
             style="font-size:16px !important; margin-top:25px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
           >
             修&nbsp;&nbsp;改
+          </b-button>
+          <b-button
+            variant="primary"
+            v-if="!is_update"
+            @click="toValidate('update')"
+            style="font-size:16px !important; margin-top:25px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+          >
+            保&nbsp;&nbsp;存
           </b-button>
         </b-modal>
 
@@ -142,8 +161,11 @@ export default {
       currentPage: 1,
       countNum: 0,
       totalRow: 0,
+      is_update: true,
       deleteItem: '',
-      select_main_id: '',
+      select_sub_id: '',
+      select_order_no: '',
+      select_slip_no: '',
       roleValidator: new Validator({
         car_id: [{ required: true, message: '请选择供应商' }],
         driver_id: { required: true, message: '请选择司机' },
@@ -184,7 +206,13 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let { totalRow, data } = await this.getOutList({ skip: skip, limit: this.limit, main_id: this.select_main_id });
+      let { totalRow, data } = await this.getOutList({
+        skip: skip,
+        limit: this.limit,
+        sub_id: this.select_sub_id,
+        order_no: this.select_order_no,
+        slip_no: this.select_slip_no,
+      });
       this.$set(this, 'totalRow', totalRow);
       if (totalRow == 0) {
         this.$set(this, 'list', {});
@@ -232,6 +260,7 @@ export default {
     //关闭弹框
     closeAlert() {
       this.$refs.Edit.hide();
+      this.is_update = true;
       this.operateId = '';
       this.form = {};
     },

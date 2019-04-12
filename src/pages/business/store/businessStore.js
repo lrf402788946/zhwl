@@ -57,8 +57,6 @@ const api = {
   inSave: '/zhwl/in/in_save',
   inEdit: '/zhwl/in/in_edit',
   inDelete: '/zhwl/in/in_delete',
-  //请求收费,支出,拆分的订单号
-  orderBus: '/zhwl/order/bus_no', //query:type: 1拆分,2支出,3收费
 };
 
 export const state = () => ({
@@ -578,9 +576,9 @@ export const actions = {
     }
   },
   //支出单列表
-  async getOutList({ commit }, { skip, limit, main_id }) {
+  async getOutList({ commit }, { skip, limit, sub_id, order_no, slip_no }) {
     try {
-      let result = await this.$axios.get(`${api.outList}?skip=${skip}&limit=${limit}&transport_main_id=${main_id}`);
+      let result = await this.$axios.get(`${api.outList}?skip=${skip}&limit=${limit}&transport_sub_id=${sub_id}&order_no=${order_no}&slip_no=${slip_no}`);
       if (result.rescode === '0') {
         return {
           totalRow: result.totalRow,
@@ -666,26 +664,6 @@ export const actions = {
       } else {
         Message.error('操作失败');
         console.warn(`error in method:orderSign`);
-        throw new Error('操作失败');
-      }
-    } catch (error) {
-      Message.error('操作失败');
-      console.error(error);
-    }
-  },
-  //请求单号
-  async orderBus({ commit }, { type, ...args }) {
-    if (type === undefined || type === null) {
-      Message.error('type为空');
-      throw new Error('type为空');
-    }
-    try {
-      let result = await this.$axios.post(api.orderBus, { type: type });
-      if (result.rescode === '0') {
-        Message.success('操作成功');
-      } else {
-        Message.error('操作失败');
-        console.warn(`error in method:orderBus`);
         throw new Error('操作失败');
       }
     } catch (error) {

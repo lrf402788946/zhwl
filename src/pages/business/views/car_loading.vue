@@ -121,7 +121,7 @@
                       <td>{{ item.goods_weight }}</td>
                       <td>{{ item.goods_volume }}</td>
                       <td>
-                        <el-select v-model="item.dly_way_id" placeholder="请选择线路" :disabled="true">
+                        <el-select v-model="item.dly_way_id" placeholder="请选择线路">
                           <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"> </el-option>
                         </el-select>
                       </td>
@@ -446,7 +446,7 @@ export default {
     },
     //获得运输单号
     async toGetTransportNo() {
-      let result = await this.getTransportNo({ car_no: this.form.car_no });
+      let result = await this.getTransportNo({ car_no: 'transport-' });
       this.$set(this.form, 'transport_no', result);
     },
     //关闭弹框
