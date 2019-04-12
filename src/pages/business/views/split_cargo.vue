@@ -437,7 +437,7 @@ export default {
     //打开收入的弹框
     async openIncomeAlert(index, slip_id) {
       this.yunfeiList.num = this.orderSubList[index].goods_num;
-      let result = await this.$axios.get(`/zhwl/in/in_list?skip=0&limit=1000&slip_id=${slip_id}&order_no=`);
+      let result = await this.$axios.get(`/zhwl/in/in_list?skip=0&limit=1000&slip_id=${slip_id}&order_no=&slip_no=`);
       let result1 = await this.$axios.get(`/zhwl/clientpact/client_pact_list?skip=0&limit=100000&cus_id=${this.orderSubList[index].cus_id}`);
       if (result.rescode === '0') {
         this.clientPactList = result1.clientPactList;
@@ -481,6 +481,7 @@ export default {
       }
       this.slipId = slip_id;
       this.$refs.incomeAlert.show();
+      this.yunfeiList.slip_no = this.orderSubList[index].slip_no;
     },
     //计算运费
     getFreight(pact_no) {
@@ -510,19 +511,26 @@ export default {
     async income() {
       let result = '';
       this.yunfeiList.pact_id = this.pact_id;
-      this.yunfeiList.cost_id = 2;
+      this.yunfeiList.cost_id = 1;
       delete this.yunfeiList.pact_no;
       // for (let index = 0; index < this.incomeForm.length; index++) {
       //   this.incomeForm[index].slip_id = this.slipId;
       // }
-      if (this.incomeForm.length > 8) {
-        for (let index = 1; index < this.incomeForm.length; index++) {
+      if (this.incomeForm[0].create_time != null) {
+        for (let index = 0; index < this.incomeForm.length; index++) {
           delete this.incomeForm[index].create_time;
-          delete this.incomeForm[index].id;
+          // delete this.incomeForm[index].id;
           delete this.incomeForm[index].order_no;
           delete this.incomeForm[index].slip_id;
+          delete this.incomeForm[index].status;
+          this.incomeForm[index].slip_no = JSON.parse(JSON.stringify(this.yunfeiList.slip_no));
         }
       }
+      delete this.yunfeiList.create_time;
+      // delete this.yunfeiList.id;
+      delete this.yunfeiList.order_no;
+      delete this.yunfeiList.slip_id;
+      delete this.yunfeiList.status;
       let incomeFormCopy = JSON.parse(JSON.stringify(this.incomeForm));
       incomeFormCopy.push(this.yunfeiList);
       for (let index = 0; index < this.deleteList.length; index++) {
