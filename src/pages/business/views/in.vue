@@ -35,18 +35,32 @@
             <tr>
               <th>单号</th>
               <th>拆分单号</th>
-              <th>收入项目</th>
-              <th>收入金额</th>
+              <th>合同</th><!-- *** -->
+              <th>项目名称</th><!-- *** -->
+              <th>收入名称</th>
+              <th>发货方式</th><!-- *** -->
+              <th>计算方式</th><!-- *** -->
+              <th>税率</th><!-- *** -->
+              <th>税前</th><!-- *** -->
+              <th>税后</th><!-- *** -->
+              <th>实际收入</th><!-- *** -->
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.order_no }}</td>
               <td>{{ item.slip_no }}</td>
+              <td>{{ item.in_price }}</td><!-- 合同*** -->
+              <td>{{ item.in_price }}</td><!-- 项目名称*** -->
               <td>{{ { data: costList, searchItem: 'id', value: item.cost_id, label: 'cost_name' } | getName }}</td>
-              <td>{{ item.in_price }}</td>
+              <td>{{ item.in_price === 1 ? '整车' : '零担' }}</td><!-- 发货方式*** -->
+              <td>{{ item.in_price === 1 ? '重量' : '体积' }}</td><!-- 计算方式*** -->
+              <td>{{ item.in_price }}</td><!-- 税率*** -->
+              <td>{{ item.in_price }}</td><!-- 税前*** -->
+              <td>{{ item.in_price }}</td><!-- 税后*** -->
+              <td>{{ item.in_price }}</td><!-- 实际收入 -->
               <td>
-                <b-button variant="danger" @click="openDetailsAlert(item.id)">详&nbsp;&nbsp;情</b-button>
-                <front v-if="item.status === 2">已经签收的订单无法更改</front>
+                <b-button variant="danger" @click="openDetailsAlert(item.id, item.status)">详&nbsp;&nbsp;情</b-button>
+                <front v-if="item.status === 2">已签收的订单无法更改</front>
                 <b-button v-if="item.status != 2" variant="primary" style="color:white;" @click="openUpdateAlert(index, item.slip_id)"
                   >修&nbsp;&nbsp;改</b-button
                 >
@@ -81,7 +95,22 @@
                 <div class="lh44">拆分单号：{{ inList.slip_no }}</div>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">收入项目：{{ inList.cost_name }}</div>
+                <div class="lh44">合同：{{ inList.in_price }}</div><!-- *** -->
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">项目名称：{{ inList.in_price }}</div><!-- *** -->
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">收入名称：{{ inList.cost_name }}</div>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">发货方式：{{ inList.slip_no === 1 ? '整车' : '零担' }}</div><!-- *** -->
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">计算方式：{{ inList.slip_no === 1 ? '重量' : '体积' }}</div><!-- *** -->
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">税率：{{ inList.in_price }}</div><!-- *** -->
               </div>
               <div class="col-lg-3 mb25">
                 <div class="lh44">件数：{{ inList.num }}</div>
@@ -90,13 +119,19 @@
                 <div class="lh44">单价：{{ inList.price }}</div>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">应收金额：{{ inList.y_price }}</div>
+                <div class="lh44">税前：{{ inList.in_price }}</div><!-- *** -->
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">实收金额：{{ inList.in_price }}</div>
+                <div class="lh44">税后：{{ inList.in_price }}</div><!-- *** -->
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">状态：{{ inList.status === 2 ? '已送达' : '未送达' }}</div>
+                <div class="lh44">应收金额：{{ inList.y_price }}</div><!-- *** -->
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">实收金额：{{ inList.in_price }}</div><!-- *** -->
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">状态：{{ showStatus === 2 ? '已送达' : '未送达' }}</div>
               </div>
               <div class="col-lg-3 mb25">
                 <div class="lh44">创建日期：</div>
@@ -130,15 +165,59 @@
         </el-dialog>
 
         <!-- 修改收入单 -->
-        <b-modal id="Edit" title="修改收入单" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
-          <p class="marginBot5">收入项</p>
-          <el-select class="marginBot" style="height:40px !important" v-model="form.cost_id" filterable placeholder="请选择支出项">
-            <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
-          </el-select>
-          <p class="marginBot5">收入金额</p>
-          <b-form-input v-model="form.in_price"></b-form-input>
-          <p class="marginBot5">备注</p>
-          <b-form-input v-model="form.remark"></b-form-input>
+        <b-modal id="Edit" title="修改收入单" size="lg" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+          <div class="d-block text-center">
+            <div class="row">
+              <div class="col-lg-3 mb25">
+                <div class="lh44">收入名称</div>
+                <el-select class="marginBot" style="height:40px !important" v-model="form.cost_id" filterable placeholder="请选择支出项">
+                  <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
+                </el-select>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">合同</div>
+                <b-form-input v-model="form.y_price"></b-form-input><!-- *** -->
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">发货方式</div>
+                <!-- *** -->
+                <el-select v-model="form.y_price" class="marginBot" style="height:40px !important" filterable placeholder="请选择发货方式">
+                  <el-option v-for="(item, index) in deliveryList" :key="index" :label="item.name" :value="item.id"></el-option>
+                </el-select>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">计算方式</div>
+                <!-- *** -->
+                <el-select v-model="form.y_price" class="marginBot" style="height:40px !important" filterable placeholder="请选择发货方式">
+                  <el-option v-for="(item, index) in calculationList" :key="index" :label="item.name" :value="item.id"></el-option>
+                </el-select>
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">税率</div>
+                <b-form-input v-model="form.y_price"></b-form-input><!-- *** -->
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">税前</div>
+                <b-form-input v-model="form.y_price"></b-form-input><!-- *** -->
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">税后</div>
+                <b-form-input v-model="form.y_price"></b-form-input><!-- *** -->
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">应收金额</div>
+                <b-form-input v-model="form.y_price"></b-form-input><!-- *** -->
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">实收金额</div>
+                <b-form-input v-model="form.in_price"></b-form-input><!-- *** -->
+              </div>
+              <div class="col-lg-3 mb25">
+                <div class="lh44">备注</div>
+                <b-form-input v-model="form.remark"></b-form-input>
+              </div>
+              </div>
+          </div>
           <b-button
             variant="secondary"
             @click="closeAlert()"
@@ -209,6 +288,9 @@ export default {
       slipId: '',
       inList: {},
       dialogUpdate: false,
+      showStatus: -1,
+      deliveryList: [{ id: 0, name: '整车' }, { id: 1, name: '零担'} ],
+      calculationList: [{ id: 0, name: '体积' }, { id: 1, name: '重量' }],
     };
   },
   computed: {
@@ -251,9 +333,10 @@ export default {
       }
     },
     //打开详情
-    async openDetailsAlert(id) {
+    async openDetailsAlert(id, status) {
       let result = await this.$axios.get(`/zhwl/in/in_info?id=${id}`);
       this.$set(this, 'inList', result.inInfo);
+      this.showStatus = status;
       this.dialogUpdate = true;
     },
     //关闭详情

@@ -10,7 +10,7 @@
               <span>{{ item.name }}</span>
             </template>
             <a v-for="(menu_item, menu_index) in item.menu" :key="menu_index" :href="menu_item.uri">
-              <el-menu-item :index="`${index}-${menu_index}`">{{ menu_item.name }}</el-menu-item>
+              <el-menu-item :index="`${index}-${menu_index}`">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ menu_item.name }}</el-menu-item>
             </a>
           </el-submenu>
         </el-menu>
