@@ -195,17 +195,11 @@
                 <td>{{ yunfeiList.rate }}</td>
                 <td>{{ yunfeiList.xm_name }}</td>
                 <td>
-                  <el-select
-                    @change="zhuangTai(yunfeiList.send_type)"
-                    v-model="yunfeiList.send_type"
-                    class="marginBot"
-                    style="height:40px !important"
-                    filterable
-                  >
+                  <el-select v-model="yunfeiList.send_type" class="marginBot" style="height:40px !important" filterable>
                     <el-option v-for="(item, index) in deliveryList" :key="index" :label="item.name" :value="item.id"></el-option>
                   </el-select>
                 </td>
-                <td v-if="zhuangtai === 0">
+                <td v-if="yunfeiList.send_type !== 1">
                   <el-select v-model="yunfeiList.count_type" class="marginBot" style="height:40px !important" filterable>
                     <el-option v-for="(item, index) in calculationList" :key="index" :label="item.name" :value="item.id"></el-option>
                   </el-select>
