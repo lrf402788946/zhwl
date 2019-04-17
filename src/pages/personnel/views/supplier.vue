@@ -1,21 +1,21 @@
 <template lang="html">
-  <div id="client">
+  <div id="supplier">
     <!-- 表格 begin -->
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">客户列表</a>
+          <a class="base-margin-left-20">供应商列表</a>
           <div class="button-table"></div>
         </div>
       </div>
       <div class="base-padding-20 base-bg-fff">
         <table>
           <tr>
-            <td>客户姓名查询:</td>
+            <td>供应商姓名查询:</td>
           </tr>
           <tr>
             <td>
-              <b-form-input v-model="select_client_name" placeholder="输入客户姓名" style="width:200px,margin-left:50px"></b-form-input>
+              <b-form-input v-model="select_client_name" placeholder="输入供应商姓名" style="width:200px,margin-left:50px"></b-form-input>
             </td>
             <td style="padding-left:60px">
               <b-button
@@ -37,20 +37,20 @@
             role="button"
             v-b-modal="'toAdd'"
           >
-            <i class="base-margin-right-5 fa fa-plus-square" style=" color:#fff !important;"></i>添加客户
+            <i class="base-margin-right-5 fa fa-plus-square" style=" color:#fff !important;"></i>添加供应商
           </a>
           <!-- 导入表格 -->
           <entrance @research="search"></entrance>
         </div>
         <div style="margin:10px 0;">
           <!-- 导出表格 -->
-          <exportExcel :exportTitle="th" :db_nameList="filterVal" dataName="list" fileName="客户表"></exportExcel>
+          <exportExcel :exportTitle="th" :db_nameList="filterVal" dataName="list" fileName="供应商表"></exportExcel>
         </div>
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
             <tr>
-              <th>客户名称</th>
-              <th>客户地址</th>
+              <th>供应商名称</th>
+              <th>供应商地址</th>
               <th>法人</th>
               <th>开户行</th>
               <th>银行账号</th>
@@ -88,12 +88,12 @@
         ></el-pagination>
       </div>
     </div>
-    <b-modal id="toAdd" title="添加客户" ref="toAdd" hide-footer>
+    <b-modal id="toAdd" title="添加供应商" ref="toAdd" hide-footer>
       <div style="margin-bottom: 7px;">所属人:</div>
       <el-select class="marginBot" style="height:40px !important" v-model="form.login_id" filterable placeholder="请选择所属员工">
         <el-option v-for="(user, index) in userList" :key="index" :label="user.user_name" :value="user.login_id"></el-option>
       </el-select>
-      <div style="margin-bottom: 7px;">客户名称:</div>
+      <div style="margin-bottom: 7px;">供应商名称:</div>
       <b-form-input v-model="form.name"></b-form-input>
       <div style="margin-bottom: 7px;">地址:</div>
       <b-form-input v-model="form.address"></b-form-input>
@@ -125,7 +125,7 @@
 
     <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block text-center">
-        <b-alert variant="danger" show>删除客户可能会影响您的管理,确认删除吗?</b-alert>
+        <b-alert variant="danger" show>删除供应商可能会影响您的管理,确认删除吗?</b-alert>
       </div>
       <b-button
         variant="danger"
@@ -144,7 +144,7 @@
     >
 
     <!-- 修改 -->
-    <b-modal id="updateAlert" title="修改客户" ref="updateAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+    <b-modal id="updateAlert" title="修改供应商" ref="updateAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block">
         <div class="row">
           <div class="col-lg-12 marginBot4">
@@ -154,7 +154,7 @@
             </el-select>
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">客户名称</p>
+            <p class="marginBot4">供应商名称</p>
             <b-form-input v-model="updateForm.name"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
@@ -214,9 +214,9 @@ import exportExcel from '@/components/exportExcel.vue';
 
 import _ from 'lodash';
 export default {
-  name: 'client',
+  name: 'supplier',
   metaInfo: {
-    title: '客户管理',
+    title: '供应商管理',
   },
   components: {
     entrance,
@@ -234,14 +234,14 @@ export default {
       value1: '',
       select_client_name: '',
       lzValidator: new Validator({
-        name: { type: 'string', required: true, message: '请填写客户名称' },
+        name: { type: 'string', required: true, message: '请填写供应商名称' },
         address: { type: 'string', required: true, message: '请填写地址' },
         legal_person: { type: 'string', required: true, message: '请填写法人' },
         bank: { type: 'string', required: true, message: '请填写开户行' },
         card_account: { type: 'string', required: true, message: '请填写银行账号' },
         taxes_no: { type: 'string', required: true, message: '请填写税号' },
       }),
-      th: ['客户名称', '地址', '法人', '开户行', '银行账号', '税号'],
+      th: ['供应商名称', '地址', '法人', '开户行', '银行账号', '税号'],
       filterVal: ['name', 'address', 'legal_person', 'bank', 'card_account', 'taxes_no'],
       is_title_search: false, //是否是模糊查询： true：是模糊查询； false： 不是模糊查询
       countNum: 0,
@@ -288,7 +288,7 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let totalRow = await this.getClientList({ skip: skip, limit: this.limit, type: '0' });
+      let totalRow = await this.getClientList({ skip: skip, limit: this.limit, type: '1' });
       this.$set(this, 'list', this.clientList);
       this.$set(this, 'totalRow', totalRow);
     },
@@ -302,7 +302,7 @@ export default {
       let totalRow = await this.getClientListLike({
         skip: skip,
         limit: this.limit,
-        type: '0',
+        type: '1',
         select_client_name: this.select_client_name,
       });
       this.$set(this, 'list', this.clientList);
@@ -319,7 +319,7 @@ export default {
       let totalRow = await this.getClientListLike({
         skip: skip,
         limit: this.limit,
-        type: '0',
+        type: '1',
         select_client_name: this.select_client_name,
       });
       this.$set(this, 'list', this.clientList);
@@ -327,7 +327,7 @@ export default {
     },
     //修改
     async update() {
-      this.updateForm.type = '0';
+      this.updateForm.type = '1';
       await this.clientOperation({ type: 'update', data: this.updateForm });
       this.updateForm = {};
       this.$refs.updateAlert.hide();
@@ -342,7 +342,7 @@ export default {
     },
     //添加
     async add() {
-      this.form.type = '0';
+      this.form.type = '1';
       await this.addClientlist({ data: this.form });
       this.form = {};
       this.$refs.toAdd.hide();

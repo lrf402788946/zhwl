@@ -162,16 +162,22 @@
       <div class="d-block text-center">
         <div class="row">
           <table class="table table-bordered table-striped ">
+            <tr>
+              <td style="width:10%">税前应收运费:{{ beforeTaxSum }}</td>
+              <td style="width:10%">税后应收运费:{{ afterTaxSum }}</td>
+              <td style="width:10%">税前实收运费:{{ beforeTaxRealSum }}</td>
+              <td style="width:10%">税后实收运费:{{ afterTaxRealSum }}</td>
+            </tr>
+          </table>
+
+          <table class="table table-bordered table-striped ">
             <tbody>
               <tr>
                 <td style="width:10%">合同</td>
                 <td style="width:6.5%">税率</td>
                 <td style="width:10%">项目名称</td>
-                <!-- *** -->
                 <td style="width:10%">发货方式</td>
-                <!-- *** -->
                 <td style="width:10%" v-if="zhuangtai === 0">计算方式</td>
-                <!-- *** -->
                 <td style="width:6.5%" v-if="zhuangtai === 0">数量</td>
                 <td style="width:6.5%" v-if="zhuangtai === 0">单价</td>
                 <td style="width:10%">税前应收运费</td>
@@ -208,10 +214,10 @@
                 <td v-if="zhuangtai === 0">{{ yunfeiList.price }}</td>
                 <td v-if="zhuangtai === 0">{{ yunfeiList.sq_ys }}</td>
                 <td v-if="zhuangtai === 0">{{ yunfeiList.sh_ys }}</td>
-                <td v-if="zhuangtai === 1"><b-form-input @change="feiyong(1)" v-model="yunfeiList.sq_ys" placeholder="请输入费用"></b-form-input></td>
-                <td v-if="zhuangtai === 1"><b-form-input @change="feiyong(2)" v-model="yunfeiList.sh_ys" placeholder="请输入费用"></b-form-input></td>
-                <td><b-form-input v-model="yunfeiList.sq_ss" placeholder="请输入费用"></b-form-input></td>
-                <td><b-form-input v-model="yunfeiList.sh_ss" placeholder="请输入费用"></b-form-input></td>
+                <td v-if="zhuangtai === 1"><b-form-input @change="feiyong(1)" v-model="yunfeiList.sq_ys"></b-form-input></td>
+                <td v-if="zhuangtai === 1"><b-form-input @change="feiyong(2)" v-model="yunfeiList.sh_ys"></b-form-input></td>
+                <td><b-form-input @change="getSumAll()" v-model="yunfeiList.sq_ss" placeholder="请输入费用"></b-form-input></td>
+                <td><b-form-input @change="getSumAll()" v-model="yunfeiList.sh_ss" placeholder="请输入费用"></b-form-input></td>
                 <td><b-form-input v-model="yunfeiList.remark" placeholder="备注"></b-form-input></td>
               </tr>
             </tbody>
@@ -238,10 +244,10 @@
                   <el-option v-for="(item, index) in taxRateList" :key="index" :label="item.name" :value="item.id"></el-option>
                 </el-select>
               </td>
-              <td><b-form-input v-model="item.sq_ys" placeholder="税前金额"></b-form-input></td>
-              <td><b-form-input v-model="item.sh_ys" placeholder="税后金额"></b-form-input></td>
-              <td><b-form-input v-model="item.sq_ss" placeholder="税前实收金额"></b-form-input></td>
-              <td><b-form-input v-model="item.sh_ss" placeholder="税后实收金额"></b-form-input></td>
+              <td><b-form-input @change="feiyongAuxiliary(1, index)" v-model="item.sq_ys" placeholder="税前金额"></b-form-input></td>
+              <td><b-form-input @change="feiyongAuxiliary(2, index)" v-model="item.sh_ys" placeholder="税后金额"></b-form-input></td>
+              <td><b-form-input @change="getSumAll()" v-model="item.sq_ss" placeholder="税前实收金额"></b-form-input></td>
+              <td><b-form-input @change="getSumAll()" v-model="item.sh_ss" placeholder="税后实收金额"></b-form-input></td>
               <td><b-form-input v-model="item.remark" placeholder="备注"></b-form-input></td>
               <td>
                 <b-button
@@ -329,6 +335,10 @@ export default {
       calculationList: [{ id: 0, name: '体积' }, { id: 1, name: '重量' }],
       taxRateList: [{ id: 0, name: 1 }, { id: 1, name: 1.03 }, { id: 2, name: 1.06 }, { id: 3, name: 1.1 }, { id: 4, name: 1.13 }],
       zhuangtai: 0,
+      beforeTaxSum: 0,
+      afterTaxSum: 0,
+      beforeTaxRealSum: 0,
+      afterTaxRealSum: 0,
     };
   },
   computed: {
@@ -363,6 +373,11 @@ export default {
       if (a === 1) {
         this.yunfeiList.sq_ys = null;
         this.yunfeiList.sh_ys = null;
+        this.yunfeiList.sq_ss = null;
+        this.yunfeiList.sh_ss = null;
+      }
+      if (a === 0) {
+        this.getFreight(this.pact_no);
       }
     },
     //获取拆分单号
@@ -466,13 +481,14 @@ export default {
       this.incomeForm.push(JSON.parse(JSON.stringify(this.incomeFormContent)));
     },
     //删除收费项
-    async deleteIncomeForm(i) {
+    deleteIncomeForm(i) {
       if (this.incomeForm[i].id === undefined) {
         this.incomeForm.splice(i, 1);
       } else {
         this.deleteList.push(this.incomeForm[i].id);
         this.incomeForm.splice(i, 1);
       }
+      this.getSumAll();
     },
     //打开拆分的弹框
     async openAlert(index) {
@@ -502,27 +518,11 @@ export default {
         this.incomeForm.splice(0, 1);
         this.addOrRevise = 1;
       } else {
-        this.$confirm('添加收入后不可再拆分, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        })
-          .then(() => {
-            this.$message({
-              type: 'success',
-              message: '继续添加',
-            });
-          })
-          .catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消添加',
-            });
-            this.closeIncomeAlert();
-          });
         this.yunfeiList.price = '';
-        this.yunfeiList.y_price = 0;
-        this.yunfeiList.in_price = 0;
+        this.yunfeiList.sq_ys = 0;
+        this.yunfeiList.sh_ys = 0;
+        this.yunfeiList.sq_ss = 0;
+        this.yunfeiList.sh_ss = 0;
         this.yunfeiList.remark = '';
         this.pact_no = '';
         this.incomeForm = [{}];
@@ -532,6 +532,7 @@ export default {
         } else {
           this.yunfeiList.y_price = 0;
         }
+        this.getSumAll();
       }
       this.slipId = slip_id;
       this.$refs.incomeAlert.show();
@@ -548,17 +549,65 @@ export default {
       }
       this.yunfeiList.sq_ys = this.yunfeiList.price * this.yunfeiList.num;
       this.yunfeiList.sh_ys = this.yunfeiList.price * this.yunfeiList.num * this.yunfeiList.rate;
+      this.yunfeiList.sq_ss = JSON.parse(JSON.stringify(this.yunfeiList.sq_ys));
+      this.yunfeiList.sh_ss = JSON.parse(JSON.stringify(this.yunfeiList.sh_ys));
+      this.getSumAll();
     },
     //税前税后费用计算
     feiyong(a) {
       if (a === 1) {
         let money = this.yunfeiList.sq_ys * this.yunfeiList.rate;
-        this.$set(this.yunfeiList, 'sh_ys', money);
+        this.yunfeiList.sh_ys = JSON.parse(JSON.stringify(money));
+        this.yunfeiList.sq_ss = JSON.parse(JSON.stringify(this.yunfeiList.sq_ys));
+        this.yunfeiList.sh_ss = JSON.parse(JSON.stringify(this.yunfeiList.sh_ys));
       }
       if (a === 2) {
         let money = this.yunfeiList.sh_ys / this.yunfeiList.rate;
-        this.$set(this.yunfeiList, 'sq_ys', money);
+        this.yunfeiList.sq_ys = JSON.parse(JSON.stringify(money));
+        this.yunfeiList.sq_ss = JSON.parse(JSON.stringify(this.yunfeiList.sq_ys));
+        this.yunfeiList.sh_ss = JSON.parse(JSON.stringify(this.yunfeiList.sh_ys));
       }
+      this.getSumAll();
+    },
+    //税前税后费用计算
+    feiyongAuxiliary(a, index) {
+      if (a === 1) {
+        let money = this.incomeForm[index].sq_ys * this.taxRateList[this.incomeForm[index].rate].name;
+        this.incomeForm[index].sh_ys = JSON.parse(JSON.stringify(money));
+        this.incomeForm[index].sq_ss = JSON.parse(JSON.stringify(this.incomeForm[index].sq_ys));
+        this.incomeForm[index].sh_ss = JSON.parse(JSON.stringify(this.incomeForm[index].sh_ys));
+      }
+      if (a === 2) {
+        let money = this.incomeForm[index].sh_ys / this.taxRateList[this.incomeForm[index].rate].name;
+        this.incomeForm[index].sq_ys = JSON.parse(JSON.stringify(money));
+        this.incomeForm[index].sq_ss = JSON.parse(JSON.stringify(this.incomeForm[index].sq_ys));
+        this.incomeForm[index].sh_ss = JSON.parse(JSON.stringify(this.incomeForm[index].sh_ys));
+      }
+      this.getSumAll();
+    },
+    //计算总费用
+    getSumAll() {
+      this.beforeTaxSum = 0;
+      this.afterTaxSum = 0;
+      this.beforeTaxRealSum = 0;
+      this.afterTaxRealSum = 0;
+      for (let index = 0; index < this.incomeForm.length; index++) {
+        if (
+          (this.incomeForm[index].sq_ys != null) &
+          (this.incomeForm[index].sh_ys != null) &
+          (this.incomeForm[index].sq_ss != null) &
+          (this.incomeForm[index].sh_ss != null)
+        ) {
+          this.beforeTaxSum += this.incomeForm[index].sq_ys;
+          this.afterTaxSum += this.incomeForm[index].sh_ys;
+          this.beforeTaxRealSum += this.incomeForm[index].sq_ss;
+          this.afterTaxRealSum += this.incomeForm[index].sh_ss;
+        }
+      }
+      this.beforeTaxSum = this.beforeTaxSum * 1 + this.yunfeiList.sq_ys * 1;
+      this.afterTaxSum = this.afterTaxSum * 1 + this.yunfeiList.sh_ys * 1;
+      this.beforeTaxRealSum = this.beforeTaxRealSum * 1 + this.yunfeiList.sq_ss * 1;
+      this.afterTaxRealSum = this.afterTaxRealSum * 1 + this.yunfeiList.sh_ss * 1;
     },
     //获取cost费用名称字段
     async getCostList() {
@@ -580,9 +629,6 @@ export default {
       this.yunfeiList.pact_id = this.pact_id;
       this.yunfeiList.cost_id = 1;
       delete this.yunfeiList.pact_no;
-      // for (let index = 0; index < this.incomeForm.length; index++) {
-      //   this.incomeForm[index].slip_id = this.slipId;
-      // }
       for (let index = 0; index < this.deleteList.length; index++) {
         await this.$axios.get(`/zhwl/in/in_delete?id=${this.deleteList[index]}`);
       }
@@ -591,7 +637,6 @@ export default {
         if (this.incomeForm[0].create_time != null) {
           for (let index = 0; index < this.incomeForm.length; index++) {
             delete this.incomeForm[index].create_time;
-            // delete this.incomeForm[index].id;
             delete this.incomeForm[index].order_no;
             delete this.incomeForm[index].slip_id;
             delete this.incomeForm[index].status;
@@ -599,7 +644,6 @@ export default {
           }
         }
         delete this.yunfeiList.create_time;
-        // delete this.yunfeiList.id;
         delete this.yunfeiList.order_no;
         delete this.yunfeiList.slip_id;
         delete this.yunfeiList.status;
@@ -613,7 +657,6 @@ export default {
         if (this.incomeForm[0].create_time != null) {
           for (let index = 0; index < this.incomeForm.length; index++) {
             delete this.incomeForm[index].create_time;
-            // delete this.incomeForm[index].id;
             delete this.incomeForm[index].order_no;
             delete this.incomeForm[index].slip_id;
             delete this.incomeForm[index].status;
@@ -621,7 +664,6 @@ export default {
           }
         }
         delete this.yunfeiList.create_time;
-        // delete this.yunfeiList.id;
         delete this.yunfeiList.order_no;
         delete this.yunfeiList.slip_id;
         delete this.yunfeiList.status;
