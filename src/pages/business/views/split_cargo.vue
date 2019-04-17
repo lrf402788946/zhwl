@@ -195,11 +195,17 @@
                 <td>{{ yunfeiList.rate }}</td>
                 <td>{{ yunfeiList.xm_name }}</td>
                 <td>
-                  <el-select v-model="yunfeiList.send_type" class="marginBot" style="height:40px !important" filterable>
+                  <el-select
+                    @change="zhuangTai(yunfeiList.send_type)"
+                    v-model="yunfeiList.send_type"
+                    class="marginBot"
+                    style="height:40px !important"
+                    filterable
+                  >
                     <el-option v-for="(item, index) in deliveryList" :key="index" :label="item.name" :value="item.id"></el-option>
                   </el-select>
                 </td>
-                <td v-if="yunfeiList.send_type !== 1">
+                <td v-if="zhuangtai === 0">
                   <el-select v-model="yunfeiList.count_type" class="marginBot" style="height:40px !important" filterable>
                     <el-option v-for="(item, index) in calculationList" :key="index" :label="item.name" :value="item.id"></el-option>
                   </el-select>
@@ -373,6 +379,7 @@ export default {
       if (a === 0) {
         this.getFreight(this.pact_no);
       }
+      this.getSumAll();
     },
     //获取拆分单号
     async getSlipNo() {
@@ -512,6 +519,7 @@ export default {
         this.incomeForm.splice(0, 1);
         this.addOrRevise = 1;
       } else {
+        this.yunfeiList.rate = '';
         this.yunfeiList.price = '';
         this.yunfeiList.sq_ys = 0;
         this.yunfeiList.sh_ys = 0;
@@ -567,15 +575,25 @@ export default {
     feiyongAuxiliary(a, index) {
       if (a === 1) {
         let money = this.incomeForm[index].sq_ys * this.taxRateList[this.incomeForm[index].rate].name;
-        this.incomeForm[index].sh_ys = JSON.parse(JSON.stringify(money));
-        this.incomeForm[index].sq_ss = JSON.parse(JSON.stringify(this.incomeForm[index].sq_ys));
-        this.incomeForm[index].sh_ss = JSON.parse(JSON.stringify(this.incomeForm[index].sh_ys));
+        let a = JSON.parse(JSON.stringify(money));
+        this.incomeForm[index].sh_ys = (a * 1).toFixed(2);
+        let b = JSON.parse(JSON.stringify(this.incomeForm[index].sq_ys));
+        this.incomeForm[index].sq_ss = (b * 1).toFixed(2);
+        let c = JSON.parse(JSON.stringify(this.incomeForm[index].sh_ys));
+        this.incomeForm[index].sh_ss = (c * 1).toFixed(2);
+        let d = JSON.parse(JSON.stringify(this.incomeForm[index].sq_ys));
+        this.incomeForm[index].sq_ys = (d * 1).toFixed(2);
       }
       if (a === 2) {
         let money = this.incomeForm[index].sh_ys / this.taxRateList[this.incomeForm[index].rate].name;
-        this.incomeForm[index].sq_ys = JSON.parse(JSON.stringify(money));
-        this.incomeForm[index].sq_ss = JSON.parse(JSON.stringify(this.incomeForm[index].sq_ys));
-        this.incomeForm[index].sh_ss = JSON.parse(JSON.stringify(this.incomeForm[index].sh_ys));
+        let a = JSON.parse(JSON.stringify(money));
+        this.incomeForm[index].sq_ys = (a * 1).toFixed(2);
+        let b = JSON.parse(JSON.stringify(this.incomeForm[index].sq_ys));
+        this.incomeForm[index].sq_ss = (b * 1).toFixed(2);
+        let c = JSON.parse(JSON.stringify(this.incomeForm[index].sh_ys));
+        this.incomeForm[index].sh_ss = (c * 1).toFixed(2);
+        let d = JSON.parse(JSON.stringify(this.incomeForm[index].sh_ys));
+        this.incomeForm[index].sh_ys = (d * 1).toFixed(2);
       }
       this.getSumAll();
     },
