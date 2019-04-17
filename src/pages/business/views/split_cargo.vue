@@ -170,10 +170,10 @@
                 <!-- *** -->
                 <td style="width:10%">发货方式</td>
                 <!-- *** -->
-                <td style="width:10%" v-if="zhuangtai === 0">计算方式</td>
+                <td style="width:10%" v-if="yunfeiList.send_type !== 1">计算方式</td>
                 <!-- *** -->
-                <td style="width:6.5%" v-if="zhuangtai === 0">数量</td>
-                <td style="width:6.5%" v-if="zhuangtai === 0">单价</td>
+                <td style="width:6.5%" v-if="yunfeiList.send_type !== 1">数量</td>
+                <td style="width:6.5%" v-if="yunfeiList.send_type !== 1">单价</td>
                 <td style="width:10%">税前应收运费</td>
                 <td style="width:10%">税后应收运费</td>
                 <td style="width:10%">税前实收运费</td>
@@ -189,29 +189,27 @@
                 <td>{{ yunfeiList.rate }}</td>
                 <td>{{ yunfeiList.xm_name }}</td>
                 <td>
-                  <el-select
-                    @change="zhuangTai(yunfeiList.send_type)"
-                    v-model="yunfeiList.send_type"
-                    class="marginBot"
-                    style="height:40px !important"
-                    filterable
-                  >
+                  <el-select v-model="yunfeiList.send_type" class="marginBot" style="height:40px !important" filterable>
                     <el-option v-for="(item, index) in deliveryList" :key="index" :label="item.name" :value="item.id"></el-option>
                   </el-select>
                 </td>
-                <td v-if="zhuangtai === 0">
+                <td v-if="yunfeiList.send_type !== 1">
                   <el-select v-model="yunfeiList.count_type" class="marginBot" style="height:40px !important" filterable>
                     <el-option v-for="(item, index) in calculationList" :key="index" :label="item.name" :value="item.id"></el-option>
                   </el-select>
                 </td>
-                <td v-if="zhuangtai === 0">{{ yunfeiList.num }}</td>
-                <td v-if="zhuangtai === 0">{{ yunfeiList.price }}</td>
-                <td v-if="zhuangtai === 0">{{ yunfeiList.sq_ys }}</td>
-                <td v-if="zhuangtai === 0">{{ yunfeiList.sh_ys }}</td>
-                <td v-if="zhuangtai === 1"><b-form-input @change="feiyong(1)" v-model="yunfeiList.sq_ys" placeholder="请输入费用"></b-form-input></td>
-                <td v-if="zhuangtai === 1"><b-form-input @change="feiyong(2)" v-model="yunfeiList.sh_ys" placeholder="请输入费用"></b-form-input></td>
-                <td><b-form-input v-model="yunfeiList.sq_ss" placeholder="请输入费用"></b-form-input></td>
-                <td><b-form-input v-model="yunfeiList.sh_ss" placeholder="请输入费用"></b-form-input></td>
+                <td v-if="yunfeiList.send_type !== 1">{{ yunfeiList.num }}</td>
+                <td v-if="yunfeiList.send_type !== 1">{{ yunfeiList.price }}</td>
+                <td v-if="yunfeiList.send_type !== 1">{{ yunfeiList.sq_ys }}</td>
+                <td v-if="yunfeiList.send_type !== 1">{{ yunfeiList.sh_ys }}</td>
+                <td v-if="yunfeiList.send_type === 1">
+                  <b-form-input @change="feiyong(1)" v-model="yunfeiList.sq_ys" placeholder="请输入税前应收"></b-form-input>
+                </td>
+                <td v-if="yunfeiList.send_type === 1">
+                  <b-form-input @change="feiyong(2)" v-model="yunfeiList.sh_ys" placeholder="请输入税后应收"></b-form-input>
+                </td>
+                <td><b-form-input v-model="yunfeiList.sq_ss" placeholder="请输入税前实收"></b-form-input></td>
+                <td><b-form-input v-model="yunfeiList.sh_ss" placeholder="请输入税后实收"></b-form-input></td>
                 <td><b-form-input v-model="yunfeiList.remark" placeholder="备注"></b-form-input></td>
               </tr>
             </tbody>
@@ -521,8 +519,6 @@ export default {
             this.closeIncomeAlert();
           });
         this.yunfeiList.price = '';
-        this.yunfeiList.y_price = 0;
-        this.yunfeiList.in_price = 0;
         this.yunfeiList.remark = '';
         this.pact_no = '';
         this.incomeForm = [{}];
@@ -552,11 +548,10 @@ export default {
     //税前税后费用计算
     feiyong(a) {
       if (a === 1) {
-        let money = this.yunfeiList.sq_ys * this.yunfeiList.rate;
-        this.$set(this.yunfeiList, 'sh_ys', money);
+        this.$set(this.yunfeiList, 'sh_ys', this.yunfeiList.sq_ys * 1 * (this.yunfeiList.rate * 1));
       }
       if (a === 2) {
-        let money = this.yunfeiList.sh_ys / this.yunfeiList.rate;
+        let money = (this.yunfeiList.sh_ys * 1) / (this.yunfeiList.rate * 1);
         this.$set(this.yunfeiList, 'sq_ys', money);
       }
     },

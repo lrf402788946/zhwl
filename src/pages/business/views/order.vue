@@ -177,6 +177,14 @@
             >
             </el-date-picker>
           </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">发货方式:</div>
+            <el-select class="marginBot" style="height:40px !important" v-model="form.send_type" filterable placeholder="请选择发货方式">
+              <el-option :value="0" label="零担运输"></el-option>
+              <el-option :value="1" label="整车运输"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-8 mb25"></div>
           <!--line2-->
           <div class="col-lg-4 mb25">
             <div class="lh44">发货地址：</div>
@@ -351,6 +359,21 @@
             >
             </el-date-picker>
           </div>
+          <div class="col-lg-4 mb25">
+            <div class="lh44">发货方式:</div>
+            <el-select
+              class="marginBot"
+              style="height:40px !important"
+              v-model="updateForm.send_type"
+              :disabled="is_update"
+              filterable
+              placeholder="请选择发货方式"
+            >
+              <el-option :value="0" label="零担运输"></el-option>
+              <el-option :value="1" label="整车运输"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-8 mb25"></div>
           <!--line2-->
           <div class="col-lg-4 mb25">
             <div class="lh44">发货地址：</div>
@@ -389,10 +412,6 @@
                   <el-button type="danger" icon="el-icon-delete" circle @click="closeSubForm(index)" v-if="is_update && updateForm.status < 2"></el-button>
                 </div>
                 <div class="col-lg-3 mb25">
-                  <div class="lh44">产品名称:</div>
-                  <b-form-input v-model="item.goods_name" :disabled="is_update" placeholder="请填写产品名称"></b-form-input>
-                </div>
-                <div class="col-lg-3 mb25">
                   <div class="lh44">数量:</div>
                   <b-form-input v-model="item.goods_num" :disabled="is_update" type="number"></b-form-input>
                 </div>
@@ -417,6 +436,10 @@
                 <div class="col-lg-3 mb25">
                   <div class="lh44">体积:</div>
                   <b-form-input v-model="item.goods_volume" :disabled="is_update" type="number"></b-form-input>
+                </div>
+                <div class="col-lg-3 mb25">
+                  <div class="lh44">产品名称:</div>
+                  <b-form-input v-model="item.goods_name" :disabled="is_update" placeholder="请填写产品名称"></b-form-input>
                 </div>
                 <div class="col-lg-3 mb25">
                   <div class="lh44">线路:</div>
@@ -555,11 +578,6 @@ export default {
         send_time_hp: [{ required: true, message: '请选择要求发货日期' }],
         reach_time_hp: [{ required: true, message: '请选择要求到达日期' }],
         send_address: [{ required: true, message: '请选择发货地址' }],
-        send_name: [{ required: true, message: '请填写发货人' }],
-        send_tel: [{ required: true, message: '请填写发货人联系方式' }],
-        take_address: [{ required: true, message: '请选择收货地址' }],
-        take_name: [{ required: true, message: '请选择收货人姓名' }],
-        take_tel: [{ required: true, message: '请选择收货人联系方式' }],
       }),
       th: ['订单号', '订单人', '订单日期', '备注'],
       filterVal: ['order_no', 'user_name', 'in_date', 'remark'],
