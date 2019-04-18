@@ -55,6 +55,10 @@ export const CAR = {
       name: '车辆日常维修记录',
       uri: '/car.html#/car_daily_detail',
     },
+    {
+      name: '车辆支出管理',
+      uri: '/car.html#/car_transport',
+    },
   ],
 };
 
@@ -86,12 +90,12 @@ export const BUSINESS = {
       uri: '/business.html#/car_loading',
     },
     {
-      name: '线路管理',
-      uri: '/business.html#/dly_way',
-    },
-    {
       name: '运输管理',
       uri: '/business.html#/transport',
+    },
+    {
+      name: '线路管理',
+      uri: '/business.html#/dly_way',
     },
     {
       name: '货物管理',

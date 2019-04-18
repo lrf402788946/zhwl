@@ -17,6 +17,9 @@ const api = {
   carDetailSave: '/zhwl/car/car_daily_detail_save',
   carDetailEdit: '/zhwl/car/car_daily_detail_edit',
   carDetailDelete: '/zhwl/car/car_daily_detail_delete',
+  //查询运输信息,管理车辆支出,单车核算用
+  tripPackList: '/zhwl/transport/return_trip_list',
+  tripSave: '/zhwl/transport/trip_save',
 };
 
 export const state = () => ({
@@ -115,6 +118,48 @@ export const actions = {
     } catch (err) {
       Message.error('操作失败');
       console.error(err);
+    }
+  },
+
+  /**
+   * 查询单车核算-合并=>运输记录列表
+   * @param {car_no} 车号
+   */
+  async getTripList({ commit }, { car_no }) {
+    try {
+      let result = await this.$axios.get(`${api.tripPackList}?car_no=${car_no}`);
+      if (result.rescode === '0') {
+        return {
+          totalRow: result.totalRow,
+          data: result.dataList,
+        };
+      } else {
+        return { totalRow: 0, data: null };
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      console.error(error);
+    }
+  },
+  /**
+   * 支出单操作
+   * @param form 合并主表信息
+   * @param subForm 车辆支出单信息
+   * @param type 具体操作
+   */
+  async tripOperation({ commit }, { form, subForm, type }) {
+    try {
+      let result = await this.$axios.post(_.get(api, type), { data: { trip: form, subForm: subForm } });
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+        console.warn(`error in method:${type}`);
+        throw new Error('操作失败');
+      }
+    } catch (error) {
+      Message.error('操作失败');
+      console.error(error);
     }
   },
 };

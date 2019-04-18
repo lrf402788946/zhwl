@@ -10,6 +10,7 @@ import split_cargo from './views/split_cargo.vue';
 import cost from './views/cost.vue';
 import out from './views/out.vue';
 import in_page from './views/in.vue';
+
 Vue.use(Router);
 
 export default new Router({
