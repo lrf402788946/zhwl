@@ -72,9 +72,9 @@ export const mutations = {
 export const actions = {
   //查询客户列表
   async getClientList({ commit }, payload) {
-    const { skip, limit } = payload;
+    const { skip, limit, type } = payload;
     try {
-      let result = await this.$axios.get(`${api.clientList}?skip=${skip}&limit=${limit}`);
+      let result = await this.$axios.get(`${api.clientList}?skip=${skip}&limit=${limit}&type=${type}`);
       if (result.rescode === '0') {
         commit(types.CLIENT_LIST, result.clientList);
         return result.totalRow;
@@ -90,9 +90,9 @@ export const actions = {
   },
   //模糊查询客户列表方法
   async getClientListLike({ commit }, payload) {
-    const { skip, limit, select_client_name } = payload;
+    const { skip, limit, select_client_name, type } = payload;
     try {
-      let result = await this.$axios.get(`${api.clientList}?skip=${skip}&limit=${limit}&name=${select_client_name}`);
+      let result = await this.$axios.get(`${api.clientList}?skip=${skip}&limit=${limit}&type=${type}&name=${select_client_name}`);
       if (result.rescode === '0') {
         commit(types.CLIENT_LIST, result.clientList);
         return result.totalRow;
