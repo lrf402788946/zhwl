@@ -1,10 +1,9 @@
 <template lang="html">
-  <div id="transport_pack">
+  <div id="car_cost">
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">车辆支出添加</a>
-          <div style="float:right"><el-button type="primary" @click="$router.push({ path: '/car_transport' })" plain>返回</el-button></div>
+          <a class="base-margin-left-20">单车核算</a>
           <div class="button-table"></div>
         </div>
       </div>
@@ -14,8 +13,23 @@
             <div class="col-lg-3 marginBot4">
               <p class="marginBot4">查询车号:</p>
               <el-select class="marginBot" style="height:40px !important" v-model="select_car_no" filterable placeholder="请选择要查询的车号">
+                <el-option value="" label="所有车辆"></el-option>
                 <el-option v-for="(car, index) in carList" :key="index" :label="car.car_no" :value="car.car_no"></el-option>
               </el-select>
+            </div>
+            <div class="col-lg-4 marginBot4">
+              <p class="marginBot4">日期范围查询:</p>
+              <el-date-picker
+                style="width:100%; height: 34px !important; line-height: 34px !important;"
+                v-model="select_in_date"
+                value-format="yyyy-MM-dd"
+                format="yyyy-MM-dd"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+              >
+              </el-date-picker>
             </div>
             <div class="col-lg-2 marginBot4">
               <b-button
@@ -27,31 +41,20 @@
             </div>
           </div>
         </div>
-        <div class="base-align-right" style="margin-bottom: 20px;">
-          <a
-            class="btn btn-info base-margin-bottom"
-            style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
-            data-toggle="tooltip"
-            title=""
-            role="button"
-            @click="openAlert('add')"
-          >
-            <i class="base-margin-right-5 fa fa-plus-square"></i>添加支出详细
-          </a>
-        </div>
+        <div class="base-align-right" style="margin-bottom: 20px;"></div>
         <table class="table table-btransported table-striped ">
-          <!-- <tbody v-if="transportList.length > 0"> -->
+          <!-- <tbody v-if="carCostList.length > 0"> -->
           <tr>
-            <th><el-button type="warning" @click="() => (loading_list = [])">重新选择</el-button></th>
-            <th>运输单号</th>
+            <th>车号</th>
+            <th>总收入</th>
+            <th>总支出</th>
+            <th>合计</th>
           </tr>
-          <tr v-for="(item, index) in transportList" :key="index">
-            <td>
-              <b-form-checkbox-group id="loading_list" name="loading_list" v-model="loading_list">
-                <b-form-checkbox :value="item"></b-form-checkbox>
-              </b-form-checkbox-group>
-            </td>
-            <td>{{ item.transport_no }}</td>
+          <tr v-for="(item, index) in carCostList" :key="index">
+            <td>{{ item.car_no }}</td>
+            <td>{{ item.inPrice ? item.inPrice : 0 }}</td>
+            <td>{{ item.outPrice ? item.outPrice : 0 }}</td>
+            <td>{{ item.inPrice * 1 - item.outPrice * 1 }}</td>
           </tr>
           <!-- </tbody>
           <tbody v-else>
@@ -171,18 +174,16 @@
 import { mapActions, mapState } from 'vuex';
 import _ from 'lodash';
 export default {
-  name: 'transport_pack',
+  name: 'car_cost',
   components: {},
   data() {
     return {
-      transportList: [{ id: 1, transport_no: '11' }, { id: 2, transport_no: '22' }, { id: 3, transport_no: '33' }],
+      carCostList: [{ id: 1, transport_no: '11' }, { id: 2, transport_no: '22' }, { id: 3, transport_no: '33' }],
       form: {},
       subForm: [],
       select_car_no: '',
-      select_to: '',
-      select_back: '',
       costList: [],
-      loading_list: [],
+      select_in_date: [],
     };
   },
   computed: {
@@ -196,10 +197,18 @@ export default {
     (data = data.filter(item => item.cost_type !== '0')), this.$set(this, 'costList', data);
   },
   methods: {
-    ...mapActions(['getTripPackList', 'getCarList', 'getCostList', 'tripOperation']),
+    ...mapActions(['getCarList', 'getCostList', 'getCarCostList']),
     async search() {
-      let { totalRow, data } = await this.getTripPackList({ car_no: this.select_car_no });
-      this.$set(this, `transportList`, data);
+      if (this.select_in_date.length <= 0) {
+        this.$message.error('请选择查询时间');
+        return false;
+      }
+      let { totalRow, data } = await this.getCarCostList({
+        car_no: this.select_car_no,
+        start_time: this.select_in_date.length > 0 ? this.select_in_date[0] : '',
+        end_time: this.select_in_date.length > 0 ? this.select_in_date[1] : '',
+      });
+      this.$set(this, `carCostList`, data);
     },
     async add() {
       let newForm = JSON.parse(JSON.stringify(this.form));

@@ -67,6 +67,10 @@ export const CAR = {
       name: '车辆支出管理',
       uri: '/car.html#/car_transport',
     },
+    {
+      name: '单车核算',
+      uri: '/car.html#/car_cost',
+    },
   ],
 };
 

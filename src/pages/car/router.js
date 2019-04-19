@@ -5,6 +5,8 @@ import car from './views/car.vue';
 import car_daily_detail from './views/car_daily_detail.vue';
 import car_transport from './views/car_transport.vue';
 import transport_pack from './views/transport_pack.vue';
+import car_cost from './views/car_cost.vue';
+
 Vue.use(Router);
 
 export default new Router({
@@ -33,6 +35,16 @@ export default new Router({
           path: '/transport_pack',
           name: 'transport_pack',
           component: transport_pack,
+        },
+        {
+          path: '/transport_pack',
+          name: 'transport_pack',
+          component: transport_pack,
+        },
+        {
+          path: '/car_cost',
+          name: 'car_cost',
+          component: car_cost,
         },
       ],
     },
