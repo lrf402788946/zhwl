@@ -178,7 +178,7 @@ export default {
   components: {},
   data() {
     return {
-      carCostList: [{ id: 1, transport_no: '11' }, { id: 2, transport_no: '22' }, { id: 3, transport_no: '33' }],
+      carCostList: [],
       form: {},
       subForm: [],
       select_car_no: '',
