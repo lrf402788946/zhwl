@@ -4,7 +4,7 @@
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">客户合同列表</a>
+          <a class="base-margin-left-20">供应商合同列表</a>
           <div class="button-table"></div>
         </div>
       </div>
@@ -48,7 +48,7 @@
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
             <tr>
-              <th>客户</th>
+              <th>供应商</th>
               <th>合同编号</th>
               <th>甲方</th>
               <th>乙方</th>
@@ -95,7 +95,7 @@
     </div>
     <!--添加-->
     <b-modal id="toAdd" title="添加合同" ref="toAdd" hide-footer>
-      <div style="margin-bottom: 7px;">选择客户:</div>
+      <div style="margin-bottom: 7px;">选择供应商:</div>
       <el-select class="marginBot" style="height:40px !important" v-model="form.cus_id" filterable placeholder="请选择客户">
         <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
       </el-select>
@@ -158,7 +158,7 @@
       <div class="d-block">
         <div class="row">
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">选择客户</p>
+            <p class="marginBot4">选择供应商</p>
             <el-select class="marginBot" style="height:40px !important" v-model="updateForm.cus_id" filterable placeholder="请选择客户">
               <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
             </el-select>
@@ -276,7 +276,7 @@ export default {
   },
   async created() {
     this.search();
-    await this.getClientList({ skip: 0, limit: '10000', type: 0 });
+    await this.getClientList({ skip: 0, limit: '10000', type: 1 });
   },
   methods: {
     ...mapActions(['getClientList', 'getContractList', 'contractOperation']),

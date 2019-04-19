@@ -4,6 +4,7 @@
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
           <a class="base-margin-left-20">车辆支出添加</a>
+          <div style="float:right"><el-button type="primary" @click="$router.push({ path: '/car_transport' })" plain>返回</el-button></div>
           <div class="button-table"></div>
         </div>
       </div>
@@ -41,28 +42,14 @@
         <table class="table table-btransported table-striped ">
           <!-- <tbody v-if="transportList.length > 0"> -->
           <tr>
-            <th><el-button type="warning" @click="() => ((select_back = ''), (select_to = ''))">重新选择</el-button></th>
+            <th><el-button type="warning" @click="() => (loading_list = [])">重新选择</el-button></th>
             <th>运输单号</th>
           </tr>
           <tr v-for="(item, index) in transportList" :key="index">
             <td>
-              <el-button
-                :type="select_to === item.id ? 'success' : 'primary'"
-                v-if="select_back !== item.id"
-                :disabled="select_to === item.id"
-                @click="choose('select_to', item.id)"
-                circle
-              >
-                发出
-              </el-button>
-              <el-button
-                :type="select_back === item.id ? 'success' : 'info'"
-                v-if="select_to !== item.id"
-                :disabled="select_back === item.id"
-                @click="choose('select_back', item.id)"
-                circle
-                >返程</el-button
-              >
+              <b-form-checkbox-group id="loading_list" name="loading_list" v-model="loading_list">
+                <b-form-checkbox :value="item"></b-form-checkbox>
+              </b-form-checkbox-group>
             </td>
             <td>{{ item.transport_no }}</td>
           </tr>
@@ -77,19 +64,11 @@
         <b-modal id="pack" title="合并车辆支出" ref="pack" size="xl" hide-footer no-close-on-backdrop no-close-on-esc no-enforce-focus>
           <div class="d-block text-center">
             <div class="row">
-              <div class="col-lg-3 mb25">
+              <div class="col-lg-4 mb25">
                 <div class="lh44">操作人：</div>
                 <b-form-input v-model="form.login_id"></b-form-input>
               </div>
-              <div class="col-lg-3 mb25">
-                <div class="lh44">运输单号：</div>
-                <b-form-input v-model="form.transport_no_go" :disabled="true"></b-form-input>
-              </div>
-              <div class="col-lg-3 mb25">
-                <div class="lh44">运输回城单号：</div>
-                <b-form-input v-model="form.transport_no_back" :disabled="true"></b-form-input>
-              </div>
-              <div class="col-lg-3 mb25">
+              <div class="col-lg-4 mb25">
                 <div class="lh44">操作日期</div>
                 <el-date-picker
                   style="width: 100%;"
@@ -100,6 +79,10 @@
                   type="date"
                 >
                 </el-date-picker>
+              </div>
+              <div class="col-lg-12 mb25">
+                <div class="lh44">运输单号：</div>
+                <b-form-input v-model="form.transport_nos" :disabled="true"></b-form-input>
               </div>
               <table class="table table-btransported table-striped ">
                 <tbody>
@@ -199,6 +182,7 @@ export default {
       select_to: '',
       select_back: '',
       costList: [],
+      loading_list: [],
     };
   },
   computed: {
@@ -212,9 +196,9 @@ export default {
     (data = data.filter(item => item.cost_type !== '0')), this.$set(this, 'costList', data);
   },
   methods: {
-    ...mapActions(['getTripList', 'getCarList', 'getCostList', 'tripOperation']),
+    ...mapActions(['getTripPackList', 'getCarList', 'getCostList', 'tripOperation']),
     async search() {
-      let { totalRow, data } = await this.getTripList({ car_no: this.select_car_no });
+      let { totalRow, data } = await this.getTripPackList({ car_no: this.select_car_no });
       this.$set(this, `transportList`, data);
     },
     choose(type, id) {
@@ -225,23 +209,23 @@ export default {
       newForm['car_no'] = this.select_car_no;
       await this.tripOperation({ form: newForm, subForm: this.subForm, type: 'tripSave' });
       this.reset();
+      this.search();
       this.$refs.pack.hide();
     },
     //打开与关闭修改和删除的弹框
     async openAlert(type, id) {
-      if (this.select_to === '' || this.select_back === '') {
+      if (this.loading_list.length <= 0) {
         this.$message.error('请选择要合并的运输单');
         return false;
       }
-      this.transportList.map(item => {
-        if (item.id === this.select_to) {
-          this.$set(this.form, 'transport_no_go', item.transport_no);
-          this.$set(this.form, 'transport_id_go', item.id);
-        } else if (item.id === this.select_back) {
-          this.$set(this.form, 'transport_no_back', item.transport_no);
-          this.$set(this.form, 'transport_id_back', item.id);
-        }
+      let transport_ids;
+      let transport_nos;
+      this.loading_list.map(item => {
+        transport_ids = transport_ids === undefined ? `${item.id}` : `${transport_ids},${item.id}`;
+        transport_nos = transport_nos === undefined ? `${item.transport_no}` : `${transport_nos},${item.transport_no}`;
       });
+      this.$set(this.form, `transport_ids`, transport_ids);
+      this.$set(this.form, `transport_nos`, transport_nos);
       this.subForm.length > 0 ? '' : this.addSubForm();
       this.$refs.pack.show();
     },

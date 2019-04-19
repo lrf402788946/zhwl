@@ -39,12 +39,16 @@ export const PERSONNEL = {
       uri: '/personnel.html#/driver',
     },
     {
-      name: '合同管理',
+      name: '客户合同管理',
       uri: '/personnel.html#/contract',
     },
     {
       name: '供应商管理',
       uri: '/personnel.html#/supplier',
+    },
+    {
+      name: '供应商合同管理',
+      uri: '/personnel.html#/supplier_contract',
     },
   ],
 };

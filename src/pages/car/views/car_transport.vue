@@ -12,22 +12,14 @@
         <div>
           <div class="row" style="margin-bottom: 15px !important;">
             <div class="col-lg-3 marginBot4">
+              <p class="marginBot4">查询车号:</p>
+              <el-select class="marginBot" style="height:40px !important" v-model="select_car_no" filterable placeholder="请选择要查询的车号">
+                <el-option v-for="(car, index) in carList" :key="index" :label="car.car_no" :value="car.car_no"></el-option>
+              </el-select>
+            </div>
+            <div class="col-lg-3 marginBot4">
               <p class="marginBot4">查询运输单号:</p>
               <b-form-input v-model="select_transport_no" placeholder="输入运输单号"></b-form-input>
-            </div>
-            <div class="col-lg-4 marginBot4">
-              <p class="marginBot4">日期查询:</p>
-              <el-date-picker
-                style="width:100%; height: 34px !important; line-height: 34px !important;"
-                v-model="select_in_date"
-                value-format="yyyy-MM-dd"
-                format="yyyy-MM-dd"
-                type="daterange"
-                range-separator="-"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-              >
-              </el-date-picker>
             </div>
             <div class="col-lg-2 marginBot4">
               <b-button
@@ -53,19 +45,19 @@
         </div>
         <div class="base-align-right" style="margin-bottom: 20px;"></div>
         <table class="table table-btransported table-striped ">
-          <!-- <tbody v-if="transportList.length > 0"> -->
+          <!-- <tbody v-if="tripList.length > 0"> -->
           <tr>
-            <th>发车运输单号</th>
-            <th>回城运输单号</th>
+            <th>运输单号</th>
             <th>操作</th>
           </tr>
-          <tr v-for="(item, index) in transportList" :key="index">
-            <td>{{ item.transport_no_go }}</td>
-            <td>{{ item.transport_no_back }}</td>
+          <tr v-for="(item, index) in tripList" :key="index">
+            <td>{{ item.transport_nos }}</td>
             <td>
-              <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">详&nbsp;&nbsp;情</b-button>
-              <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">结&nbsp;&nbsp;账</b-button>
-              <b-button v-if="!(item.status === 2)" variant="danger" style="color:white;" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button>
+              <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', item.id)">详&nbsp;&nbsp;情</b-button>
+              <b-button variant="success" v-if="item.status !== '1'" style="color:white; margin-right:5px;" @click="openAlert('checkout', item.id)">
+                结&nbsp;&nbsp;账
+              </b-button>
+              <!-- <b-button v-if="!(item.status === 2)" variant="danger" style="color:white;" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button> -->
             </td>
           </tr>
           <!-- </tbody>
@@ -91,103 +83,138 @@
     </div>
 
     <!--详情-->
-    <el-dialog :visible.sync="dialogDetail" title="运输详情" width="90%" close-on-click-modal close-on-press-escape center>
+    <el-dialog :visible.sync="dialogDetail" title="运输详情" width="90%" :show-close="false" close-on-click-modal close-on-press-escape center>
       <div class="d-block text-center">
         <div class="row">
           <div class="col-lg-4 mb25">
-            <div class="lh44">运输单号：</div>
-            <b-form-input v-model="updateForm.transport_no" :disabled="true" placeholder="车牌号"></b-form-input>
+            <div class="lh44">操作人：</div>
+            <b-form-input v-model="updateForm.login_id" :disabled="true"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
-            <div class="lh44">发货日期：</div>
+            <div class="lh44">操作日期</div>
             <el-date-picker
               style="width: 100%;"
+              v-model="updateForm.create_time"
               :disabled="true"
-              v-model="updateForm.send_time"
-              placeholder="发货日期"
+              placeholder="操作日期"
               value-format="yyyy-MM-dd"
               format="yyyy-MM-dd"
               type="date"
             >
             </el-date-picker>
           </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">线路：</div>
-            <b-form-input v-model="updateForm.content" :disabled="true" filterable placeholder="请输入运输线路" />
+          <div class="col-lg-12 mb25">
+            <div class="lh44">运输单号：</div>
+            <b-form-input v-model="updateForm.transport_nos" :disabled="true"></b-form-input>
           </div>
-          <br />
           <table class="table table-btransported table-striped ">
             <tbody>
               <tr>
-                <td>订单号</td>
-                <td>货物名称</td>
-                <td>线路</td>
-                <td>状态</td>
+                <td>费用项目</td>
+                <td>费用金额</td>
+                <td>操作时间</td>
+                <td>操作人</td>
+                <td>备注</td>
                 <td>操作</td>
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
-                <td>{{ item.order_no }}</td>
-                <td>{{ item.goods_name }}</td>
                 <td>
-                  {{ { data: dlyWayList, searchItem: 'id', value: item.dly_way_id, label: 'name' } | getName }}
+                  <el-select style="height:40px !important" :disabled="is_update" v-model="item.cost_id" filterable placeholder="请选择支出项">
+                    <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
+                  </el-select>
                 </td>
-                <td>{{ item.status === 1 ? '未到达' : '已到达' }}</td>
                 <td>
-                  <el-button v-if="item.status === 1" type="primary" icon="el-icon-edit" @click="openAlert('sign', item.id)">签收</el-button>
-                  <p v-else>已签收</p>
+                  <b-form-input v-model="item.price" type="number" :disabled="is_update"></b-form-input>
+                </td>
+                <td>
+                  <el-date-picker
+                    style="width:100%; height: 34px !important; line-height: 34px !important;"
+                    v-model="item.create_time"
+                    :disabled="is_update"
+                    value-format="yyyy-MM-dd"
+                    format="yyyy-MM-dd"
+                    type="date"
+                    placeholder="请选择操作时间"
+                  >
+                  </el-date-picker>
+                </td>
+                <td>
+                  <b-form-input v-model="item.login_id" :disabled="is_update"></b-form-input>
+                </td>
+                <td>
+                  <b-form-input v-model="item.remark" :disabled="is_update"></b-form-input>
+                </td>
+                <td>
+                  <el-button type="danger" icon="el-icon-delete" :disabled="is_update" circle @click="() => subForm.splice(index, 1)"></el-button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-      <b-button
-        v-if="is_update && updateForm.status === 1"
-        variant="primary"
-        @click="is_update = false"
-        class="resetButton"
-        style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
-        >修&nbsp;&nbsp;改</b-button
-      >
-      <!-- <b-button
+      <div class="row">
+        <div class="col-lg-4">
+          <b-button
+            variant="primary"
+            v-if="is_update && updateForm.status !== '1'"
+            @click="is_update = false"
+            class="resetButton"
+            style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:70% !important; padding:6px 80px !important;"
+            >修&nbsp;&nbsp;改</b-button
+          >
+          <b-button
+            variant="primary"
+            v-if="!is_update"
+            @click="() => subForm.push({})"
+            class="resetButton"
+            style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:70% !important; padding:6px 80px !important;"
+            >添&nbsp;&nbsp;加</b-button
+          >
+        </div>
+        <!-- <b-button
         variant="primary"
         @click="exportExcel()"
         class="resetButton"
         style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
         >导&nbsp;&nbsp;出</b-button
       > -->
-      <b-button
-        v-if="!is_update"
-        variant="primary"
-        @click="toValidate('update')"
-        class="resetButton"
-        style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
-        >保&nbsp;&nbsp;存</b-button
-      >
-      <b-button
-        variant="secondary"
-        @click="closeAlert('update')"
-        class="resetButton"
-        style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #ccc !important;  width:30% !important; padding:6px 80px !important;"
-        >返&nbsp;&nbsp;回</b-button
-      >
+        <div class="col-lg-4">
+          <b-button
+            v-if="!is_update"
+            variant="primary"
+            @click="toValidate('update')"
+            class="resetButton"
+            style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:70% !important; padding:6px 80px !important;"
+            >保&nbsp;&nbsp;存</b-button
+          >
+        </div>
+        <div class="col-lg-4">
+          <b-button
+            variant="secondary"
+            @click="closeAlert('update')"
+            class="resetButton"
+            style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #ccc !important;  width:70% !important; padding:6px 80px !important;"
+            >返&nbsp;&nbsp;回</b-button
+          >
+        </div>
+      </div>
     </el-dialog>
     <!--删除弹框-->
-    <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+    <b-modal id="checkout" title="确认结算" ref="checkoutAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block text-center">
-        <b-alert variant="danger" show>删除订单可能会有严重影响,确认删除吗?</b-alert>
+        <b-alert variant="danger" show>确认结算吗?</b-alert>
       </div>
       <b-button
-        variant="danger"
+        variant="success"
         style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-        @click="toDelete()"
-        >删&nbsp;&nbsp;除</b-button
+        @click="toEnd()"
+        >结&nbsp;&nbsp;算</b-button
       >
       <b-button
         variant="primary"
         style="font-size:16px !important; margin-top:25px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
         class="resetButton"
-        @click="closeAlert('delete')"
+        @click="closeAlert('checkout')"
         >返&nbsp;&nbsp;回</b-button
       >
     </b-modal>
@@ -206,38 +233,20 @@ export default {
   },
   data() {
     return {
-      list: [],
-      transportList: [], //没用
+      updateForm: {},
+      tripList: [],
       subForm: [],
-      signForm: {},
       is_update: true,
       operateId: '',
       currentPage: 1,
       totalRow: 0,
-      form: {},
-      updateForm: {},
       mainValidator: new Validator({
         // op: [{ required: true, message: '请填写操作人' }],
       }),
-      signValidator: new Validator({
-        sign_name: { required: true, message: '请填写签收人' },
-        sign_time: { required: true, message: '请选择签收日期' },
-      }),
-      th: ['订单号', '订单人', '订单日期', '备注'],
-      filterVal: ['transport_no', 'user_name', 'in_date', 'remark'],
       select_transport_no: '',
       select_car_no: '',
-      select_driver_id: '',
-      select_in_date: [],
-      chooseStatus: [
-        // { text: '待发', value: '0' },
-        { text: '装车', value: '1' },
-        { text: '到达', value: '2' },
-        // { text: '支付完成', value: '3' },
-        // { text: '收款完成', value: '4' },
-      ],
       dialogDetail: false,
-      dialogSign: false,
+      costList: [],
     };
   },
   watch: {},
@@ -245,13 +254,16 @@ export default {
     ...mapState({
       limit: state => state.publics.limit,
       userInfo: state => state.publics.userInfo,
+      carList: state => state.self.carList,
     }),
   },
   async created() {
-    // this.search();
+    await this.getCarList({ skip: 0, limit: 10000 });
+    let { data } = await this.getCostList({ skip: 0, limit: 10000 });
+    (data = data.filter(item => item.cost_type !== '0')), this.$set(this, 'costList', data);
   },
   methods: {
-    ...mapActions([]),
+    ...mapActions(['getTripList', 'getCarList', 'getCostList', 'tripOperation']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -263,27 +275,19 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let totalRow = await this.getTransportList({
+      let { totalRow, data } = await this.getTripList({
         skip: skip,
         limit: this.limit,
         transport_no: this.select_transport_no,
         car_no: this.select_car_no,
-        driver_id: this.select_driver_id,
-        start_time: this.select_in_date === null ? '' : this.select_in_date.length > 0 ? this.select_in_date[0] : '',
-        end_time: this.select_in_date === null ? '' : this.select_in_date.length > 0 ? this.select_in_date[1] : '',
       });
       this.$set(this, 'totalRow', totalRow);
+      if (totalRow > 0) {
+        this.$set(this, 'tripList', data);
+      }
     },
     //验证
     toValidate(type) {
-      if (type === 'sign') {
-        this.signValidator.validate(this.signForm, (errors, fields) => {
-          if (errors) {
-            return this.handleErrors(errors, fields);
-          }
-          return this.toSign();
-        });
-      }
       this.mainValidator.validate(type === 'add' ? this.form : this.updateForm, (errors, fields) => {
         if (errors) {
           return this.handleErrors(errors, fields);
@@ -298,55 +302,41 @@ export default {
     //修改
     async update() {
       try {
-        delete this.updateForm.drivername;
-        await this.transportEdit({ form: this.updateForm, subForm: this.subForm });
+        this.subForm.map(item => delete item.cost_name);
+        await this.tripOperation({ type: 'tripEdit', id: this.updateForm.id, subForm: this.subForm });
         this.closeAlert('update');
         this.updateForm = [];
         this.subForm = [];
         this.is_update = true;
         this.search();
       } catch (error) {
-        console.error('error in line 504');
+        console.log(error);
       }
     },
-    //删除
-    async toDelete() {
-      try {
-        await this.transportDelete({ id: this.operateId });
-        this.closeAlert('delete');
-        this.search();
-      } catch (error) {
-        console.error('error in line 517');
-      }
+    //结算
+    async toEnd() {
+      await this.tripOperation({ type: 'tripEnd', id: this.operateId });
+      this.closeAlert('checkout');
+      this.search();
     },
     //打开与关闭修改和删除的弹框
     async openAlert(type, id) {
       if (type === 'update') {
         this.dialogDetail = true;
-        this.updateForm = JSON.parse(JSON.stringify(this.transportList[id]));
-        await this.getTransportSubList({ id: this.updateForm.id });
-        this.$set(this, 'subForm', this.transportSubListVuex);
-      } else if (type === 'delete') {
-        this.$refs.deleteAlert.show();
+        let result = await this.tripOperation({ id: id, type: 'tripInfo' });
+        this.$set(this, 'updateForm', result.trip);
+        this.$set(this, 'subForm', result.tripOutList);
+      } else if (type === 'checkout') {
+        this.$refs.checkoutAlert.show();
         this.operateId = id;
-      } else if (type === 'add') {
-        this.form.login_id = this.userInfo.login_id;
-        this.form.user_name = this.userInfo.user_name;
-        this.addSubForm('open');
-        this.$refs.addAlert.show();
-      } else if (type === 'sign') {
-        this.signForm['id'] = id;
-        this.dialogSign = true;
       }
     },
     //关闭弹框
     closeAlert(type) {
       if (type === 'update') {
         this.dialogDetail = false;
-      } else if (type === 'delete') {
-        this.$refs.deleteAlert.hide();
-      } else if (type === 'sign') {
-        this.dialogSign = false;
+      } else if (type === 'checkout') {
+        this.$refs.checkoutAlert.hide();
       }
       this.is_update = true;
       this.operateId = '';
@@ -361,15 +351,8 @@ export default {
       }, {});
       console.debug(errors, fields);
     },
-    //添加字表数据
-    addSubForm(type) {
-      this.subForm.push({});
-    },
     reset() {
-      this.form = {};
       this.subForm = [];
-      this.form.user_name = this.userInfo.user_name;
-      this.form.login_id = this.userInfo.login_id;
     },
   },
   filters: {

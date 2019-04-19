@@ -8,6 +8,7 @@ import post from './views/post.vue';
 import staff from './views/staff.vue';
 import contract from './views/contract.vue';
 import supplier from './views/supplier.vue';
+import supplier_contract from './views/supplier_contract.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -51,6 +52,11 @@ export default new Router({
           path: '/supplier',
           name: 'supplier',
           component: supplier,
+        },
+        {
+          path: '/supplier_contract',
+          name: 'supplier_contract',
+          component: supplier_contract,
         },
       ],
     },

@@ -41,14 +41,12 @@
           <tbody v-if="list.length > 0">
             <tr>
               <th>机动车所有人</th>
-              <th>类别</th>
               <th>机动车登记编号</th>
               <th>身份证明代码</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.car_onwer }}</td>
-              <td>{{ item.type === '0' ? '自供' : '供应商' }}</td>
               <td>{{ item.car_no }}</td>
               <td>{{ item.it_member }}</td>
               <td>

@@ -249,90 +249,6 @@
               </el-tab-pane>
             </el-tabs>
           </div>
-          <!-- <el-tab-pane label="所装货物" name="1">
-                <table class="table table-bordered table-striped ">
-                  <tbody>
-                    <tr>
-                      <td>订单号</td>
-                      <td>货物名称</td>
-                      <td>运输金额</td>
-                      <td>线路</td>
-                      <td>操作</td>
-                    </tr>
-                    <tr v-for="(item, index) in subForm" :key="index">
-                      <td><b-form-input v-model="item.order_no" :disabled="true"></b-form-input></td>
-                      <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
-                      <td><b-form-input v-model="item.price" :disabled="true"></b-form-input></td>
-                      <td>
-                        <el-select v-model="item.dly_way_id" placeholder="请选择线路" :disabled="true">
-                          <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"> </el-option>
-                        </el-select>
-                      </td>
-                      <td>
-                        <b-button
-                          variant="danger"
-                          :disabled="false"
-                          @click="clearSubForm(index)"
-                          class="resetButton"
-                          style="margin-top: 23px; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
-                          >删&nbsp;&nbsp;除</b-button
-                        >
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </el-tab-pane>
-              <el-tab-pane label="支出单" name="2">
-                <div class="col-lg-1 mb25">
-                  <el-button size="mini" type="primary" icon="el-icon-plus" circle @click="() => costForm.push({})"></el-button>
-                </div>
-                <div style="padding: 0px 20px;" v-for="(item, index) in costForm" :key="index">
-                  <div class="row" style="border-top: 1px solid">
-                    <div class="col-lg-4 mb25">
-                      <div class="lh44">供应商</div>
-                      <el-select class="marginBot" style="height:40px !important" v-model="item.car_id" filterable placeholder="请选择供应商">
-                        <el-option v-for="(car, index) in carList" :key="index" :label="car.car_onwer" :value="car.id"></el-option>
-                      </el-select>
-                    </div>
-                    <div class="col-lg-4 mb25">
-                      <div class="lh44">司机</div>
-                      <el-select class="marginBot" style="height:40px !important" v-model="item.driver_id" filterable placeholder="请选择司机">
-                        <el-option v-for="(driver, index) in driverList" :key="index" :label="driver.name" :value="driver.id"></el-option>
-                      </el-select>
-                    </div>
-                    <div class="col-lg-4 mb25">
-                      <div class="lh44">线路</div>
-                      <el-select class="marginBot" style="height:40px !important" v-model="item.dly_way_id" filterable placeholder="请选择线路">
-                        <el-option v-for="(way, index) in dlyWayList" :key="index" :label="way.name" :value="way.id"></el-option>
-                      </el-select>
-                    </div>
-                    <div class="col-lg-4 mb25">
-                      <div class="lh44">支出项</div>
-                      <el-select class="marginBot" style="height:40px !important" v-model="item.cost_id" filterable placeholder="请选择支出项">
-                        <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
-                      </el-select>
-                    </div>
-                    <div class="col-lg-4 mb25">
-                      <div class="lh44">支出金额</div>
-                      <b-form-input v-model="item.out_price"></b-form-input>
-                    </div>
-                    <div class="col-lg-11 mb25">
-                      <div class="lh44">备注</div>
-                      <b-form-input v-model="item.remark"></b-form-input>
-                    </div>
-                    <div class="col-lg-1 mb25">
-                      <el-button
-                        style="position: relative;top: 30px;"
-                        size="mini"
-                        type="danger"
-                        icon="el-icon-minus"
-                        circle
-                        @click="index => costForm.splice(index, 1)"
-                      ></el-button>
-                    </div>
-                  </div>
-                </div>
-              </el-tab-pane> -->
         </div>
       </div>
       <b-button
@@ -405,7 +321,7 @@ export default {
     await this.getCarList({ skip: 0, limit: 10000 });
     await this.getdly_wayList({ skip: 0, limit: 10000 });
     await this.getDriverList({ skip: 0, limit: 10000 });
-    await this.getClientList({ skip: 0, limit: 10000 });
+    await this.getClientList({ skip: 0, limit: 10000, type: 1 });
     let { data } = await this.getCostList({ skip: 0, limit: 10000 });
     (data = data.filter(item => item.cost_type !== '0')), this.$set(this, 'costList', data);
     this.search();
