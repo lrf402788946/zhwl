@@ -103,3 +103,17 @@ export const BUSINESS = {
     },
   ],
 };
+
+export const SETTLEMENT = {
+  name: '结算单管理',
+  menu: [
+    {
+      name: '客户结算单',
+      uri: '/settlement.html#/customerStatement',
+    },
+    {
+      name: '供应商结算单',
+      uri: '/settlement.html#/vendorStatement',
+    },
+  ],
+};

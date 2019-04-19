@@ -180,8 +180,8 @@
           <div class="col-lg-4 mb25">
             <div class="lh44">发货方式:</div>
             <el-select class="marginBot" style="height:40px !important" v-model="form.send_type" filterable placeholder="请选择发货方式">
-              <el-option :value="0" label="零担运输"></el-option>
-              <el-option :value="1" label="整车运输"></el-option>
+              <el-option value="0" label="零担运输"></el-option>
+              <el-option value="1" label="整车运输"></el-option>
             </el-select>
           </div>
           <div class="col-lg-8 mb25"></div>
@@ -645,7 +645,7 @@ export default {
   },
   async created() {
     this.search();
-    await this.getClientList({ skip: 0, limit: 10000 });
+    await this.getClientList({ skip: 0, limit: 10000, type: 0 });
     await this.getdly_wayList({ skip: 0, limit: 10000 });
   },
   methods: {

@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { SYSTEM, PERSONNEL, CAR, BUSINESS } from '@/util/role_menu.js';
+import { SYSTEM, PERSONNEL, CAR, BUSINESS, SETTLEMENT } from '@/util/role_menu.js';
 import { mapState } from 'vuex';
 export default {
   name: 'sideMenu',
@@ -49,6 +49,7 @@ export default {
       this.menu.push(PERSONNEL);
       this.menu.push(CAR);
       this.menu.push(BUSINESS);
+      this.menu.push(SETTLEMENT);
     },
     // menuList() {
     //   let newMenu = [];

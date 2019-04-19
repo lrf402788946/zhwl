@@ -8,6 +8,7 @@ module.exports = {
     business: 'src/pages/business/main.js',
     personnel: 'src/pages/personnel/main.js',
     car: 'src/pages/car/main.js',
+    settlement: 'src/pages/settlement/main.js',
   },
   configureWebpack: config => {
     Object.assign(config, {

@@ -36,48 +36,38 @@
               <th>单号</th>
               <th>拆分单号</th>
               <th>合同</th>
-              <!-- *** -->
               <th>项目名称</th>
-              <!-- *** -->
+              <th>单价</th>
               <th>收入名称</th>
+              <th>辆份收费</th>
               <th>发货方式</th>
-              <!-- *** -->
               <th>计算方式</th>
-              <!-- *** -->
-              <th>税率</th>
-              <!-- *** -->
-              <th>税前</th>
-              <!-- *** -->
-              <th>税后</th>
-              <!-- *** -->
-              <th>实际收入</th>
-              <!-- *** -->
+              <!-- <th>税率</th>
+              <th>税前应收</th>
+              <th>税后应收</th>
+              <th>税前实收</th>
+              <th>税后实收</th> -->
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.order_no }}</td>
               <td>{{ item.slip_no }}</td>
-              <td>{{ item.in_price }}</td>
-              <!-- 合同*** -->
-              <td>{{ item.in_price }}</td>
-              <!-- 项目名称*** -->
+              <td>{{ item.pact_no }}</td>
+              <td>{{ item.xm_name }}</td>
+              <td>{{ item.price }}</td>
               <td>{{ { data: costList, searchItem: 'id', value: item.cost_id, label: 'cost_name' } | getName }}</td>
-              <td>{{ item.in_price === 1 ? '整车' : '零担' }}</td>
-              <!-- 发货方式*** -->
-              <td>{{ item.in_price === 1 ? '重量' : '体积' }}</td>
-              <!-- 计算方式*** -->
-              <td>{{ item.in_price }}</td>
-              <!-- 税率*** -->
-              <td>{{ item.in_price }}</td>
-              <!-- 税前*** -->
-              <td>{{ item.in_price }}</td>
-              <!-- 税后*** -->
-              <td>{{ item.in_price }}</td>
-              <!-- 实际收入 -->
+              <td>{{ item.is_lf === '1' ? '否' : '是' }}</td>
+              <td>{{ item.send_type === '1' ? '整车' : '零担' }}</td>
+              <td>{{ item.count_type === '1' ? '重量' : '体积' }}</td>
+              <!-- <td>{{ item.rate }}</td>
+              <td>{{ item.sq_ys }}</td>
+              <td>{{ item.sh_ys }}</td>
+              <td>{{ item.sq_ss }}</td>
+              <td>{{ item.sh_ss }}</td> -->
               <td>
                 <b-button variant="danger" @click="openDetailsAlert(item.id, item.status)">详&nbsp;&nbsp;情</b-button>
                 <front v-if="item.status === 2">已签收的订单无法更改</front>
-                <b-button v-if="item.status != 2" variant="primary" style="color:white;" @click="openUpdateAlert(index, item.slip_id)"
+                <b-button v-if="item.status != 2" variant="primary" style="color:white;" @click="openUpdateAlert(item.id, item.status, item.slip_id)"
                   >修&nbsp;&nbsp;改</b-button
                 >
                 <b-button v-if="item.status != 2" variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
@@ -111,27 +101,22 @@
                 <div class="lh44">拆分单号：{{ inList.slip_no }}</div>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">合同：{{ inList.in_price }}</div>
-                <!-- *** -->
+                <div class="lh44">合同：{{ inList.pact_no }}</div>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">项目名称：{{ inList.in_price }}</div>
-                <!-- *** -->
+                <div class="lh44">项目名称：{{ inList.xm_name }}</div>
               </div>
               <div class="col-lg-3 mb25">
                 <div class="lh44">收入名称：{{ inList.cost_name }}</div>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">发货方式：{{ inList.slip_no === 1 ? '整车' : '零担' }}</div>
-                <!-- *** -->
+                <div class="lh44">发货方式：{{ inList.send_type === 1 ? '整车' : '零担' }}</div>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">计算方式：{{ inList.slip_no === 1 ? '重量' : '体积' }}</div>
-                <!-- *** -->
+                <div class="lh44">计算方式：{{ inList.count_type === 1 ? '重量' : '体积' }}</div>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">税率：{{ inList.in_price }}</div>
-                <!-- *** -->
+                <div class="lh44">税率：{{ inList.rate }}</div>
               </div>
               <div class="col-lg-3 mb25">
                 <div class="lh44">件数：{{ inList.num }}</div>
@@ -140,20 +125,16 @@
                 <div class="lh44">单价：{{ inList.price }}</div>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">税前：{{ inList.in_price }}</div>
-                <!-- *** -->
+                <div class="lh44">税前应收金额：{{ inList.sq_ys }}</div>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">税后：{{ inList.in_price }}</div>
-                <!-- *** -->
+                <div class="lh44">税后应收金额：{{ inList.sh_ys }}</div>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">应收金额：{{ inList.y_price }}</div>
-                <!-- *** -->
+                <div class="lh44">税前实收金额：{{ inList.sq_ss }}</div>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">实收金额：{{ inList.in_price }}</div>
-                <!-- *** -->
+                <div class="lh44">税后实收金额：{{ inList.sh_ss }}</div>
               </div>
               <div class="col-lg-3 mb25">
                 <div class="lh44">状态：{{ showStatus === 2 ? '已送达' : '未送达' }}</div>
@@ -195,53 +176,35 @@
             <div class="row">
               <div class="col-lg-3 mb25">
                 <div class="lh44">收入名称</div>
-                <el-select class="marginBot" style="height:40px !important" v-model="form.cost_id" filterable placeholder="请选择支出项">
+                <el-select :disabled="true" class="marginBot" style="height:40px !important" v-model="form.cost_id" filterable placeholder="请选择支出项">
                   <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
                 </el-select>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">合同</div>
-                <b-form-input v-model="form.y_price"></b-form-input
-                ><!-- *** -->
-              </div>
-              <div class="col-lg-3 mb25">
-                <div class="lh44">发货方式</div>
-                <!-- *** -->
-                <el-select v-model="form.y_price" class="marginBot" style="height:40px !important" filterable placeholder="请选择发货方式">
-                  <el-option v-for="(item, index) in deliveryList" :key="index" :label="item.name" :value="item.id"></el-option>
-                </el-select>
-              </div>
-              <div class="col-lg-3 mb25">
                 <div class="lh44">计算方式</div>
-                <!-- *** -->
-                <el-select v-model="form.y_price" class="marginBot" style="height:40px !important" filterable placeholder="请选择发货方式">
+                <el-select v-model="form.count_type" class="marginBot" style="height:40px !important" filterable placeholder="请选择发货方式">
                   <el-option v-for="(item, index) in calculationList" :key="index" :label="item.name" :value="item.id"></el-option>
                 </el-select>
               </div>
               <div class="col-lg-3 mb25">
                 <div class="lh44">税率</div>
-                <b-form-input v-model="form.y_price"></b-form-input
-                ><!-- *** -->
+                <b-form-input :disabled="true" v-model="form.rate"></b-form-input>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">税前</div>
-                <b-form-input v-model="form.y_price"></b-form-input
-                ><!-- *** -->
+                <div class="lh44">税前应收</div>
+                <b-form-input :disabled="true" v-model="form.sq_ys"></b-form-input>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">税后</div>
-                <b-form-input v-model="form.y_price"></b-form-input
-                ><!-- *** -->
+                <div class="lh44">税后应收</div>
+                <b-form-input :disabled="true" v-model="form.sh_ys"></b-form-input>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">应收金额</div>
-                <b-form-input v-model="form.y_price"></b-form-input
-                ><!-- *** -->
+                <div class="lh44">税前实收</div>
+                <b-form-input v-model="form.sq_ss"></b-form-input>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">实收金额</div>
-                <b-form-input v-model="form.in_price"></b-form-input
-                ><!-- *** -->
+                <div class="lh44">税后实收</div>
+                <b-form-input v-model="form.sh_ss"></b-form-input>
               </div>
               <div class="col-lg-3 mb25">
                 <div class="lh44">备注</div>
@@ -311,17 +274,13 @@ export default {
       select_slip_no: '',
       roleValidator: new Validator({
         // car_id: [{ required: true, message: '请选择供应商' }],
-        // driver_id: { required: true, message: '请选择司机' },
-        // dly_way_id: { required: true, message: '请选择线路' },
-        // cost_id: { required: true, message: '请选择支出项' },
-        // out_price: { required: true, message: '请填写支出金额' },
       }),
       slipId: '',
       inList: {},
       dialogUpdate: false,
       showStatus: -1,
-      deliveryList: [{ id: 0, name: '整车' }, { id: 1, name: '零担' }],
-      calculationList: [{ id: 0, name: '体积' }, { id: 1, name: '重量' }],
+      deliveryList: [{ id: '0', name: '整车' }, { id: '1', name: '零担' }],
+      calculationList: [{ id: '0', name: '体积' }, { id: '1', name: '重量' }],
     };
   },
   computed: {
@@ -363,13 +322,6 @@ export default {
         this.$set(this, 'list', data);
       }
     },
-    //打开详情
-    async openDetailsAlert(id, status) {
-      let result = await this.$axios.get(`/zhwl/in/in_info?id=${id}`);
-      this.$set(this, 'inList', result.inInfo);
-      this.showStatus = status;
-      this.dialogUpdate = true;
-    },
     //关闭详情
     closeDetailsAlert() {
       this.dialogUpdate = false;
@@ -399,15 +351,32 @@ export default {
       this.deleteItem = '';
       this.$refs.deleteAlert.hide();
     },
+    //打开详情
+    async openDetailsAlert(id, status) {
+      let result = await this.$axios.get(`/zhwl/in/in_info?id=${id}`);
+      this.$set(this, 'inList', result.inInfo);
+      this.showStatus = status;
+      this.dialogUpdate = true;
+    },
     //打开修改提示框
-    openUpdateAlert(index, slip_id) {
+    async openUpdateAlert(id, status, slip_id) {
+      let result = await this.$axios.get(`/zhwl/in/in_info?id=${id}`);
+      this.$set(this, 'inList', result.inInfo);
+      this.showStatus = status;
       this.$refs.Edit.show();
-      this.form = JSON.parse(JSON.stringify(this.list[index]));
+      this.form = JSON.parse(JSON.stringify(result.inInfo));
       this.slipId = slip_id;
     },
     //修改
     async update() {
       let form1 = [];
+      delete this.form.create_time;
+      delete this.form.order_no;
+      delete this.form.slip_id;
+      delete this.form.status;
+      delete this.form.cost_name;
+      delete this.form.pact_id;
+      delete this.form.pact_no;
       form1[0] = this.form;
       await this.updateIncome({ slipId: this.slipId, data: form1 });
       this.form = {};
