@@ -39,12 +39,16 @@ export const PERSONNEL = {
       uri: '/personnel.html#/driver',
     },
     {
-      name: '合同管理',
+      name: '客户合同管理',
       uri: '/personnel.html#/contract',
     },
     {
       name: '供应商管理',
       uri: '/personnel.html#/supplier',
+    },
+    {
+      name: '供应商合同管理',
+      uri: '/personnel.html#/supplier_contract',
     },
   ],
 };
@@ -58,6 +62,14 @@ export const CAR = {
     {
       name: '车辆日常维修记录',
       uri: '/car.html#/car_daily_detail',
+    },
+    {
+      name: '车辆支出管理',
+      uri: '/car.html#/car_transport',
+    },
+    {
+      name: '单车核算',
+      uri: '/car.html#/car_cost',
     },
   ],
 };
@@ -90,12 +102,12 @@ export const BUSINESS = {
       uri: '/business.html#/car_loading',
     },
     {
-      name: '线路管理',
-      uri: '/business.html#/dly_way',
-    },
-    {
       name: '运输管理',
       uri: '/business.html#/transport',
+    },
+    {
+      name: '线路管理',
+      uri: '/business.html#/dly_way',
     },
     {
       name: '货物管理',

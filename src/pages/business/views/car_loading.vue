@@ -188,7 +188,16 @@
                       </div>
                       <div class="col-lg-4 mb25">
                         <div class="lh44">税率</div>
-                        {{ out.rate ? out.rate : (out.rate = 0.5) }}
+                        <el-select
+                          class="marginBot"
+                          style="height:40px !important"
+                          v-model="out.rate"
+                          filterable
+                          placeholder="请选择税率"
+                          @change="changeMoney(index, outIndex, 'rate')"
+                        >
+                          <el-option v-for="(item, index) in rateList" :key="index" :value="item" :label="item"></el-option>
+                        </el-select>
                         <!-- <b-form-input v-model="out.rate" type="number" :disabled="true"></b-form-input> -->
                       </div>
                       <div class="col-lg-4 mb25">
@@ -249,90 +258,6 @@
               </el-tab-pane>
             </el-tabs>
           </div>
-          <!-- <el-tab-pane label="所装货物" name="1">
-                <table class="table table-bordered table-striped ">
-                  <tbody>
-                    <tr>
-                      <td>订单号</td>
-                      <td>货物名称</td>
-                      <td>运输金额</td>
-                      <td>线路</td>
-                      <td>操作</td>
-                    </tr>
-                    <tr v-for="(item, index) in subForm" :key="index">
-                      <td><b-form-input v-model="item.order_no" :disabled="true"></b-form-input></td>
-                      <td><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
-                      <td><b-form-input v-model="item.price" :disabled="true"></b-form-input></td>
-                      <td>
-                        <el-select v-model="item.dly_way_id" placeholder="请选择线路" :disabled="true">
-                          <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"> </el-option>
-                        </el-select>
-                      </td>
-                      <td>
-                        <b-button
-                          variant="danger"
-                          :disabled="false"
-                          @click="clearSubForm(index)"
-                          class="resetButton"
-                          style="margin-top: 23px; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
-                          >删&nbsp;&nbsp;除</b-button
-                        >
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </el-tab-pane>
-              <el-tab-pane label="支出单" name="2">
-                <div class="col-lg-1 mb25">
-                  <el-button size="mini" type="primary" icon="el-icon-plus" circle @click="() => costForm.push({})"></el-button>
-                </div>
-                <div style="padding: 0px 20px;" v-for="(item, index) in costForm" :key="index">
-                  <div class="row" style="border-top: 1px solid">
-                    <div class="col-lg-4 mb25">
-                      <div class="lh44">供应商</div>
-                      <el-select class="marginBot" style="height:40px !important" v-model="item.car_id" filterable placeholder="请选择供应商">
-                        <el-option v-for="(car, index) in carList" :key="index" :label="car.car_onwer" :value="car.id"></el-option>
-                      </el-select>
-                    </div>
-                    <div class="col-lg-4 mb25">
-                      <div class="lh44">司机</div>
-                      <el-select class="marginBot" style="height:40px !important" v-model="item.driver_id" filterable placeholder="请选择司机">
-                        <el-option v-for="(driver, index) in driverList" :key="index" :label="driver.name" :value="driver.id"></el-option>
-                      </el-select>
-                    </div>
-                    <div class="col-lg-4 mb25">
-                      <div class="lh44">线路</div>
-                      <el-select class="marginBot" style="height:40px !important" v-model="item.dly_way_id" filterable placeholder="请选择线路">
-                        <el-option v-for="(way, index) in dlyWayList" :key="index" :label="way.name" :value="way.id"></el-option>
-                      </el-select>
-                    </div>
-                    <div class="col-lg-4 mb25">
-                      <div class="lh44">支出项</div>
-                      <el-select class="marginBot" style="height:40px !important" v-model="item.cost_id" filterable placeholder="请选择支出项">
-                        <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
-                      </el-select>
-                    </div>
-                    <div class="col-lg-4 mb25">
-                      <div class="lh44">支出金额</div>
-                      <b-form-input v-model="item.out_price"></b-form-input>
-                    </div>
-                    <div class="col-lg-11 mb25">
-                      <div class="lh44">备注</div>
-                      <b-form-input v-model="item.remark"></b-form-input>
-                    </div>
-                    <div class="col-lg-1 mb25">
-                      <el-button
-                        style="position: relative;top: 30px;"
-                        size="mini"
-                        type="danger"
-                        icon="el-icon-minus"
-                        circle
-                        @click="index => costForm.splice(index, 1)"
-                      ></el-button>
-                    </div>
-                  </div>
-                </div>
-              </el-tab-pane> -->
         </div>
       </div>
       <b-button
@@ -387,6 +312,7 @@ export default {
       skip: 0,
       order_loading_list: [],
       tabs: '0',
+      rateList: [1, 1.03, 1.06, 1.1, 1.13],
     };
   },
   computed: {
@@ -405,7 +331,7 @@ export default {
     await this.getCarList({ skip: 0, limit: 10000 });
     await this.getdly_wayList({ skip: 0, limit: 10000 });
     await this.getDriverList({ skip: 0, limit: 10000 });
-    await this.getClientList({ skip: 0, limit: 10000 });
+    await this.getClientList({ skip: 0, limit: 10000, type: 1 });
     let { data } = await this.getCostList({ skip: 0, limit: 10000 });
     (data = data.filter(item => item.cost_type !== '0')), this.$set(this, 'costList', data);
     this.search();
@@ -542,6 +468,11 @@ export default {
           break;
         //选择合同后的变化=>改税率
         case 'contract':
+          this.$set(
+            this.subForm[index].costForm[outIndex],
+            'rate',
+            this.contractList.filter(item => item.id === this.subForm[index].costForm[outIndex].pact_id)[0].cess * 1
+          );
           break;
         default:
           break;
@@ -549,21 +480,13 @@ export default {
     },
     changeMoney(index, outIndex, type) {
       //获取税率
-      let rate = this.subForm[index].costForm[outIndex].rate * 1 + 1;
+      let rate = this.subForm[index].costForm[outIndex].rate
+        ? this.subForm[index].costForm[outIndex].rate * 1
+        : ((this.subForm[index].costForm[outIndex].rate = 1), this.subForm[index].costForm[outIndex].rate * 1);
       //判断是否是修改实付,修改实付不需要修改应付部分
       if (typeof type !== 'string') {
-        //赋值税后应付
+        //将税前应付*税率,赋给税后应付
         this.$set(this.subForm[index].costForm[outIndex], 'sh_ys', rate * 1 * this.subForm[index].costForm[outIndex].sq_ys);
-        //计算税前应付合计,并赋值
-        let allBefore = this.subForm[index].costForm.reduce((prev, cur) => {
-          return prev * 1 + cur.sq_ys * 1;
-        }, 0);
-        this.$set(this.subForm[index], 'allBefore', allBefore);
-        //计算税后应付合计,并赋值
-        let allAfter = this.subForm[index].costForm.reduce((prev, cur) => {
-          return prev * 1 + cur.sh_ys;
-        }, 0);
-        this.$set(this.subForm[index], 'allAfter', allAfter);
         //将税前应付赋给税前实付
         this.$set(this.subForm[index].costForm[outIndex], 'sq_ss', this.subForm[index].costForm[outIndex].sq_ys);
         //将税前实付*税率,赋给税后实付
@@ -572,12 +495,28 @@ export default {
         //将税前实付*税率,赋给税后实付
         this.$set(this.subForm[index].costForm[outIndex], 'sh_ss', rate * 1 * this.subForm[index].costForm[outIndex].sq_ss);
       } else if (type === 'shouldAfter') {
+        //修改税后实付,除法需要四舍五入
         let newMoney = (this.subForm[index].costForm[outIndex].sh_ss * 1) / (rate * 1);
         newMoney = parseFloat(newMoney);
         newMoney = Math.round(newMoney * 100) / 100;
         this.$set(this.subForm[index].costForm[outIndex], 'sq_ss', newMoney);
+      } else if (type === 'rate') {
+        //将税前应付*税率,赋给税后应付
+        this.$set(this.subForm[index].costForm[outIndex], 'sh_ys', rate * 1 * this.subForm[index].costForm[outIndex].sq_ys);
+        //将税前实付*税率,赋给税后实付
+        this.$set(this.subForm[index].costForm[outIndex], 'sh_ss', rate * 1 * this.subForm[index].costForm[outIndex].sq_ss);
       }
 
+      //计算税前应付合计,并赋值
+      let allBefore = this.subForm[index].costForm.reduce((prev, cur) => {
+        return prev * 1 + cur.sq_ys * 1;
+      }, 0);
+      this.$set(this.subForm[index], 'allBefore', allBefore);
+      //计算税后应付合计,并赋值
+      let allAfter = this.subForm[index].costForm.reduce((prev, cur) => {
+        return prev * 1 + cur.sh_ys;
+      }, 0);
+      this.$set(this.subForm[index], 'allAfter', allAfter);
       //计算税前实付合计
       let allShouldBefore = this.subForm[index].costForm.reduce((prev, cur) => {
         return prev * 1 + cur.sq_ss * 1;
@@ -588,11 +527,6 @@ export default {
         return prev * 1 + cur.sh_ss * 1;
       }, 0);
       this.$set(this.subForm[index], 'allShouldAfter', allShouldAfter);
-    },
-    //选择合同更换税率
-    async changeRate(index, outIndex) {
-      console.log(this.subForm[index].costForm[outIndex]);
-      // await this.getContractList({skip:0,limit:10000,pact_no:'',cus_id:});
     },
     //关闭弹框
     closeAlert(type) {
