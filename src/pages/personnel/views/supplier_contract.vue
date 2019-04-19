@@ -94,9 +94,9 @@
       </div>
     </div>
     <!--添加-->
-    <b-modal id="toAdd" title="添加合同" ref="toAdd" hide-footer>
+    <b-modal id="toAdd" title="添加合同" ref="toAdd" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div style="margin-bottom: 7px;">选择供应商:</div>
-      <el-select class="marginBot" style="height:40px !important" v-model="form.cus_id" filterable placeholder="请选择客户">
+      <el-select class="marginBot" style="height:40px !important" v-model="form.cus_id" filterable placeholder="请选择供应商">
         <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
       </el-select>
       <div style="margin-bottom: 7px;">合同编号:</div>
@@ -159,7 +159,7 @@
         <div class="row">
           <div class="col-lg-12 marginBot4">
             <p class="marginBot4">选择供应商</p>
-            <el-select class="marginBot" style="height:40px !important" v-model="updateForm.cus_id" filterable placeholder="请选择客户">
+            <el-select class="marginBot" style="height:40px !important" v-model="updateForm.cus_id" filterable placeholder="请选择供应商">
               <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
             </el-select>
           </div>

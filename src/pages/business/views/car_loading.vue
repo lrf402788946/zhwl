@@ -188,7 +188,16 @@
                       </div>
                       <div class="col-lg-4 mb25">
                         <div class="lh44">税率</div>
-                        {{ out.rate ? out.rate : (out.rate = 0.5) }}
+                        <el-select
+                          class="marginBot"
+                          style="height:40px !important"
+                          v-model="out.rate"
+                          filterable
+                          placeholder="请选择税率"
+                          @change="changeMoney(index, outIndex, 'rate')"
+                        >
+                          <el-option v-for="(item, index) in rateList" :key="index" :value="item" :label="item"></el-option>
+                        </el-select>
                         <!-- <b-form-input v-model="out.rate" type="number" :disabled="true"></b-form-input> -->
                       </div>
                       <div class="col-lg-4 mb25">
@@ -303,6 +312,7 @@ export default {
       skip: 0,
       order_loading_list: [],
       tabs: '0',
+      rateList: [1, 1.03, 1.06, 1.1, 1.13],
     };
   },
   computed: {
@@ -458,6 +468,11 @@ export default {
           break;
         //选择合同后的变化=>改税率
         case 'contract':
+          this.$set(
+            this.subForm[index].costForm[outIndex],
+            'rate',
+            this.contractList.filter(item => item.id === this.subForm[index].costForm[outIndex].pact_id)[0].cess * 1
+          );
           break;
         default:
           break;
@@ -465,21 +480,13 @@ export default {
     },
     changeMoney(index, outIndex, type) {
       //获取税率
-      let rate = this.subForm[index].costForm[outIndex].rate * 1 + 1;
+      let rate = this.subForm[index].costForm[outIndex].rate
+        ? this.subForm[index].costForm[outIndex].rate * 1
+        : ((this.subForm[index].costForm[outIndex].rate = 1), this.subForm[index].costForm[outIndex].rate * 1);
       //判断是否是修改实付,修改实付不需要修改应付部分
       if (typeof type !== 'string') {
-        //赋值税后应付
+        //将税前应付*税率,赋给税后应付
         this.$set(this.subForm[index].costForm[outIndex], 'sh_ys', rate * 1 * this.subForm[index].costForm[outIndex].sq_ys);
-        //计算税前应付合计,并赋值
-        let allBefore = this.subForm[index].costForm.reduce((prev, cur) => {
-          return prev * 1 + cur.sq_ys * 1;
-        }, 0);
-        this.$set(this.subForm[index], 'allBefore', allBefore);
-        //计算税后应付合计,并赋值
-        let allAfter = this.subForm[index].costForm.reduce((prev, cur) => {
-          return prev * 1 + cur.sh_ys;
-        }, 0);
-        this.$set(this.subForm[index], 'allAfter', allAfter);
         //将税前应付赋给税前实付
         this.$set(this.subForm[index].costForm[outIndex], 'sq_ss', this.subForm[index].costForm[outIndex].sq_ys);
         //将税前实付*税率,赋给税后实付
@@ -488,12 +495,28 @@ export default {
         //将税前实付*税率,赋给税后实付
         this.$set(this.subForm[index].costForm[outIndex], 'sh_ss', rate * 1 * this.subForm[index].costForm[outIndex].sq_ss);
       } else if (type === 'shouldAfter') {
+        //修改税后实付,除法需要四舍五入
         let newMoney = (this.subForm[index].costForm[outIndex].sh_ss * 1) / (rate * 1);
         newMoney = parseFloat(newMoney);
         newMoney = Math.round(newMoney * 100) / 100;
         this.$set(this.subForm[index].costForm[outIndex], 'sq_ss', newMoney);
+      } else if (type === 'rate') {
+        //将税前应付*税率,赋给税后应付
+        this.$set(this.subForm[index].costForm[outIndex], 'sh_ys', rate * 1 * this.subForm[index].costForm[outIndex].sq_ys);
+        //将税前实付*税率,赋给税后实付
+        this.$set(this.subForm[index].costForm[outIndex], 'sh_ss', rate * 1 * this.subForm[index].costForm[outIndex].sq_ss);
       }
 
+      //计算税前应付合计,并赋值
+      let allBefore = this.subForm[index].costForm.reduce((prev, cur) => {
+        return prev * 1 + cur.sq_ys * 1;
+      }, 0);
+      this.$set(this.subForm[index], 'allBefore', allBefore);
+      //计算税后应付合计,并赋值
+      let allAfter = this.subForm[index].costForm.reduce((prev, cur) => {
+        return prev * 1 + cur.sh_ys;
+      }, 0);
+      this.$set(this.subForm[index], 'allAfter', allAfter);
       //计算税前实付合计
       let allShouldBefore = this.subForm[index].costForm.reduce((prev, cur) => {
         return prev * 1 + cur.sq_ss * 1;
@@ -504,11 +527,6 @@ export default {
         return prev * 1 + cur.sh_ss * 1;
       }, 0);
       this.$set(this.subForm[index], 'allShouldAfter', allShouldAfter);
-    },
-    //选择合同更换税率
-    async changeRate(index, outIndex) {
-      console.log(this.subForm[index].costForm[outIndex]);
-      // await this.getContractList({skip:0,limit:10000,pact_no:'',cus_id:});
     },
     //关闭弹框
     closeAlert(type) {

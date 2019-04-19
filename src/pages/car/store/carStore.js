@@ -216,6 +216,9 @@ export const actions = {
         return {
           totalRow: result.totalRow,
           data: result.dataList,
+          inCount: result.inCount,
+          outCount: result.outCount,
+          profitCount: result.profitCount,
         };
       } else {
         return { totalRow: 0, data: null };

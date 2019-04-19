@@ -49,12 +49,14 @@
             <th>总收入</th>
             <th>总支出</th>
             <th>合计</th>
+            <th>操作</th>
           </tr>
           <tr v-for="(item, index) in carCostList" :key="index">
             <td>{{ item.car_no }}</td>
             <td>{{ item.inPrice ? item.inPrice : 0 }}</td>
             <td>{{ item.outPrice ? item.outPrice : 0 }}</td>
             <td>{{ item.inPrice * 1 - item.outPrice * 1 }}</td>
+            <td><b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', item.id)">详&nbsp;&nbsp;情</b-button></td>
           </tr>
           <!-- </tbody>
           <tbody v-else>
@@ -64,95 +66,26 @@
           </tbody> -->
         </table>
 
-        <b-modal id="pack" title="合并车辆支出" ref="pack" size="xl" hide-footer no-close-on-backdrop no-close-on-esc no-enforce-focus>
+        <el-dialog :visible.sync="dialog" title="明细" width="90%" close-on-click-modal close-on-press-escape center>
           <div class="d-block text-center">
             <div class="row">
-              <div class="col-lg-4 mb25">
-                <div class="lh44">操作人：</div>
-                <b-form-input v-model="form.login_id"></b-form-input>
+              <div class="col-lg-6 mb25">
+                <el-card class="box-card">
+                  <div slot="header" class="clearfix">
+                    <span>收入</span>
+                  </div>
+                </el-card>
               </div>
-              <div class="col-lg-4 mb25">
-                <div class="lh44">操作日期</div>
-                <el-date-picker
-                  style="width: 100%;"
-                  v-model="form.create_time"
-                  placeholder="操作日期"
-                  value-format="yyyy-MM-dd"
-                  format="yyyy-MM-dd"
-                  type="date"
-                >
-                </el-date-picker>
+              <div class="col-lg-6 mb25">
+                <el-card class="box-card">
+                  <div slot="header" class="clearfix">
+                    <span>支出</span>
+                  </div>
+                </el-card>
               </div>
-              <div class="col-lg-12 mb25">
-                <div class="lh44">运输单号：</div>
-                <b-form-input v-model="form.transport_nos" :disabled="true"></b-form-input>
-              </div>
-              <table class="table table-btransported table-striped ">
-                <tbody>
-                  <tr>
-                    <td>费用项目</td>
-                    <td>费用金额</td>
-                    <td>操作时间</td>
-                    <td>操作人</td>
-                    <td>备注</td>
-                    <td>操作</td>
-                  </tr>
-                  <tr v-for="(item, index) in subForm" :key="index">
-                    <td>
-                      <el-select style="height:40px !important" v-model="item.cost_id" filterable placeholder="请选择支出项">
-                        <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
-                      </el-select>
-                    </td>
-                    <td>
-                      <b-form-input v-model="item.price" type="number"></b-form-input>
-                    </td>
-                    <td>
-                      <el-date-picker
-                        style="width:100%; height: 34px !important; line-height: 34px !important;"
-                        v-model="item.create_time"
-                        value-format="yyyy-MM-dd"
-                        format="yyyy-MM-dd"
-                        type="date"
-                        placeholder="请选择操作时间"
-                      >
-                      </el-date-picker>
-                    </td>
-                    <td>
-                      <b-form-input v-model="item.login_id"></b-form-input>
-                    </td>
-                    <td>
-                      <b-form-input v-model="item.remark"></b-form-input>
-                    </td>
-                    <td>
-                      <el-button type="danger" icon="el-icon-delete" circle @click="clearSubForm(index)"></el-button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
             </div>
           </div>
-          <b-button
-            variant="primary"
-            @click="addSubForm()"
-            class="resetButton"
-            style="font-size:16px !important; margin-top:25px; width:30% !important; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-            >添加商品</b-button
-          >
-          <b-button
-            variant="primary"
-            @click="add()"
-            class="resetButton"
-            style="font-size:16px !important; margin:25px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
-            >保&nbsp;&nbsp;存</b-button
-          >
-          <b-button
-            variant="secondary"
-            @click="reset()"
-            class="resetButton"
-            style="font-size:16px !important; margin-top:25px; margin-bottom:30px !important; width:30% !important; margin-right: 0 !important; padding:6px 80px !important;"
-            >重&nbsp;&nbsp;置</b-button
-          >
-        </b-modal>
+        </el-dialog>
 
         <!-- <el-pagination
           layout="total, prev, pager, next"
@@ -179,11 +112,15 @@ export default {
   data() {
     return {
       carCostList: [],
+      inCount: '',
+      outCount: '',
+      profitCount: '',
       form: {},
       subForm: [],
       select_car_no: '',
       costList: [],
       select_in_date: [],
+      dialog: false,
     };
   },
   computed: {
@@ -203,12 +140,15 @@ export default {
         this.$message.error('请选择查询时间');
         return false;
       }
-      let { totalRow, data } = await this.getCarCostList({
+      let { totalRow, data, inCount, outCount, profitCount } = await this.getCarCostList({
         car_no: this.select_car_no,
         start_time: this.select_in_date.length > 0 ? this.select_in_date[0] : '',
         end_time: this.select_in_date.length > 0 ? this.select_in_date[1] : '',
       });
       this.$set(this, `carCostList`, data);
+      this.$set(this, `inCount`, inCount);
+      this.$set(this, `outCount`, outCount);
+      this.$set(this, `profitCount`, profitCount);
     },
     async add() {
       let newForm = JSON.parse(JSON.stringify(this.form));
@@ -220,20 +160,7 @@ export default {
     },
     //打开与关闭修改和删除的弹框
     async openAlert(type, id) {
-      if (this.loading_list.length <= 0) {
-        this.$message.error('请选择要合并的运输单');
-        return false;
-      }
-      let transport_ids;
-      let transport_nos;
-      this.loading_list.map(item => {
-        transport_ids = transport_ids === undefined ? `${item.id}` : `${transport_ids},${item.id}`;
-        transport_nos = transport_nos === undefined ? `${item.transport_no}` : `${transport_nos},${item.transport_no}`;
-      });
-      this.$set(this.form, `transport_ids`, transport_ids);
-      this.$set(this.form, `transport_nos`, transport_nos);
-      this.subForm.length > 0 ? '' : this.addSubForm();
-      this.$refs.pack.show();
+      this.dialog = true;
     },
     addSubForm() {
       this.subForm.push({});
