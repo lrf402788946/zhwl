@@ -203,7 +203,12 @@ export const actions = {
       console.error(error);
     }
   },
-
+  /**
+   *
+   * @param car_no 车号
+   * @param start_time 起始时间
+   * @param end_time 截止时间
+   */
   async getCarCostList({ commit }, { car_no, start_time, end_time }) {
     try {
       let result = await this.$axios.get(`${api.carCost}?car_no=${car_no}&start_time=${start_time}&end_time=${end_time}`);
