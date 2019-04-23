@@ -94,7 +94,7 @@ export const BUSINESS = {
       uri: '/business.html#/order',
     },
     {
-      name: '拆分管理',
+      name: '收入管理',
       uri: '/business.html#/split_cargo',
     },
     {
