@@ -33,26 +33,25 @@
         <table class="table table-bordered table-striped ">
           <tbody v-if="list.length > 0">
             <tr>
+              <th>流水号</th>
               <th>订单号</th>
               <th>拆分单号</th>
               <th>供应商</th>
-              <th>司机</th>
               <th>线路</th>
-              <th>支出金额</th>
+              <th>长途运费金额</th>
               <th>状态</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
+              <td>{{ item.what_no }}</td>
               <td>{{ item.order_no }}</td>
               <td>{{ item.slip_no }}</td>
-              <td>{{ { data: carList, searchItem: 'id', value: item.car_id, label: 'car_onwer' } | getName }}</td>
-              <td>{{ { data: driverList, searchItem: 'id', value: item.driver_id, label: 'name' } | getName }}</td>
+              <td>{{ { data: clientList, searchItem: 'id', value: item.c_id, label: 'name' } | getName }}</td>
               <td>{{ { data: dlyWayList, searchItem: 'id', value: item.dly_way_id, label: 'name' } | getName }}</td>
               <td>{{ item.out_price }}</td>
-              <td>{{ item.status >= 2 ? '到达' : '未到达' }}</td>
+              <td>{{ item.status === 1 ? '未指派线路负责人' : item.status === 2 ? '已指派' : '未填写长途运费' }}</td>
               <td>
                 <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">详&nbsp;&nbsp;情</b-button>
-                <b-button variant="danger" v-if="item.status < 2" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
               </td>
             </tr>
           </tbody>
@@ -72,54 +71,166 @@
           @current-change="toSearch"
           :total="totalRow"
         ></el-pagination>
-        <b-modal id="Edit" title="修改支出单" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
-          <p class="marginBot5">订单号</p>
-          <b-form-input v-model="form.order_no" :disabled="is_update"></b-form-input>
-          <p class="marginBot5">拆分单号</p>
-          <b-form-input v-model="form.slip_no" :disabled="is_update"></b-form-input>
-          <p class="marginBot5">供应商</p>
-          <el-select class="marginBot" style="height:40px !important" v-model="form.car_id" :disabled="is_update" filterable placeholder="请选择供应商">
-            <el-option v-for="(car, index) in carList" :key="index" :label="car.car_onwer" :value="car.id"></el-option>
-          </el-select>
-          <p class="marginBot5">司机</p>
-          <el-select class="marginBot" style="height:40px !important" v-model="form.driver_id" :disabled="is_update" filterable placeholder="请选择司机">
-            <el-option v-for="(driver, index) in driverList" :key="index" :label="driver.name" :value="driver.id"></el-option>
-          </el-select>
-          <p class="marginBot5">线路</p>
-          <el-select class="marginBot" style="height:40px !important" v-model="form.dly_way_id" :disabled="is_update" filterable placeholder="请选择线路">
-            <el-option v-for="(way, index) in dlyWayList" :key="index" :label="way.name" :value="way.id"></el-option>
-          </el-select>
-          <p class="marginBot5">支出项</p>
-          <el-select class="marginBot" style="height:40px !important" v-model="form.cost_id" :disabled="is_update" filterable placeholder="请选择支出项">
-            <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
-          </el-select>
-          <p class="marginBot5">支出金额</p>
-          <b-form-input v-model="form.out_price" :disabled="is_update"></b-form-input>
-          <p class="marginBot5">备注</p>
-          <b-form-input v-model="form.remark" :disabled="is_update"></b-form-input>
-          <b-button
-            variant="secondary"
-            @click="closeAlert()"
-            style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-          >
-            返&nbsp;&nbsp;回
-          </b-button>
-          <b-button
-            variant="primary"
-            v-if="is_update && form.status < 2"
-            @click="is_update = false"
-            style="font-size:16px !important; margin-top:25px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-          >
-            修&nbsp;&nbsp;改
-          </b-button>
-          <b-button
-            variant="primary"
-            v-if="!is_update"
-            @click="toValidate('update')"
-            style="font-size:16px !important; margin-top:25px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-          >
-            保&nbsp;&nbsp;存
-          </b-button>
+        <b-modal id="Edit" title="修改支出单" ref="Edit" size="xl" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+          <div class="d-block text-center">
+            <div class="row">
+              <div class="col-lg-4 mb25">
+                <p class="marginBot5">流水号</p>
+                <p>{{ form.what_no }}</p>
+              </div>
+              <div class="col-lg-4 mb25">
+                <p class="marginBot5">订单号</p>
+                <p>{{ form.order_no }}</p>
+              </div>
+              <div class="col-lg-4 mb25">
+                <p class="marginBot5">拆分单号</p>
+                <p>{{ form.slip_no }}</p>
+              </div>
+              <div class="col-lg-3 mb25">
+                <p class="marginBot5">税前应收金额</p>
+                <p>0</p>
+              </div>
+              <div class="col-lg-3 mb25">
+                <p class="marginBot5">税后应收金额</p>
+                <p>0</p>
+              </div>
+              <div class="col-lg-3 mb25">
+                <p class="marginBot5">税前实收金额</p>
+                <p>0</p>
+              </div>
+              <div class="col-lg-3 mb25">
+                <p class="marginBot5">税后实收金额</p>
+                <p>0</p>
+              </div>
+              <div class="col-lg-4 mb25">
+                <p class="marginBot5">支出项</p>
+                <p>长途运费</p>
+              </div>
+              <div class="col-lg-4 mb25">
+                <p class="marginBot5">供应商</p>
+                <p>{{ { data: clientList, searchItem: 'id', value: form.c_id, label: 'name' } | getName }}</p>
+              </div>
+              <div class="col-lg-4 mb25">
+                <p class="marginBot5">金额</p>
+                <p>0</p>
+              </div>
+            </div>
+          </div>
+
+          <table class="table table-bordered table-striped ">
+            <tbody>
+              <tr>
+                <th>支出项</th>
+                <th>供应商</th>
+                <th>合同</th>
+                <th>税率</th>
+                <th>税前应收金额</th>
+                <th>税后应收金额</th>
+                <th>税前实收金额</th>
+                <th>税后实收金额</th>
+                <th>备注</th>
+              </tr>
+              <tr v-for="(item, index) in subForm" :key="index">
+                <td>
+                  <el-select
+                    class="marginBot"
+                    style="height:40px !important"
+                    v-model="item.cost_id"
+                    :disabled="is_update"
+                    filterable
+                    placeholder="请选择支出项"
+                  >
+                    <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
+                  </el-select>
+                </td>
+                <td>
+                  <el-select :disabled="is_update" class="marginBot" style="height:40px !important" v-model="item.c_id" filterable placeholder="请选择供应商">
+                    <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
+                  </el-select>
+                </td>
+                <td>
+                  <el-select
+                    class="marginBot"
+                    style="height:40px !important"
+                    v-model="item.pact_id"
+                    filterable
+                    :disabled="is_update"
+                    placeholder="请选择合同"
+                    @change="changeList(index, outIndex, 'contract')"
+                  >
+                    <el-option v-for="(contract, index) in contractList" :key="index" :label="contract.pact_no" :value="contract.id"></el-option>
+                  </el-select>
+                </td>
+                <td>
+                  <el-select
+                    class="marginBot"
+                    style="height:40px !important"
+                    v-model="item.rate"
+                    filterable
+                    :disabled="is_update"
+                    placeholder="请选择税率"
+                    @change="changeMoney(index, outIndex, 'rate')"
+                  >
+                    <el-option v-for="(item, index) in rateList" :key="index" :value="item" :label="item"></el-option>
+                  </el-select>
+                </td>
+                <td>
+                  <b-form-input v-model="item.sq_ys" :disabled="is_update"></b-form-input>
+                </td>
+                <td>
+                  <b-form-input v-model="item.sh_ys" :disabled="is_update"></b-form-input>
+                </td>
+                <td>
+                  <b-form-input v-model="item.sq_ss" :disabled="is_update"></b-form-input>
+                </td>
+                <td>
+                  <b-form-input v-model="item.sh_ss" :disabled="is_update"></b-form-input>
+                </td>
+                <td>
+                  <b-form-input v-model="item.remark" :disabled="is_update"></b-form-input>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="row">
+            <div class="col-lg-4">
+              <b-button
+                variant="primary"
+                v-if="is_update && form.status < 2"
+                @click="is_update = false"
+                class="resetButton"
+                style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:70% !important; padding:6px 80px !important;"
+                >修&nbsp;&nbsp;改</b-button
+              >
+              <b-button
+                variant="primary"
+                v-if="!is_update"
+                @click="() => subForm.push({})"
+                class="resetButton"
+                style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:70% !important; padding:6px 80px !important;"
+                >添&nbsp;&nbsp;加</b-button
+              >
+            </div>
+            <div class="col-lg-4">
+              <b-button
+                v-if="!is_update"
+                variant="primary"
+                @click="toValidate('update')"
+                class="resetButton"
+                style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:70% !important; padding:6px 80px !important;"
+                >保&nbsp;&nbsp;存</b-button
+              >
+            </div>
+            <div class="col-lg-4">
+              <b-button
+                variant="secondary"
+                @click="closeAlert()"
+                class="resetButton"
+                style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #ccc !important;  width:70% !important; padding:6px 80px !important;"
+                >返&nbsp;&nbsp;回</b-button
+              >
+            </div>
+          </div>
         </b-modal>
 
         <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
@@ -157,9 +268,10 @@ export default {
   components: {},
   data() {
     return {
-      list: [],
+      list: [{ what_no: 'what_no-1', order_no: 'order_no-1', slip_no: 'slip_no-1', c_id: 21, dly_way_id: 3, out_price: '1000', status: 1 }],
       form: {},
       costList: [],
+      subForm: [],
       currentPage: 1,
       countNum: 0,
       totalRow: 0,
@@ -169,12 +281,13 @@ export default {
       select_order_no: '',
       select_slip_no: '',
       roleValidator: new Validator({
-        car_id: [{ required: true, message: '请选择供应商' }],
-        driver_id: { required: true, message: '请选择司机' },
-        dly_way_id: { required: true, message: '请选择线路' },
-        cost_id: { required: true, message: '请选择支出项' },
-        out_price: { required: true, message: '请填写支出金额' },
+        // car_id: [{ required: true, message: '请选择供应商' }],
+        // driver_id: { required: true, message: '请选择司机' },
+        // dly_way_id: { required: true, message: '请选择线路' },
+        // cost_id: { required: true, message: '请选择支出项' },
+        // out_price: { required: true, message: '请填写支出金额' },
       }),
+      rateList: [1, 1.03, 1.06, 1.1, 1.13],
     };
   },
   computed: {
@@ -183,20 +296,23 @@ export default {
       driverList: state => state.personnel.driverList,
       dlyWayList: state => state.self.dlyWayList,
       carList: state => state.car.carList,
+      clientList: state => state.personnel.clientList,
+      contractList: state => state.personnel.contractList,
     }),
   },
   async created() {
-    await this.search();
+    // await this.search();
     await Promise.all([
       this.getdly_wayList({ skip: 0, limit: 10000 }),
       this.getDriverList({ skip: 0, limit: 10000 }),
       this.getCarList({ skip: 0, limit: 10000 }),
+      this.getClientList({ skip: 0, limit: 10000, type: 1 }),
     ]);
     let { data } = await this.getCostList({ skip: 0, limit: 10000 });
     (data = data.filter(item => item.cost_type !== '0')), this.$set(this, 'costList', data);
   },
   methods: {
-    ...mapActions(['getOutList', 'getDriverList', 'getdly_wayList', 'getCarList', 'getCostList', 'outOperation']),
+    ...mapActions(['getOutList', 'getDriverList', 'getdly_wayList', 'getCarList', 'getCostList', 'outOperation', 'getClientList', 'getContractList']),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -251,6 +367,9 @@ export default {
     openUpdateAlert(index) {
       this.$refs.Edit.show();
       this.form = JSON.parse(JSON.stringify(this.list[index]));
+      //使用接口请求这个订单所有的支出,赋值,判断权限是否允许更改
+      //模拟假数据一条
+      this.subForm.push({});
     },
     //修改
     async update() {
