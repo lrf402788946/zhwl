@@ -113,16 +113,12 @@
               <tr>
                 <td>订单号</td>
                 <td>货物名称</td>
-                <td>线路</td>
                 <td>状态</td>
                 <td>操作</td>
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
                 <td>{{ item.order_no }}</td>
                 <td>{{ item.goods_name }}</td>
-                <td>
-                  {{ { data: dlyWayList, searchItem: 'id', value: item.dly_way_id, label: 'name' } | getName }}
-                </td>
                 <td>{{ item.status === 1 ? '未到达' : '已到达' }}</td>
                 <td>
                   <el-button v-if="item.status === 1" type="primary" icon="el-icon-edit" @click="openAlert('sign', item.id)">签收</el-button>

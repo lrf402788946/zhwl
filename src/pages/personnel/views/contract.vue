@@ -28,16 +28,9 @@
         </div>
 
         <div class="base-align-right" style="margin-bottom:20px;">
-          <a
-            class="btn btn-info base-margin-bottom"
-            data-toggle="tooltip"
-            style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
-            title=""
-            role="button"
-            v-b-modal="'toAdd'"
+          <b-button @click="addAlert()" variant="primary" style="font-size:14px !important; color:#efe !important; padding: 6px 12px !important;"
+            >新建合同</b-button
           >
-            <i class="base-margin-right-5 fa fa-plus-square" style=" color:#fff !important;"></i>添加合同
-          </a>
           <!-- 导入表格 -->
           <entrance @research="search"></entrance>
         </div>
@@ -49,6 +42,7 @@
           <tbody v-if="list.length > 0">
             <tr>
               <th>客户</th>
+              <th>项目名称</th>
               <th>合同编号</th>
               <th>甲方</th>
               <th>乙方</th>
@@ -61,6 +55,7 @@
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ { data: clientList, searchItem: 'id', value: item.cus_id, label: 'name' } | getName }}</td>
+              <td>{{ item.item_name }}</td>
               <td>{{ item.pact_no }}</td>
               <td>{{ item.jf }}</td>
               <td>{{ item.yf }}</td>
@@ -94,44 +89,95 @@
       </div>
     </div>
     <!--添加-->
-    <b-modal id="toAdd" title="添加合同" ref="toAdd" hide-footer>
-      <div style="margin-bottom: 7px;">选择客户:</div>
-      <el-select class="marginBot" style="height:40px !important" v-model="form.cus_id" filterable placeholder="请选择客户">
-        <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
-      </el-select>
-      <div style="margin-bottom: 7px;">合同编号:</div>
-      <b-form-input v-model="form.pact_no"></b-form-input>
-      <div style="margin-bottom: 7px;">项目名称:</div>
-      <b-form-input v-model="form.item_name"></b-form-input>
-      <div style="margin-bottom: 7px;">甲方:</div>
-      <b-form-input v-model="form.jf"></b-form-input>
-      <div style="margin-bottom: 7px;">乙方:</div>
-      <b-form-input v-model="form.yf"></b-form-input>
-      <div style="margin-bottom: 7px;">合同周期:</div>
-      <b-form-input v-model="form.cycle"></b-form-input>
-      <div style="margin-bottom: 7px;">结算方式:</div>
-      <b-form-input v-model="form.js_type"></b-form-input>
-      <div style="margin-bottom: 7px;">结算周期:</div>
-      <b-form-input v-model="form.js_cycle"></b-form-input>
-      <div style="margin-bottom: 7px;">价格:</div>
-      <b-form-input v-model="form.price"></b-form-input>
-      <div style="margin-bottom: 7px;">税率:</div>
-      <b-form-input v-model="form.cess"></b-form-input>
-      <b-button
-        variant="secondary"
-        style="font-size:16px !important; margin-top:35px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-        @click="form = {}"
-      >
-        重&nbsp;&nbsp;置</b-button
-      >
-      <b-button
-        style="font-size:16px !important; margin-top:35px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-        variant="primary"
-        @click="toValidate('add')"
-      >
-        保&nbsp;&nbsp;存</b-button
-      ></b-modal
-    >
+    <el-dialog title="添加合同" :visible.sync="addDialog" width="70%">
+      <div class="d-block">
+        <div class="row">
+          <div class="col-lg-12 marginBot4">
+            <table class="table table-bordered table-striped ">
+              <tbody>
+                <tr>
+                  <td>选择客户</td>
+                  <td>合同编号</td>
+                  <td>项目名称</td>
+                </tr>
+                <tr>
+                  <td>
+                    <el-select class="marginBot" style="height:40px !important" v-model="form.cus_id" filterable placeholder="请选择客户">
+                      <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
+                    </el-select>
+                  </td>
+                  <td><b-form-input v-model="form.pact_no"></b-form-input></td>
+                  <td><b-form-input v-model="form.item_name"></b-form-input></td>
+                </tr>
+                <tr>
+                  <td>甲方</td>
+                  <td>乙方</td>
+                  <td>合同周期</td>
+                </tr>
+                <tr>
+                  <td><b-form-input v-model="form.jf"></b-form-input></td>
+                  <td><b-form-input v-model="form.yf"></b-form-input></td>
+                  <td><b-form-input v-model="form.cycle"></b-form-input></td>
+                </tr>
+                <tr>
+                  <td>结算方式</td>
+                  <td>结算周期</td>
+                  <td>税率</td>
+                </tr>
+                <tr>
+                  <td><b-form-input v-model="form.js_type"></b-form-input></td>
+                  <td><b-form-input v-model="form.js_cycle"></b-form-input></td>
+                  <td><b-form-input v-model="form.cess"></b-form-input></td>
+                </tr>
+              </tbody>
+            </table>
+            <table class="table table-bordered table-striped ">
+              <tbody>
+                <tr>
+                  <td>是否按辆份收费？</td>
+                  <td v-if="radio === '1'">发货方式</td>
+                  <td v-if="(radio === '1') & (form.send_type === '0')">计价方式</td>
+                  <td>单价</td>
+                </tr>
+                <tr>
+                  <td>
+                    <el-radio v-model="radio" label="1">否</el-radio>
+                    <el-radio v-model="radio" label="0">是</el-radio>
+                  </td>
+                  <td v-if="radio === '1'">
+                    <!-- 选择发货方式 -->
+                    <el-select v-model="form.send_type" class="marginBot" style="height:40px !important" filterable>
+                      <el-option v-for="(item, index) in deliveryList" :key="index" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                  </td>
+                  <td v-if="(radio === '1') & (form.send_type === '0')">
+                    <!-- 选择计价方式 -->
+                    <el-select v-model="form.count_type" class="marginBot" style="height:40px !important" filterable>
+                      <el-option v-for="(item, index) in calculationList" :key="index" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                  </td>
+                  <td><b-form-input v-model="form.price"></b-form-input></td>
+                </tr>
+              </tbody>
+            </table>
+            <b-button
+              variant="secondary"
+              style="font-size:16px !important; margin-top:35px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+              @click="form = {}"
+            >
+              重&nbsp;&nbsp;置</b-button
+            >
+            <b-button
+              style="font-size:16px !important; margin-top:35px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+              variant="primary"
+              @click="toValidate('add')"
+            >
+              保&nbsp;&nbsp;存</b-button
+            >
+          </div>
+        </div>
+      </div>
+    </el-dialog>
     <!--删除-->
     <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
       <div class="d-block text-center">
@@ -154,52 +200,77 @@
     >
 
     <!-- 修改 -->
-    <b-modal id="updateAlert" title="修改合同" ref="updateAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+    <el-dialog title="修改合同" :visible.sync="updateDialog" width="70%">
       <div class="d-block">
         <div class="row">
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">选择客户</p>
-            <el-select class="marginBot" style="height:40px !important" v-model="updateForm.cus_id" filterable placeholder="请选择客户">
-              <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">合同编号</p>
-            <b-form-input v-model="updateForm.pact_no"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">项目名称</p>
-            <b-form-input v-model="updateForm.item_name"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">甲方</p>
-            <b-form-input v-model="updateForm.jf"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">乙方</p>
-            <b-form-input v-model="updateForm.yf"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">合同周期</p>
-            <b-form-input v-model="updateForm.cycle"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">结算方式</p>
-            <b-form-input v-model="updateForm.js_type"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">结算周期</p>
-            <b-form-input v-model="updateForm.js_cycle"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">价格</p>
-            <b-form-input v-model="updateForm.price"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">税率</p>
-            <b-form-input v-model="updateForm.cess"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
+            <table class="table table-bordered table-striped ">
+              <tbody>
+                <tr>
+                  <td>选择客户</td>
+                  <td>合同编号</td>
+                  <td>项目名称</td>
+                </tr>
+                <tr>
+                  <td>
+                    <el-select class="marginBot" style="height:40px !important" v-model="updateForm.cus_id" filterable placeholder="请选择客户">
+                      <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
+                    </el-select>
+                  </td>
+                  <td><b-form-input v-model="updateForm.pact_no"></b-form-input></td>
+                  <td><b-form-input v-model="updateForm.item_name"></b-form-input></td>
+                </tr>
+                <tr>
+                  <td>甲方</td>
+                  <td>乙方</td>
+                  <td>合同周期</td>
+                </tr>
+                <tr>
+                  <td><b-form-input v-model="updateForm.jf"></b-form-input></td>
+                  <td><b-form-input v-model="updateForm.yf"></b-form-input></td>
+                  <td><b-form-input v-model="updateForm.cycle"></b-form-input></td>
+                </tr>
+                <tr>
+                  <td>结算方式</td>
+                  <td>结算周期</td>
+                  <td>税率</td>
+                </tr>
+                <tr>
+                  <td><b-form-input v-model="updateForm.js_type"></b-form-input></td>
+                  <td><b-form-input v-model="updateForm.js_cycle"></b-form-input></td>
+                  <td><b-form-input v-model="updateForm.cess"></b-form-input></td>
+                </tr>
+              </tbody>
+            </table>
+            <table class="table table-bordered table-striped ">
+              <tbody>
+                <tr>
+                  <td>是否按辆份收费？</td>
+                  <td v-if="radio === '1'">发货方式</td>
+                  <td v-if="(radio === '1') & (updateForm.send_type === '0')">计价方式</td>
+                  <td>单价</td>
+                </tr>
+                <tr>
+                  <td>
+                    <el-radio v-model="radio" label="1">否</el-radio>
+                    <el-radio v-model="radio" label="0">是</el-radio>
+                  </td>
+                  <td v-if="radio === '1'">
+                    <!-- 选择发货方式 -->
+                    <el-select v-model="updateForm.send_type" class="marginBot" style="height:40px !important" filterable>
+                      <el-option v-for="(item, index) in deliveryList" :key="index" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                  </td>
+                  <td v-if="(radio === '1') & (updateForm.send_type === '0')">
+                    <!-- 选择计价方式 -->
+                    <el-select v-model="updateForm.count_type" class="marginBot" style="height:40px !important" filterable>
+                      <el-option v-for="(item, index) in calculationList" :key="index" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                  </td>
+                  <td><b-form-input v-model="updateForm.price"></b-form-input></td>
+                </tr>
+              </tbody>
+            </table>
             <b-button
               variant="secondary"
               @click="closeAlert('update')"
@@ -218,8 +289,8 @@
             >
           </div>
         </div>
-      </div></b-modal
-    >
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -265,6 +336,11 @@ export default {
       th: ['合同编号', '甲方', '乙方', '合同周期', '结算方式', '结算周期', '价格', '税率'],
       filterVal: ['pact_no', 'jf', 'yf', 'cycle', 'js_type', 'js_cycle', 'price', 'cess'],
       countNum: 0,
+      addDialog: false,
+      updateDialog: false,
+      radio: '1',
+      deliveryList: [{ id: '0', name: '零担' }, { id: '1', name: '整车' }],
+      calculationList: [{ id: '0', name: '体积' }, { id: '1', name: '重量' }],
     };
   },
   computed: {
@@ -297,9 +373,10 @@ export default {
     },
     //修改
     async update() {
+      this.updateForm.is_lf = this.radio;
       await this.contractOperation({ type: 'contractEdit', data: this.updateForm });
       this.updateForm = {};
-      this.$refs.updateAlert.hide();
+      this.updateDialog = false;
       this.search();
     },
     //删除
@@ -309,11 +386,17 @@ export default {
       this.deleteItem = '';
       this.$refs.deleteAlert.hide();
     },
+    //打开添加窗口
+    addAlert() {
+      this.form = {};
+      this.addDialog = true;
+    },
     //添加
     async add() {
+      this.form.is_lf = this.radio;
       await this.contractOperation({ type: 'contractSave', data: this.form });
       this.form = {};
-      this.$refs.toAdd.hide();
+      this.addDialog = false;
       this.search();
     },
     //打印
@@ -335,8 +418,9 @@ export default {
     },
     openAlert(type, id) {
       if (type === 'update') {
-        this.$refs.updateAlert.show();
+        this.updateDialog = true;
         this.updateForm = JSON.parse(JSON.stringify(this.list[id]));
+        this.radio = this.updateForm.is_lf;
       } else if (type === 'delete') {
         this.$refs.deleteAlert.show();
         this.operateId = id;
@@ -344,7 +428,7 @@ export default {
     },
     closeAlert(type) {
       if (type === 'update') {
-        this.$refs.updateAlert.hide();
+        this.updateDialog = false;
       } else if (type === 'delete') {
         this.$refs.deleteAlert.hide();
       }

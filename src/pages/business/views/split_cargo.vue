@@ -5,49 +5,81 @@
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">拆分货物</a>
+          <a class="base-margin-left-20">收入管理</a>
           <div class="button-table"></div>
         </div>
       </div>
       <!-- 展示界面 -->
       <div class="base-padding-20 base-bg-fff">
+        <div>
+          <div class="row" style="margin-bottom: 15px !important;">
+            <div class="col-lg-3 marginBot4">
+              <p class="marginBot4">订单单号查询:</p>
+              <b-form-input v-model="select_order_no" placeholder="输入订单单号"></b-form-input>
+            </div>
+            <div class="col-lg-3 marginBot4">
+              <p class="marginBot4">订单人查询:</p>
+              <el-select class="marginBot" style="height:40px !important" v-model="select_c_id" filterable placeholder="输入订单人">
+                <el-option value="" label="全部客户">全部客户</el-option>
+                <el-option v-for="(item, index) in clientList" :key="index" :label="item.name" :value="item.id"></el-option>
+              </el-select>
+            </div>
+            <div class="col-lg-4 marginBot4">
+              <p class="marginBot4">订单日期查询:</p>
+              <el-date-picker
+                style="width:100%; height: 34px !important; line-height: 34px !important;"
+                v-model="select_in_date"
+                value-format="yyyy-MM-dd"
+                format="yyyy-MM-dd"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+              >
+              </el-date-picker>
+            </div>
+            <div class="col-lg-2 marginBot4">
+              <b-button
+                variant="primary"
+                style="font-size: 14px !important; color: rgb(255, 255, 255) !important; width: 60% !important; padding: 5px 10px !important; margin-top:28px; margin-right: 0px !important;"
+                @click="search('vague')"
+                >点击查询</b-button
+              >
+            </div>
+          </div>
+        </div>
         <table class="table table-bordered table-striped ">
-          <tbody v-if="orderSubList.length > 0">
+          <tbody v-if="orderList.length > 0">
             <tr>
               <th>订单号</th>
-              <th>拆分单号</th>
-              <th>货物</th>
-              <th>数量</th>
-              <th>体积</th>
-              <th>重量</th>
-              <th width="25%">操作</th>
+              <th>客户</th>
+              <th>要求发货日期</th>
+              <th>状态</th>
+              <th width="30%">操作</th>
             </tr>
-            <tr v-for="(item, index) in orderSubList" :key="index">
+            <tr v-for="(item, index) in orderList" :key="index">
               <td>{{ item.order_no }}</td>
-              <td>{{ item.slip_no }}</td>
-              <td>{{ item.goods_name }}</td>
-              <td>{{ item.goods_num }}</td>
-              <td>{{ item.goods_volume }}</td>
-              <td>{{ item.goods_weight }}</td>
+              <td>{{ getC_name(item.c_id) }}</td>
+              <td>{{ item.send_time_hp }}</td>
+              <td>{{ item.status | getStatus }}</td>
               <td>
                 <b-button
-                  v-if="item.is_in === '1'"
+                  v-if="item.is_in != 0"
                   @click="openIncomeAlert(index, item.id)"
-                  style="font-size:14px !important; color:#efe !important; background-color:#6b0 !important; padding: 6px 12px !important;"
+                  style="margin-left:4% !important; font-size:14px !important; color:#efe !important; background-color:#6b0 !important; padding: 6px 12px !important;"
                   >添加/修改收入</b-button
                 >
                 <b-button
-                  v-if="item.is_in === '0'"
+                  v-if="item.is_in === 0"
                   @click="openIncomeAlert(index, item.id)"
-                  style="font-size:14px !important; color:#efe !important; background-color:#ff8800 !important; padding: 6px 12px !important;"
+                  style="margin-left:4% !important; font-size:14px !important; color:#efe !important; background-color:#f80 !important; padding: 6px 28px !important;"
                   >添加收入</b-button
                 >
                 <b-button
-                  v-if="item.is_in === '0'"
-                  class="btn btn-info base-margin-bottom"
-                  @click="openAlert(index)"
-                  style="font-size:14px !important; color:#efe !important; padding: 6px 12px !important;margin-left: 42px !important;"
-                  >拆分货物</b-button
+                  variant="primary"
+                  @click="assignPerson(item.id)"
+                  style="margin-left:4% !important; font-size:14px !important; color:#efe !important; padding: 6px 21px !important;"
+                  >指派负责人</b-button
                 >
               </td>
             </tr>
@@ -71,99 +103,37 @@
         </el-pagination>
       </div>
     </div>
-
-    <!--拆分弹框-->
-    <b-modal id="addAlert" title="拆分订单" ref="addAlert" size="xl" hide-footer>
-      <div class="d-block text-center">
-        <div class="row">
-          <h4>原订单</h4>
-          <table class="table table-bordered table-striped ">
-            <tbody>
-              <tr>
-                <td style="width:15%">订单号</td>
-                <td style="width:15%">拆分单号</td>
-                <td style="width:10%">货物名称</td>
-                <td style="width:10%">发货日期</td>
-                <td style="width:10%">数量</td>
-                <td style="width:10%">体积</td>
-                <td style="width:10%">重量</td>
-              </tr>
-              <tr>
-                <td>{{ orderList.order_no }}</td>
-                <td>{{ orderList.slip_no }}</td>
-                <td>{{ orderList.goods_name }}</td>
-                <td><el-date-picker v-model="orderList.send_time" :disabled="true" size="large" type="date" placeholder="选择发货日期"></el-date-picker></td>
-                <td>{{ orderList.goods_num }}</td>
-                <td>{{ orderList.goods_volume }}</td>
-                <td>{{ orderList.goods_weight }}</td>
-              </tr>
-            </tbody>
-          </table>
-          <h4>拆分后订单</h4>
-          <b-button variant="danger" style="color:white;" @click="addOrderSublist()">拆&nbsp;分&nbsp;订&nbsp;单</b-button>
-          <table class="table table-bordered table-striped ">
-            <tbody>
-              <tr>
-                <td style="width:20%">拆分单号</td>
-                <td>发货日期</td>
-                <td>数量</td>
-                <td>体积</td>
-                <td>重量</td>
-                <td>操作</td>
-              </tr>
-              <tr v-for="(item, index) in subForm" :key="index">
-                <td v-if="false"><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
-                <td v-if="false"><b-form-input v-model="item.content" :disabled="true"></b-form-input></td>
-                <td><b-form-input v-model="item.slip_no"></b-form-input></td>
-                <td>
-                  <el-date-picker v-model="item.send_time" size="large" type="date" placeholder="选择发货日期"></el-date-picker>
-                </td>
-                <td>
-                  <el-input-number @change="changeNum()" :min="0" :max="goods_num" size="small" v-model="item.goods_num"></el-input-number>
-                </td>
-                <td>
-                  <el-input-number @change="changeNum()" :min="0" :max="goods_volume" size="small" v-model="item.goods_volume"></el-input-number>
-                </td>
-                <td>
-                  <el-input-number @change="changeNum()" :min="0" :max="goods_weight" size="small" v-model="item.goods_weight"></el-input-number>
-                </td>
-                <td>
-                  <b-button
-                    variant="danger"
-                    :disabled="false"
-                    @click="clearSubForm(index)"
-                    class="resetButton"
-                    style="margin-top: 23px; margin-left: 8px !important; margin-right: 6px !important; padding: 5px 8px !important; font-size: 13px !important;"
-                    >删&nbsp;&nbsp;除</b-button
-                  >
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+    <!-- 指派负责人弹窗 -->
+    <el-dialog title="指派负责人" :visible.sync="assignAlert" width="35%">
+      <div>
+        <p>请选择负责人</p>
+        <el-select v-model="aaaa" class="marginBot" style="height:40px !important" filterable>
+          <el-option v-for="(item, index) in taxRateList" :key="index" :label="item.name" :value="item.id"></el-option>
+        </el-select>
       </div>
       <b-button
-        variant="primary"
-        @click="toValidate('add')"
+        variant="secondary"
+        @click="closeAssignAlert()"
         class="resetButton"
-        style="font-size:16px !important; margin:25px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:30% !important; padding:6px 80px !important;"
-        >保&nbsp;&nbsp;存</b-button
+        style="font-size:16px !important; margin-top:35px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+      >
+        返&nbsp;&nbsp;回</b-button
       >
       <b-button
-        variant="secondary"
-        @click="closeAlert('update')"
+        variant="primary"
+        @click="saveAssign()"
         class="resetButton"
-        style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #ccc !important;  width:30% !important; padding:6px 80px !important;"
-        >返&nbsp;&nbsp;回</b-button
+        style="font-size:16px !important; margin-top:35px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
       >
-    </b-modal>
+        保&nbsp;&nbsp;存</b-button
+      >
+    </el-dialog>
     <!--添加/修改收入弹框-->
-    <!-- <b-modal id="incomeAlert" title="添加/修改收入" ref="incomeAlert" size="xl" hide-footer> -->
     <el-dialog title="添加/修改收入" :visible.sync="dialogVisible" width="80%">
       <div>
         是否按辆份收费？
-        <el-radio v-model="radio" label="1">否</el-radio>
-        <el-radio v-model="radio" label="0">是</el-radio>
+        <el-radio v-model="radio" disabled label="1">否</el-radio>
+        <el-radio v-model="radio" disabled label="0">是</el-radio>
       </div>
       <div class="d-block text-center">
         <div class="row">
@@ -188,7 +158,7 @@
               </tr>
               <tr>
                 <td style="width:10%">{{ name }}</td>
-                <td style="width:10%">{{ wayname }}</td>
+                <td style="width:10%">{{ wayname | getWayName(dlyWayList) }}</td>
                 <td style="width:10%">
                   <el-select @change="getFreight(pact_no)" class="marginBot" style="height:40px !important" v-model="pact_no" filterable placeholder="合同号">
                     <el-option v-for="item in clientPactList" :key="item.id" :label="item.pact_no" :value="item.pact_no"> </el-option>
@@ -210,8 +180,8 @@
                 <td style="width:10%">{{ yunfeiList.num }}</td>
                 <td style="width:10%">{{ yunfeiList.sq_ys }}</td>
                 <td style="width:10%">{{ yunfeiList.sh_ys }}</td>
-                <td style="width:10%"><b-form-input @change="getSumAll()" v-model="yunfeiList.sq_ss" placeholder="请输入费用"></b-form-input></td>
-                <td style="width:10%"><b-form-input @change="getSumAll()" v-model="yunfeiList.sh_ss" placeholder="请输入费用"></b-form-input></td>
+                <td style="width:10%"><b-form-input @change="feiyongTrue(1)" v-model="yunfeiList.sq_ss" placeholder="请输入费用"></b-form-input></td>
+                <td style="width:10%"><b-form-input @change="feiyongTrue(2)" v-model="yunfeiList.sh_ss" placeholder="请输入费用"></b-form-input></td>
                 <td style="width:10%"><b-form-input v-model="yunfeiList.remark" placeholder="备注"></b-form-input></td>
               </tr>
             </tbody>
@@ -220,7 +190,7 @@
           <table v-if="radio === '1'" class="table table-bordered table-striped ">
             <tr>
               <td style="width:10%">客户:&nbsp;&nbsp;{{ name }}</td>
-              <td style="width:10%">线路:&nbsp;&nbsp;{{ wayname }}</td>
+              <td style="width:10%">线路:&nbsp;&nbsp;{{ wayname | getWayName(dlyWayList) }}</td>
               <td style="width:10%">单价:&nbsp;&nbsp;{{ yunfeiList.price }}</td>
               <td style="width:20%"><b-form-input v-model="yunfeiList.remark" placeholder="备注"></b-form-input></td>
             </tr>
@@ -243,7 +213,14 @@
               </tr>
               <tr>
                 <td>
-                  <el-select @change="getFreight(pact_no)" class="marginBot" style="height:40px !important" v-model="pact_no" filterable placeholder="合同号">
+                  <el-select
+                    @change="changeContract(pact_no)"
+                    class="marginBot"
+                    style="height:40px !important"
+                    v-model="pact_no"
+                    filterable
+                    placeholder="合同号"
+                  >
                     <el-option v-for="item in clientPactList" :key="item.id" :label="item.pact_no" :value="item.pact_no"> </el-option>
                   </el-select>
                 </td>
@@ -251,6 +228,7 @@
                 <td>{{ yunfeiList.xm_name }}</td>
                 <td>
                   <el-select
+                    :disabled="true"
                     @change="zhuangTai(yunfeiList.send_type)"
                     v-model="yunfeiList.send_type"
                     class="marginBot"
@@ -261,18 +239,20 @@
                   </el-select>
                 </td>
                 <td v-if="zhuangtai === '0'">
-                  <el-select v-model="yunfeiList.count_type" class="marginBot" style="height:40px !important" filterable>
+                  <el-select :disabled="true" v-model="yunfeiList.count_type" class="marginBot" style="height:40px !important" filterable>
                     <el-option v-for="(item, index) in calculationList" :key="index" :label="item.name" :value="item.id"></el-option>
                   </el-select>
                 </td>
                 <td v-if="zhuangtai === '0'">{{ yunfeiList.num }}</td>
                 <td v-if="zhuangtai === '1'"><b-form-input @change="getFreight(pact_no)" v-model="yunfeiList.num"></b-form-input></td>
-                <td v-if="zhuangtai === '0'">{{ yunfeiList.sq_ys }}</td>
-                <td v-if="zhuangtai === '0'">{{ yunfeiList.sh_ys }}</td>
-                <td v-if="zhuangtai === '1'"><b-form-input @change="feiyong(1)" v-model="yunfeiList.sq_ys"></b-form-input></td>
-                <td v-if="zhuangtai === '1'"><b-form-input @change="feiyong(2)" v-model="yunfeiList.sh_ys"></b-form-input></td>
-                <td><b-form-input @change="getSumAll()" v-model="yunfeiList.sq_ss" placeholder="请输入费用"></b-form-input></td>
-                <td><b-form-input @change="getSumAll()" v-model="yunfeiList.sh_ss" placeholder="请输入费用"></b-form-input></td>
+                <td>{{ yunfeiList.sq_ys }}</td>
+                <td>{{ yunfeiList.sh_ys }}</td>
+                <!-- <td v-if="zhuangtai === '0'">{{ yunfeiList.sq_ys }}</td>
+                <td v-if="zhuangtai === '0'">{{ yunfeiList.sh_ys }}</td> -->
+                <!-- <td v-if="zhuangtai === '1'"><b-form-input @change="feiyong(1)" v-model="yunfeiList.sq_ys"></b-form-input></td>
+                <td v-if="zhuangtai === '1'"><b-form-input @change="feiyong(2)" v-model="yunfeiList.sh_ys"></b-form-input></td> -->
+                <td><b-form-input @change="feiyongTrue(1)" v-model="yunfeiList.sq_ss" placeholder="请输入费用"></b-form-input></td>
+                <td><b-form-input @change="feiyongTrue(2)" v-model="yunfeiList.sh_ss" placeholder="请输入费用"></b-form-input></td>
               </tr>
             </tbody>
           </table>
@@ -295,14 +275,14 @@
                   </el-select>
                 </td>
                 <td>
-                  <el-select v-model="item.rate" class="marginBot" style="height:40px !important" filterable>
+                  <el-select @change="feiyongAuxiliary(0, index)" v-model="item.rate" class="marginBot" style="height:40px !important" filterable>
                     <el-option v-for="(item, index) in taxRateList" :key="index" :label="item.name" :value="item.id"></el-option>
                   </el-select>
                 </td>
                 <td><b-form-input @change="feiyongAuxiliary(1, index)" v-model="item.sq_ys" placeholder="税前金额"></b-form-input></td>
                 <td><b-form-input @change="feiyongAuxiliary(2, index)" v-model="item.sh_ys" placeholder="税后金额"></b-form-input></td>
-                <td><b-form-input @change="getSumAll()" v-model="item.sq_ss" placeholder="税前实收金额"></b-form-input></td>
-                <td><b-form-input @change="getSumAll()" v-model="item.sh_ss" placeholder="税后实收金额"></b-form-input></td>
+                <td><b-form-input @change="feiyongAuxiliaryTrue(1, index)" v-model="item.sq_ss" placeholder="税前实收金额"></b-form-input></td>
+                <td><b-form-input @change="feiyongAuxiliaryTrue(2, index)" v-model="item.sh_ss" placeholder="税后实收金额"></b-form-input></td>
                 <td><b-form-input v-model="item.remark" placeholder="备注"></b-form-input></td>
                 <td>
                   <b-button
@@ -340,7 +320,6 @@
         >取&nbsp;&nbsp;消</b-button
       >
     </el-dialog>
-    <!-- </b-modal> -->
   </div>
 </template>
 
@@ -353,37 +332,18 @@ import { constants } from 'fs';
 export default {
   name: 'car_loading',
   metaInfo: {
-    title: '拆分管理',
+    title: '收入管理',
   },
   data() {
     return {
-      list: [],
-      subForm: [],
       incomeForm: [],
       slipId: '',
-      is_update: true,
-      operateId: '',
       currentPage: 1,
       totalRow: 0,
       form: {},
-      updateForm: {},
-      mainValidator: new Validator({
-        // car_no: [{ required: true, message: '请填写操作人' }],
-        // car_onwer: [{ required: true, message: '请选择客户' }],
-        // send_time: [{ required: true, message: '请选择发货日期' }],
-      }),
-      select_order_no: '',
-      select_c_id: '',
-      select_in_date: [],
       skip: 0,
-      orderList: {},
       costList: [],
-      incomeFormContent: {},
-      goods_num: 0,
-      goods_volume: 0,
-      goods_weight: 0,
       addOrRevise: 0, //0添加，1修改（收入方法区分）
-      isShow: false,
       deleteList: [],
       clientPactList: [],
       yunfeiList: {},
@@ -401,17 +361,20 @@ export default {
       clientList: [],
       num: 0,
       dialogVisible: false,
+      assignAlert: false,
       radio: '1',
+      select_order_no: '',
+      select_c_id: '',
+      select_in_date: [],
+      dlyWayList: [{}],
+      goodsNums: 0,
+      aaaa: '',
     };
   },
   computed: {
     ...mapState({
       limit: state => state.publics.limit,
-      userInfo: state => state.publics.userInfo,
-      orderSubList: state => state.self.orderSubList,
-      dlyWayList: state => state.self.dlyWayList,
-      carList: state => state.car.carList,
-      driverList: state => state.personnel.driverList,
+      orderList: state => state.self.orderList,
     }),
   },
   async created() {
@@ -419,24 +382,14 @@ export default {
     this.getCostList();
     this.yunfeiList.send_type = '0';
     this.getClientList();
+    let result = await this.$axios.get(`/zhwl/dlyway/dly_way_list?skip=0&limit=9999`);
+    this.dlyWayList = JSON.parse(JSON.stringify(result.dlyWayList));
   },
   methods: {
-    ...mapActions([
-      'transportOrderSubList',
-      'getDriverList',
-      'getCarList',
-      'transporSelectOrder',
-      'transportSave',
-      'getdly_wayList',
-      'getTransportNo',
-      'orderSubSplit',
-      'orderIncome',
-      'updateIncome',
-    ]),
+    ...mapActions(['orderIncome', 'updateIncome', 'getOrderList']),
     zhuangTai(a) {
-      this.zhuangtai = a;
       if (a === '1') {
-        this.num = this.yunfeiList.num;
+        this.num = JSON.parse(JSON.stringify(this.yunfeiList.num));
         this.yunfeiList.num = 0;
         this.yunfeiList.sq_ys = null;
         this.yunfeiList.sh_ys = null;
@@ -444,7 +397,7 @@ export default {
         this.yunfeiList.sh_ss = null;
       }
       if (a === '0') {
-        this.yunfeiList.num = this.num;
+        this.yunfeiList.num = JSON.parse(JSON.stringify(this.num));
         this.getFreight(this.pact_no);
       }
       this.getSumAll();
@@ -453,21 +406,6 @@ export default {
     async getClientList() {
       let result = await this.$axios.get(`/zhwl/client/client_list?skip=0&limit=99999&type=0`);
       this.clientList = JSON.parse(JSON.stringify(result.clientList));
-    },
-    //获取拆分单号
-    async getSlipNo() {
-      let result = await this.$axios.get(`/zhwl/order/slip_no?id=1&order_no=order0001`);
-    },
-    //拆分
-    async addOrderSublist() {
-      let result = await this.$axios.get(`/zhwl/order/slip_no?id=${this.orderList.id}&order_no=${this.orderList.order_no}`);
-      this.slip_no = JSON.parse(JSON.stringify(result.slip_no));
-      let newArray = JSON.parse(JSON.stringify(this.orderList));
-      newArray.goods_num = 0;
-      newArray.goods_volume = 0;
-      newArray.goods_weight = 0;
-      newArray.slip_no = this.slip_no;
-      this.subForm.splice(this.subForm.length, 0, newArray);
     },
     //分页
     toSearch(currentPage) {
@@ -480,79 +418,20 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let totalRow = await this.transportOrderSubList({
+      let totalRow = await this.getOrderList({
         skip: skip,
         limit: this.limit,
-        is_in: '',
+        order_no: this.select_order_no,
+        c_id: this.select_c_id,
+        start_time: this.select_in_date.length > 0 ? this.select_in_date[0] : '',
+        end_time: this.select_in_date.length > 0 ? this.select_in_date[1] : '',
       });
       this.$set(this, 'totalRow', totalRow);
     },
-    //验证
-    toValidate(type) {
-      this.mainValidator.validate(type === 'add' ? this.form : this.updateForm, (errors, fields) => {
-        if (errors) {
-          return this.handleErrors(errors, fields);
-        }
-        if (type === 'add') {
-          let num_sum = 0;
-          let volume_sum = 0;
-          let weight_sum = 0;
-          for (let index = 0; index < this.subForm.length; index++) {
-            num_sum += this.subForm[index].goods_num;
-            volume_sum += this.subForm[index].goods_volume;
-            weight_sum += this.subForm[index].goods_weight;
-          }
-          if ((this.goods_num < num_sum) | (this.goods_volume < volume_sum) | (this.goods_weight < weight_sum)) {
-            return this.$message.error('请重新核对数量！！！');
-          }
-          return this.add();
-        } else {
-          return this.update();
-        }
-      });
-    },
-    //添加
-    async add() {
-      try {
-        for (let index = 0; index < this.subForm.length; index++) {
-          delete this.subForm[index].order_no;
-          delete this.subForm[index].id;
-          delete this.subForm[index].wayname;
-          delete this.subForm[index].dly_way_id;
-          delete this.subForm[index].cus_id;
-        }
-        let subFormCopy = JSON.parse(JSON.stringify(this.subForm));
-        subFormCopy.splice(0, 0, this.orderList);
-        delete subFormCopy[0].order_no;
-        delete subFormCopy[0].wayname;
-        delete subFormCopy[0].dly_way_id;
-        delete subFormCopy[0].cus_id;
-        await this.orderSubSplit({ form: this.form, subForm: subFormCopy });
-        this.$refs.addAlert.hide();
-        this.subForm = [];
-        this.search();
-      } catch (error) {
-        console.error('error in line 269');
-      }
-    },
-    changeNum() {
-      let sum1 = 0;
-      let sum2 = 0;
-      let sum3 = 0;
-      for (let index = 0; index < this.subForm.length; index++) {
-        sum1 += this.subForm[index].goods_num;
-        sum2 += this.subForm[index].goods_volume;
-        sum3 += this.subForm[index].goods_weight;
-      }
-      this.orderList.goods_num = this.goods_num - sum1;
-      this.orderList.goods_volume = this.goods_volume - sum2;
-      this.orderList.goods_weight = this.goods_weight - sum3;
-    },
     //添加收费项
     addIncomeForm() {
-      this.isShow = false;
       this.send_time = '';
-      this.incomeForm.push(JSON.parse(JSON.stringify(this.incomeFormContent)));
+      this.incomeForm.push(JSON.parse(JSON.stringify({})));
     },
     //删除收费项
     deleteIncomeForm(i) {
@@ -564,38 +443,24 @@ export default {
       }
       this.getSumAll();
     },
-    //打开拆分的弹框
-    async openAlert(index) {
-      this.subForm = [];
-      await this.transportOrderSubList({
-        skip: 0,
-        limit: 100000000,
-        is_in: '',
-      });
-      this.$set(this, 'orderList', this.orderSubList[index]);
-      this.goods_num = this.orderList.goods_num * 1;
-      this.goods_volume = this.orderList.goods_volume * 1;
-      this.goods_weight = this.orderList.goods_weight * 1;
-      this.$refs.addAlert.show();
-    },
     //打开收入的弹框
-    async openIncomeAlert(index, slip_id) {
-      for (let index = 0; index < this.clientList.length; index++) {
-        if (this.clientList[index].id === this.orderSubList[index].cus_id) {
-          this.name = this.clientList[index].name;
+    async openIncomeAlert(index, main_id) {
+      this.goodsNums = JSON.parse(JSON.stringify(this.orderList[index].goods_nums));
+      for (let index1 = 0; index1 < this.clientList.length; index1++) {
+        if (this.clientList[index1].id === this.orderList[index].c_id) {
+          this.name = this.clientList[index1].name;
         }
       }
-      this.wayname = this.orderSubList[index].wayname;
-      this.yunfeiList.num = this.orderSubList[index].goods_num;
-      let result = await this.$axios.get(`/zhwl/in/in_list?skip=0&limit=1000&slip_id=${slip_id}&order_no=&slip_no=`);
-      let result1 = await this.$axios.get(`/zhwl/clientpact/client_pact_list?skip=0&limit=100000&cus_id=${this.orderSubList[index].cus_id}`);
+      this.yunfeiList.num = this.orderList[index].goods_nums;
+      this.wayname = this.orderList[index].dly_way_id;
+      let result = await this.$axios.get(`/zhwl/in/in_list?skip=0&limit=1000&main_id=${main_id}&order_no=&slip_no=`);
+      let result1 = await this.$axios.get(`/zhwl/clientpact/client_pact_list?skip=0&limit=100000&cus_id=${this.orderList[index].c_id}`);
       if (result.rescode === '0') {
         this.radio = result.inList[0].is_lf;
         this.clientPactList = result1.clientPactList;
         this.pact_no = result1.clientPactList[0].pact_no;
         this.$set(this, 'incomeForm', result.inList);
         this.yunfeiList = this.incomeForm[0];
-        this.yunfeiList.num = this.orderSubList[index].goods_num;
         this.incomeForm.splice(0, 1);
         this.addOrRevise = 1;
       } else {
@@ -617,10 +482,14 @@ export default {
         }
       }
       this.getSumAll();
-      this.slipId = slip_id;
-      // this.$refs.incomeAlert.show();
+      this.slipId = main_id;
       this.dialogVisible = true;
-      this.yunfeiList.slip_no = this.orderSubList[index].slip_no;
+      this.yunfeiList.slip_no = this.orderList[0].slip_no;
+    },
+    // 改变合同
+    changeContract(pact_no) {
+      this.yunfeiList.num = JSON.parse(JSON.stringify(this.goodsNums));
+      this.getFreight(pact_no);
     },
     //计算运费
     getFreight(pact_no) {
@@ -629,6 +498,11 @@ export default {
         if (this.clientPactList[index].pact_no === pact_no) {
           this.yunfeiList.price = this.clientPactList[index].price;
           this.yunfeiList.rate = this.clientPactList[index].cess;
+          this.yunfeiList.xm_name = this.clientPactList[index].item_name;
+          this.radio = this.clientPactList[index].is_lf;
+          this.yunfeiList.send_type = this.clientPactList[index].send_type;
+          this.yunfeiList.count_type = this.clientPactList[index].count_type;
+          this.zhuangtai = this.yunfeiList.send_type;
         }
       }
       this.yunfeiList.sq_ys = this.yunfeiList.price * this.yunfeiList.num;
@@ -637,34 +511,59 @@ export default {
       this.yunfeiList.sh_ss = JSON.parse(JSON.stringify(this.yunfeiList.sh_ys));
       this.getSumAll();
     },
-    //税前税后费用计算
-    feiyong(a) {
+    // //运费税前税后应收费用计算
+    // feiyong(a) {
+    //   if (a === 1) {
+    //     let money = this.incomeForm.sq_ys * this.taxRateList[this.incomeForm.rate].name;
+    //     let a = JSON.parse(JSON.stringify(money));
+    //     this.incomeForm.sh_ys = (a * 1).toFixed(2);
+    //     let b = JSON.parse(JSON.stringify(this.incomeForm.sq_ys));
+    //     this.incomeForm.sq_ss = (b * 1).toFixed(2);
+    //     let c = JSON.parse(JSON.stringify(this.incomeForm.sh_ys));
+    //     this.incomeForm.sh_ss = (c * 1).toFixed(2);
+    //     let d = JSON.parse(JSON.stringify(this.incomeForm.sq_ys));
+    //     this.incomeForm.sq_ys = (d * 1).toFixed(2);
+    //   }
+    //   if (a === 2) {
+    //     let money = this.incomeForm.sh_ys / this.taxRateList[this.incomeForm.rate].name;
+    //     let a = JSON.parse(JSON.stringify(money));
+    //     this.incomeForm.sq_ys = (a * 1).toFixed(2);
+    //     let b = JSON.parse(JSON.stringify(this.incomeForm.sq_ys));
+    //     this.incomeForm.sq_ss = (b * 1).toFixed(2);
+    //     let c = JSON.parse(JSON.stringify(this.incomeForm.sh_ys));
+    //     this.incomeForm.sh_ss = (c * 1).toFixed(2);
+    //     let d = JSON.parse(JSON.stringify(this.incomeForm.sh_ys));
+    //     this.incomeForm.sh_ys = (d * 1).toFixed(2);
+    //   }
+    //   this.getSumAll();
+    // },
+    //运费税前税后实际收费计算
+    feiyongTrue(a) {
       if (a === 1) {
-        let money = this.incomeForm.sq_ys * this.taxRateList[this.incomeForm.rate].name;
+        let money = this.yunfeiList.sq_ss * this.yunfeiList.rate;
         let a = JSON.parse(JSON.stringify(money));
-        this.incomeForm.sh_ys = (a * 1).toFixed(2);
-        let b = JSON.parse(JSON.stringify(this.incomeForm.sq_ys));
-        this.incomeForm.sq_ss = (b * 1).toFixed(2);
-        let c = JSON.parse(JSON.stringify(this.incomeForm.sh_ys));
-        this.incomeForm.sh_ss = (c * 1).toFixed(2);
-        let d = JSON.parse(JSON.stringify(this.incomeForm.sq_ys));
-        this.incomeForm.sq_ys = (d * 1).toFixed(2);
+        this.yunfeiList.sh_ss = (a * 1).toFixed(2);
       }
       if (a === 2) {
-        let money = this.incomeForm.sh_ys / this.taxRateList[this.incomeForm.rate].name;
+        let money = this.yunfeiList.sh_ss / this.yunfeiList.rate;
         let a = JSON.parse(JSON.stringify(money));
-        this.incomeForm.sq_ys = (a * 1).toFixed(2);
-        let b = JSON.parse(JSON.stringify(this.incomeForm.sq_ys));
-        this.incomeForm.sq_ss = (b * 1).toFixed(2);
-        let c = JSON.parse(JSON.stringify(this.incomeForm.sh_ys));
-        this.incomeForm.sh_ss = (c * 1).toFixed(2);
-        let d = JSON.parse(JSON.stringify(this.incomeForm.sh_ys));
-        this.incomeForm.sh_ys = (d * 1).toFixed(2);
+        this.yunfeiList.sq_ss = (a * 1).toFixed(2);
       }
       this.getSumAll();
     },
-    //税前税后费用计算
+    //税前税后应收费用计算副表
     feiyongAuxiliary(a, index) {
+      if (a === 0) {
+        if ((this.incomeForm[index].sq_ys === null) & (this.incomeForm[index].sh_ys != null)) {
+          a = 2;
+        }
+        if (this.incomeForm[index].sq_ys != null) {
+          a = 1;
+        }
+        if ((this.incomeForm[index].sq_ys === null) & (this.incomeForm[index].sh_ys === null)) {
+          return;
+        }
+      }
       if (a === 1) {
         let money = this.incomeForm[index].sq_ys * this.taxRateList[this.incomeForm[index].rate].name;
         let a = JSON.parse(JSON.stringify(money));
@@ -686,6 +585,20 @@ export default {
         this.incomeForm[index].sh_ss = (c * 1).toFixed(2);
         let d = JSON.parse(JSON.stringify(this.incomeForm[index].sh_ys));
         this.incomeForm[index].sh_ys = (d * 1).toFixed(2);
+      }
+      this.getSumAll();
+    },
+    //税前税后实际收费计算副表
+    feiyongAuxiliaryTrue(a, index) {
+      if (a === 1) {
+        let money = this.incomeForm[index].sq_ss * this.taxRateList[this.incomeForm[index].rate].name;
+        let a = JSON.parse(JSON.stringify(money));
+        this.incomeForm[index].sh_ss = (a * 1).toFixed(2);
+      }
+      if (a === 2) {
+        let money = this.incomeForm[index].sh_ss / this.taxRateList[this.incomeForm[index].rate].name;
+        let a = JSON.parse(JSON.stringify(money));
+        this.incomeForm[index].sq_ss = (a * 1).toFixed(2);
       }
       this.getSumAll();
     },
@@ -712,6 +625,16 @@ export default {
       this.afterTaxSum = this.afterTaxSum * 1 + this.yunfeiList.sh_ys * 1;
       this.beforeTaxRealSum = this.beforeTaxRealSum * 1 + this.yunfeiList.sq_ss * 1;
       this.afterTaxRealSum = this.afterTaxRealSum * 1 + this.yunfeiList.sh_ss * 1;
+    },
+    //显示名字
+    getC_name(id) {
+      try {
+        if (this.clientList.length > 0) {
+          return this.clientList.filter(item => item.id === id)[0].name;
+        }
+      } catch {
+        return;
+      }
     },
     //获取cost费用名称字段
     async getCostList() {
@@ -744,16 +667,20 @@ export default {
             delete this.incomeForm[index].order_no;
             delete this.incomeForm[index].slip_id;
             delete this.incomeForm[index].status;
+            delete this.incomeForm[index].main_id;
+            delete this.incomeForm[index].pact_no;
+            delete this.incomeForm[index].pact_id;
           }
         }
         delete this.yunfeiList.create_time;
         delete this.yunfeiList.order_no;
         delete this.yunfeiList.slip_id;
         delete this.yunfeiList.status;
+        delete this.yunfeiList.main_id;
         let incomeFormCopy = JSON.parse(JSON.stringify(this.incomeForm));
         this.yunfeiList.is_lf = this.radio;
         incomeFormCopy.push(JSON.parse(JSON.stringify(this.yunfeiList)));
-        result = await this.updateIncome({ slipId: this.slipId, data: incomeFormCopy });
+        result = await this.updateIncome({ main_id: this.slipId, data: incomeFormCopy });
         this.slipId = '';
         this.closeIncomeAlert();
       } else {
@@ -774,7 +701,7 @@ export default {
         this.yunfeiList.is_lf = this.radio;
         let incomeFormCopy = JSON.parse(JSON.stringify(this.incomeForm));
         incomeFormCopy.push(JSON.parse(JSON.stringify(this.yunfeiList)));
-        result = await this.orderIncome({ slipId: this.slipId, data: incomeFormCopy });
+        result = await this.orderIncome({ main_id: this.slipId, data: incomeFormCopy });
         this.slipId = '';
         this.closeIncomeAlert();
       }
@@ -787,27 +714,10 @@ export default {
     },
     //关闭添加收入弹框
     closeIncomeAlert() {
-      // this.$refs.incomeAlert.hide();
       this.dialogVisible = false;
       this.incomeForm = [];
-      this.isShow = false;
       this.deleteList = [];
       this.search();
-    },
-    //获得运输单号
-    async toGetTransportNo() {
-      let result = await this.getTransportNo({ car_no: this.form.car_no });
-      this.$set(this.form, 'transport_no', result);
-    },
-    //关闭弹框
-    closeAlert(type) {
-      if (type === 'update') {
-        this.$refs.addAlert.hide();
-      }
-      this.search();
-      this.is_update = true;
-      this.operateId = '';
-      this.reset();
     },
     //验证错误
     handleErrors(errors, fields) {
@@ -818,15 +728,50 @@ export default {
       }, {});
       console.debug(errors, fields);
     },
-    //删除表单中内容
-    clearSubForm(i) {
-      this.subForm.splice(i, 1);
+    // 打开指派负责人弹窗
+    assignPerson(id) {
+      this.assignAlert = true;
     },
-    reset() {
-      this.form = {};
-      this.subForm = [];
-      this.form.user_name = this.userInfo.user_name;
-      this.form.login_id = this.userInfo.login_id;
+    // 关闭指派负责人弹窗
+    closeAssignAlert() {
+      this.assignAlert = false;
+    },
+    // 保存指派负责人
+    async saveAssign() {},
+  },
+  filters: {
+    getWayName(id, dlyWayList) {
+      let text = '';
+      for (let index = 0; index < dlyWayList.length; index++) {
+        if (id === dlyWayList[index].id) {
+          text = dlyWayList[index].name;
+          return text;
+        }
+      }
+    },
+    getStatus(data) {
+      let text = '';
+      switch (data) {
+        case 0:
+          text = '待发';
+          break;
+        case 1:
+          text = '发车';
+          break;
+        case 2:
+          text = '到达';
+          break;
+        case 3:
+          text = '支付完成';
+          break;
+        case 4:
+          text = '收款完成';
+          break;
+        default:
+          text = '当前状态错误';
+          break;
+      }
+      return text;
     },
   },
 };

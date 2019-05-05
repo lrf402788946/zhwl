@@ -32,7 +32,7 @@ export const mutations = {
     }
   },
   // 登出
-  isLogout(state) {
+  logout(state) {
     state.userInfo = '';
     state.userRoleList = [];
     sessionStorage.removeItem('userInfo');
@@ -63,6 +63,7 @@ export const actions = {
           sessionStorage.setItem('userInfo', JSON.stringify(result.user));
           sessionStorage.setItem('userRoleList', JSON.stringify(result.userRoleList));
           Message.success(result.msg);
+          return true;
         } else {
           Message.error(result.msg);
         }

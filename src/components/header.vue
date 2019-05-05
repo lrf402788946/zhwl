@@ -73,7 +73,7 @@ export default {
     ...mapActions(['login', 'logout']),
     logout() {
       // sessionStorage.removeItem('userInfo');
-      this.isLogout();
+      this.logout();
       this.$router.push({ path: '/login' });
     },
     loginOrNot() {

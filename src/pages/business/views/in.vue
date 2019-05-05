@@ -182,8 +182,8 @@
               </div>
               <div class="col-lg-3 mb25">
                 <div class="lh44">计算方式</div>
-                <el-select v-model="form.count_type" class="marginBot" style="height:40px !important" filterable placeholder="请选择发货方式">
-                  <el-option v-for="(item, index) in calculationList" :key="index" :label="item.name" :value="item.id"></el-option>
+                <el-select v-model="form.count_type" class="marginBot" style="height:40px !important" filterable placeholder="请选择计算方式">
+                  <el-option v-for="item in calculationList" :key="item.id" :label="item.name" :value="item.id"></el-option>
                 </el-select>
               </div>
               <div class="col-lg-3 mb25">

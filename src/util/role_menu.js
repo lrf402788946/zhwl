@@ -81,10 +81,10 @@ export const BUSINESS = {
       name: '收/支项管理',
       uri: '/business.html#/cost',
     },
-    {
-      name: '收入单管理',
-      uri: '/business.html#/in_page',
-    },
+    // {
+    //   name: '收入单管理',
+    //   uri: '/business.html#/in_page',
+    // },
     {
       name: '支出单管理',
       uri: '/business.html#/out',
@@ -94,7 +94,7 @@ export const BUSINESS = {
       uri: '/business.html#/order',
     },
     {
-      name: '拆分管理',
+      name: '收入管理',
       uri: '/business.html#/split_cargo',
     },
     {
@@ -118,6 +118,20 @@ export const BUSINESS = {
 
 export const SETTLEMENT = {
   name: '结算单管理',
+  menu: [
+    {
+      name: '客户结算单',
+      uri: '/settlement.html#/customerStatement',
+    },
+    {
+      name: '供应商结算单',
+      uri: '/settlement.html#/vendorStatement',
+    },
+  ],
+};
+
+export const SEARCH = {
+  name: '综合查询',
   menu: [
     {
       name: '客户结算单',
