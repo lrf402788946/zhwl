@@ -132,8 +132,8 @@
     <el-dialog title="添加/修改收入" :visible.sync="dialogVisible" width="80%">
       <div>
         是否按辆份收费？
-        <el-radio v-model="radio" label="1">否</el-radio>
-        <el-radio v-model="radio" label="0">是</el-radio>
+        <el-radio v-model="radio" disabled label="1">否</el-radio>
+        <el-radio v-model="radio" disabled label="0">是</el-radio>
       </div>
       <div class="d-block text-center">
         <div class="row">
@@ -180,8 +180,8 @@
                 <td style="width:10%">{{ yunfeiList.num }}</td>
                 <td style="width:10%">{{ yunfeiList.sq_ys }}</td>
                 <td style="width:10%">{{ yunfeiList.sh_ys }}</td>
-                <td style="width:10%"><b-form-input @change="getSumAll()" v-model="yunfeiList.sq_ss" placeholder="请输入费用"></b-form-input></td>
-                <td style="width:10%"><b-form-input @change="getSumAll()" v-model="yunfeiList.sh_ss" placeholder="请输入费用"></b-form-input></td>
+                <td style="width:10%"><b-form-input @change="feiyongTrue(1)" v-model="yunfeiList.sq_ss" placeholder="请输入费用"></b-form-input></td>
+                <td style="width:10%"><b-form-input @change="feiyongTrue(2)" v-model="yunfeiList.sh_ss" placeholder="请输入费用"></b-form-input></td>
                 <td style="width:10%"><b-form-input v-model="yunfeiList.remark" placeholder="备注"></b-form-input></td>
               </tr>
             </tbody>
@@ -245,10 +245,12 @@
                 </td>
                 <td v-if="zhuangtai === '0'">{{ yunfeiList.num }}</td>
                 <td v-if="zhuangtai === '1'"><b-form-input @change="getFreight(pact_no)" v-model="yunfeiList.num"></b-form-input></td>
-                <td v-if="zhuangtai === '0'">{{ yunfeiList.sq_ys }}</td>
-                <td v-if="zhuangtai === '0'">{{ yunfeiList.sh_ys }}</td>
-                <td v-if="zhuangtai === '1'"><b-form-input @change="feiyong(1)" v-model="yunfeiList.sq_ys"></b-form-input></td>
-                <td v-if="zhuangtai === '1'"><b-form-input @change="feiyong(2)" v-model="yunfeiList.sh_ys"></b-form-input></td>
+                <td>{{ yunfeiList.sq_ys }}</td>
+                <td>{{ yunfeiList.sh_ys }}</td>
+                <!-- <td v-if="zhuangtai === '0'">{{ yunfeiList.sq_ys }}</td>
+                <td v-if="zhuangtai === '0'">{{ yunfeiList.sh_ys }}</td> -->
+                <!-- <td v-if="zhuangtai === '1'"><b-form-input @change="feiyong(1)" v-model="yunfeiList.sq_ys"></b-form-input></td>
+                <td v-if="zhuangtai === '1'"><b-form-input @change="feiyong(2)" v-model="yunfeiList.sh_ys"></b-form-input></td> -->
                 <td><b-form-input @change="feiyongTrue(1)" v-model="yunfeiList.sq_ss" placeholder="请输入费用"></b-form-input></td>
                 <td><b-form-input @change="feiyongTrue(2)" v-model="yunfeiList.sh_ss" placeholder="请输入费用"></b-form-input></td>
               </tr>
@@ -509,43 +511,43 @@ export default {
       this.yunfeiList.sh_ss = JSON.parse(JSON.stringify(this.yunfeiList.sh_ys));
       this.getSumAll();
     },
-    //运费税前税后应收费用计算
-    feiyong(a) {
-      if (a === 1) {
-        let money = this.incomeForm.sq_ys * this.taxRateList[this.incomeForm.rate].name;
-        let a = JSON.parse(JSON.stringify(money));
-        this.incomeForm.sh_ys = (a * 1).toFixed(2);
-        let b = JSON.parse(JSON.stringify(this.incomeForm.sq_ys));
-        this.incomeForm.sq_ss = (b * 1).toFixed(2);
-        let c = JSON.parse(JSON.stringify(this.incomeForm.sh_ys));
-        this.incomeForm.sh_ss = (c * 1).toFixed(2);
-        let d = JSON.parse(JSON.stringify(this.incomeForm.sq_ys));
-        this.incomeForm.sq_ys = (d * 1).toFixed(2);
-      }
-      if (a === 2) {
-        let money = this.incomeForm.sh_ys / this.taxRateList[this.incomeForm.rate].name;
-        let a = JSON.parse(JSON.stringify(money));
-        this.incomeForm.sq_ys = (a * 1).toFixed(2);
-        let b = JSON.parse(JSON.stringify(this.incomeForm.sq_ys));
-        this.incomeForm.sq_ss = (b * 1).toFixed(2);
-        let c = JSON.parse(JSON.stringify(this.incomeForm.sh_ys));
-        this.incomeForm.sh_ss = (c * 1).toFixed(2);
-        let d = JSON.parse(JSON.stringify(this.incomeForm.sh_ys));
-        this.incomeForm.sh_ys = (d * 1).toFixed(2);
-      }
-      this.getSumAll();
-    },
+    // //运费税前税后应收费用计算
+    // feiyong(a) {
+    //   if (a === 1) {
+    //     let money = this.incomeForm.sq_ys * this.taxRateList[this.incomeForm.rate].name;
+    //     let a = JSON.parse(JSON.stringify(money));
+    //     this.incomeForm.sh_ys = (a * 1).toFixed(2);
+    //     let b = JSON.parse(JSON.stringify(this.incomeForm.sq_ys));
+    //     this.incomeForm.sq_ss = (b * 1).toFixed(2);
+    //     let c = JSON.parse(JSON.stringify(this.incomeForm.sh_ys));
+    //     this.incomeForm.sh_ss = (c * 1).toFixed(2);
+    //     let d = JSON.parse(JSON.stringify(this.incomeForm.sq_ys));
+    //     this.incomeForm.sq_ys = (d * 1).toFixed(2);
+    //   }
+    //   if (a === 2) {
+    //     let money = this.incomeForm.sh_ys / this.taxRateList[this.incomeForm.rate].name;
+    //     let a = JSON.parse(JSON.stringify(money));
+    //     this.incomeForm.sq_ys = (a * 1).toFixed(2);
+    //     let b = JSON.parse(JSON.stringify(this.incomeForm.sq_ys));
+    //     this.incomeForm.sq_ss = (b * 1).toFixed(2);
+    //     let c = JSON.parse(JSON.stringify(this.incomeForm.sh_ys));
+    //     this.incomeForm.sh_ss = (c * 1).toFixed(2);
+    //     let d = JSON.parse(JSON.stringify(this.incomeForm.sh_ys));
+    //     this.incomeForm.sh_ys = (d * 1).toFixed(2);
+    //   }
+    //   this.getSumAll();
+    // },
     //运费税前税后实际收费计算
     feiyongTrue(a) {
       if (a === 1) {
-        let money = this.incomeForm.sq_ss * this.taxRateList[this.incomeForm.rate].name;
+        let money = this.yunfeiList.sq_ss * this.yunfeiList.rate;
         let a = JSON.parse(JSON.stringify(money));
-        this.incomeForm.sh_ss = (a * 1).toFixed(2);
+        this.yunfeiList.sh_ss = (a * 1).toFixed(2);
       }
       if (a === 2) {
-        let money = this.incomeForm.sh_ss / this.taxRateList[this.incomeForm.rate].name;
+        let money = this.yunfeiList.sh_ss / this.yunfeiList.rate;
         let a = JSON.parse(JSON.stringify(money));
-        this.incomeForm.sq_ss = (a * 1).toFixed(2);
+        this.yunfeiList.sq_ss = (a * 1).toFixed(2);
       }
       this.getSumAll();
     },
