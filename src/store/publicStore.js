@@ -63,6 +63,7 @@ export const actions = {
           sessionStorage.setItem('userInfo', JSON.stringify(result.user));
           sessionStorage.setItem('userRoleList', JSON.stringify(result.userRoleList));
           Message.success(result.msg);
+          return true;
         } else {
           Message.error(result.msg);
         }

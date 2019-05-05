@@ -9,6 +9,7 @@ module.exports = {
     personnel: 'src/pages/personnel/main.js',
     car: 'src/pages/car/main.js',
     settlement: 'src/pages/settlement/main.js',
+    search: 'src/pages/search/main.js',
   },
   configureWebpack: config => {
     Object.assign(config, {

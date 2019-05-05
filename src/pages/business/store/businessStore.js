@@ -245,11 +245,11 @@ export const actions = {
     }
   },
   //添加拆分的收入
-  async orderIncome({ commit }, { slipId, data }) {
+  async orderIncome({ commit }, { main_id, data }) {
     try {
       let result = await this.$axios.post(api.orderIncome, {
         data,
-        slip_id: slipId,
+        main_id: main_id,
       });
       if (result.rescode === '0') {
         Message.success('操作成功');
@@ -262,11 +262,11 @@ export const actions = {
     }
   },
   //修改拆分的收入
-  async updateIncome({ commit }, { slipId, data }) {
+  async updateIncome({ commit }, { main_id, data }) {
     try {
       let result = await this.$axios.post(api.updateIncome, {
         data,
-        slip_id: slipId,
+        main_id: main_id,
       });
       if (result.rescode === '0') {
         Message.success('操作成功');
@@ -389,9 +389,9 @@ export const actions = {
     }
   },
   //装车,查询订单子表
-  async transportOrderSubList({ commit }, { skip, limit, is_in }) {
+  async transportOrderSubList({ commit }, { skip, limit }) {
     try {
-      let result = await this.$axios.get(`${api.transportOrderSubList}?skip=${skip}&limit=${limit}&is_in=${is_in}`);
+      let result = await this.$axios.get(`${api.transportOrderSubList}?skip=${skip}&limit=${limit}`);
       if (result.rescode === '0') {
         commit(types.ORDER_SUB_LIST, result.orderSubList);
         return result.totalRow;

@@ -17,7 +17,7 @@
             data-toggle="tooltip"
             title=""
             role="button"
-            @click="openAlert('add')"
+            @click="openAlert()"
           >
             <!-- v-b-modal="'addAlert'"-->
             <i class="base-margin-right-5 fa fa-plus-square"></i>发车
@@ -33,6 +33,7 @@
               <th>数量</th>
               <th>重量</th>
               <th>体积</th>
+              <th>要求发货日期</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in orderSubList" :key="index">
@@ -47,6 +48,7 @@
               <td>{{ item.goods_num }}</td>
               <td>{{ item.goods_weight }}</td>
               <td>{{ item.goods_volume }}</td>
+              <td><el-date-picker v-model="item.send_time_hp" :disabled="true" size="large" type="date"></el-date-picker></td>
               <td>
                 <b-button
                   class="btn btn-info base-margin-bottom"
@@ -119,7 +121,7 @@
                       <td>数量</td>
                       <td>重量</td>
                       <td>体积</td>
-                      <td>线路</td>
+                      <!-- <td>线路</td> -->
                     </tr>
                     <tr>
                       <td>{{ item.order_no }}</td>
@@ -129,11 +131,11 @@
                       <td>{{ item.goods_num }}</td>
                       <td>{{ item.goods_weight }}</td>
                       <td>{{ item.goods_volume }}</td>
-                      <td>
+                      <!-- <td>
                         <el-select v-model="item.dly_way_id" placeholder="请选择线路">
                           <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"> </el-option>
                         </el-select>
-                      </td>
+                      </td> -->
                     </tr>
                   </tbody>
                 </table>
@@ -285,17 +287,16 @@
       >
     </b-modal>
     <!--拆分弹框-->
-    <b-modal id="addSplitAlert" title="拆分订单" ref="addSplitAlert" size="xl" hide-footer>
+    <b-modal id="addSplitAlert" title="拆分货物" ref="addSplitAlert" size="xl" hide-footer>
       <div class="d-block text-center">
         <div class="row">
-          <h4>原订单</h4>
+          <h4>原货物情况</h4>
           <table class="table table-bordered table-striped ">
             <tbody>
               <tr>
                 <td style="width:15%">订单号</td>
                 <td style="width:15%">拆分单号</td>
                 <td style="width:10%">货物名称</td>
-                <td style="width:10%">发货日期</td>
                 <td style="width:10%">数量</td>
                 <td style="width:10%">体积</td>
                 <td style="width:10%">重量</td>
@@ -304,20 +305,18 @@
                 <td>{{ orderList.order_no }}</td>
                 <td>{{ orderList.slip_no }}</td>
                 <td>{{ orderList.goods_name }}</td>
-                <td><el-date-picker v-model="orderList.send_time" :disabled="true" size="large" type="date" placeholder="选择发货日期"></el-date-picker></td>
                 <td>{{ orderList.goods_num }}</td>
                 <td>{{ orderList.goods_volume }}</td>
                 <td>{{ orderList.goods_weight }}</td>
               </tr>
             </tbody>
           </table>
-          <h4>拆分后订单</h4>
-          <b-button variant="danger" style="color:white;" @click="addOrderSublist()">拆&nbsp;分&nbsp;订&nbsp;单</b-button>
+          <h4>拆分后</h4>
+          <b-button variant="danger" style="color:white; margin-left: 85% !important;" @click="addOrderSublist()">拆&nbsp;分&nbsp;货&nbsp;物</b-button>
           <table class="table table-bordered table-striped ">
             <tbody>
               <tr>
                 <td style="width:20%">拆分单号</td>
-                <td>发货日期</td>
                 <td>数量</td>
                 <td>体积</td>
                 <td>重量</td>
@@ -327,9 +326,6 @@
                 <td v-if="false"><b-form-input v-model="item.goods_name" :disabled="true"></b-form-input></td>
                 <td v-if="false"><b-form-input v-model="item.content" :disabled="true"></b-form-input></td>
                 <td><b-form-input v-model="item.slip_no"></b-form-input></td>
-                <td>
-                  <el-date-picker v-model="item.send_time" size="large" type="date" placeholder="选择发货日期"></el-date-picker>
-                </td>
                 <td>
                   <el-input-number @change="changeNum()" :min="0" :max="goods_num" size="small" v-model="item.goods_num"></el-input-number>
                 </td>
@@ -468,7 +464,6 @@ export default {
       let totalRow = await this.transportOrderSubList({
         skip: skip,
         limit: this.limit,
-        is_in: '',
       });
       this.$set(this, 'totalRow', totalRow);
     },
@@ -526,7 +521,7 @@ export default {
       this.search();
     },
     //打开与关闭修改和删除的弹框
-    async openAlert(type, id) {
+    async openAlert() {
       if (this.order_loading_list <= 0) {
         this.$message.error('请选择要装车的货物');
         return false;
@@ -675,7 +670,6 @@ export default {
       await this.transportOrderSubList({
         skip: 0,
         limit: 100000000,
-        is_in: '',
       });
       this.$set(this, 'orderList', this.orderSubList[index]);
       this.goods_num = this.orderList.goods_num * 1;
@@ -718,6 +712,7 @@ export default {
           delete this.splitForm[index].wayname;
           delete this.splitForm[index].dly_way_id;
           delete this.splitForm[index].cus_id;
+          delete this.splitForm[index].send_time_hp;
         }
         let subFormCopy = JSON.parse(JSON.stringify(this.splitForm));
         subFormCopy.splice(0, 0, this.orderList);
@@ -725,6 +720,7 @@ export default {
         delete subFormCopy[0].wayname;
         delete subFormCopy[0].dly_way_id;
         delete subFormCopy[0].cus_id;
+        delete subFormCopy[0].send_time_hp;
         await this.orderSubSplit({ form: this.form, subForm: subFormCopy });
         this.$refs.addSplitAlert.hide();
         this.splitForm = [];

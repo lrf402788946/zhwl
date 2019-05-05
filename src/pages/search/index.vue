@@ -1,23 +1,56 @@
 <template>
   <div>
-    <div class="ind">
-      欢迎使用智慧物流管理平台
+    <div class="base-wrapper">
+      <Header></Header>
+      <div class="base-main" id="base-main">
+        <sideMenu style="float:left;"></sideMenu>
+        <div id="base-main-right" class="base-main-right">
+          <router-view />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Header from '@/components/header.vue';
+import sideMenu from '@/components/side_menu.vue';
 export default {
   data() {
     return {
       img: require('@/assets/img/blurred.jpg'),
-      data: [],
+      form: {},
     };
   },
-  created() {
-    // this.test();
+  components: {
+    Header,
+    sideMenu,
   },
-  methods: {},
+  mounted() {
+    $('#base-main').height($(window).height() - 60);
+    $(window).resize(function() {
+      $('#base-main').height($(window).height() - 60);
+    });
+    $('#base-main-right').width($(window).width() - 260);
+    $(window).resize(function() {
+      $('#base-main-right').width($(window).width() - 260);
+    });
+  },
+  methods: {
+    isLogin() {
+      let routerPath = this.$route.name;
+      console.log(routerPath);
+      if (routerPath != null) {
+        if (routerPath.includes('login')) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    },
+  },
 };
 </script>
 <style>
@@ -90,7 +123,7 @@ label {
 </style>
 
 <style scoped>
-/* @import '../icon/Font-Awesome-master/css/font-awesome.css';
-@import '../layout/base-Layout-bootstrap.css';
-@import '../style/base-style-bootstrap.css'; */
+@import '../../assets/style/Font-Awesome-master/css/font-awesome.css';
+@import '../../assets/style/layout/base-Layout-bootstrap.css';
+@import '../../assets/style/base-style-bootstrap.css';
 </style>

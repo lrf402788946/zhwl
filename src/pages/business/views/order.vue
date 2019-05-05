@@ -122,12 +122,6 @@
             </el-select>
           </div>
           <div class="col-lg-3 mb25">
-            <div class="lh44">合同:</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="form.pact_id" filterable placeholder="请选择合同">
-              <el-option v-for="(item, index) in contractList" :key="index" :value="item.id" :label="item.pact_no"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-3 mb25">
             <div class="lh44">要求发货日期：</div>
             <el-date-picker
               style="width: 100%;"
@@ -177,41 +171,20 @@
             >
             </el-date-picker>
           </div>
-          <div class="col-lg-4 mb25">
+          <div class="col-lg-3 mb25">
+            <div class="lh44">线路:</div>
+            <b-form-select v-model="form.dly_way_id" class="marginBot" style="height:40px !important">
+              <option :value="undefined" disabled>请选择线路</option>
+              <option v-for="(item, index) in dlyWayList" :key="index" :value="item.id">{{ item.name }}</option>
+            </b-form-select>
+          </div>
+          <!-- <div class="col-lg-3 mb25">
             <div class="lh44">发货方式:</div>
             <el-select class="marginBot" style="height:40px !important" v-model="form.send_type" filterable placeholder="请选择发货方式">
               <el-option value="0" label="零担运输"></el-option>
               <el-option value="1" label="整车运输"></el-option>
             </el-select>
-          </div>
-          <div class="col-lg-8 mb25"></div>
-          <!--line2-->
-          <div class="col-lg-4 mb25">
-            <div class="lh44">发货地址：</div>
-            <b-form-input v-model="form.send_address" placeholder="请填写发货地址"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">发货人：</div>
-            <b-form-input v-model="form.send_name" placeholder="请填写发货人"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">发货人联系方式：</div>
-            <b-form-input v-model="form.send_tel" placeholder="请填写发货人联系方式"></b-form-input>
-          </div>
-          <!--line3-->
-          <div class="col-lg-4 mb25">
-            <div class="lh44">收货地址：</div>
-            <b-form-input v-model="form.take_address" placeholder="请填写收货地址"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">收货人：</div>
-            <b-form-input v-model="form.take_name" placeholder="请填写收货人"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">收货人联系方式：</div>
-            <b-form-input v-model="form.take_tel" placeholder="请填写收货人联系方式"></b-form-input>
-          </div>
-          <br />
+          </div> -->
         </div>
         <el-tabs v-model="tabs" type="card">
           <el-tab-pane v-for="(item, index) in subForm" :key="index" :label="`货物${index + 1}`" :name="`${index}`">
@@ -233,10 +206,6 @@
                 <b-form-input v-model="item.item_num" type="number"></b-form-input>
               </div>
               <div class="col-lg-3 mb25">
-                <div class="lh44">发货件数:</div>
-                <b-form-input v-model="item.sent_num" type="number" :disabled="true"></b-form-input>
-              </div>
-              <div class="col-lg-3 mb25">
                 <div class="lh44">包装:</div>
                 <b-form-input v-model="item.pack" placeholder="请填写包装信息"></b-form-input>
               </div>
@@ -249,17 +218,42 @@
                 <div class="lh44">体积:</div>
                 <b-form-input v-model="item.goods_volume" type="number"></b-form-input>
               </div>
-              <div class="col-lg-3 mb25">
-                <div class="lh44">线路:</div>
-                <b-form-select v-model="item.dly_way_id" class="marginBot" style="height:40px !important">
-                  <option :value="undefined" disabled>请选择线路</option>
-                  <option v-for="(item, index) in dlyWayList" :key="index" :value="item.id">{{ item.name }}</option>
-                </b-form-select>
-              </div>
             </div>
           </el-tab-pane>
         </el-tabs>
       </div>
+      <el-collapse v-model="activeNames">
+        <el-collapse-item title="☆☆☆其他附加项☆☆☆">
+          <!--line2-->
+          <div class="row">
+            <div class="col-lg-3 mb25">
+              <div class="lh44">发货地址：</div>
+              <b-form-input v-model="form.send_address" placeholder="请填写发货地址"></b-form-input>
+            </div>
+            <div class="col-lg-3 mb25">
+              <div class="lh44">发货人：</div>
+              <b-form-input v-model="form.send_name" placeholder="请填写发货人"></b-form-input>
+            </div>
+            <div class="col-lg-3 mb25">
+              <div class="lh44">发货人联系方式：</div>
+              <b-form-input v-model="form.send_tel" placeholder="请填写发货人联系方式"></b-form-input>
+            </div>
+            <!--line3-->
+            <div class="col-lg-3 mb25">
+              <div class="lh44">收货地址：</div>
+              <b-form-input v-model="form.take_address" placeholder="请填写收货地址"></b-form-input>
+            </div>
+            <div class="col-lg-3 mb25">
+              <div class="lh44">收货人：</div>
+              <b-form-input v-model="form.take_name" placeholder="请填写收货人"></b-form-input>
+            </div>
+            <div class="col-lg-3 mb25">
+              <div class="lh44">收货人联系方式：</div>
+              <b-form-input v-model="form.take_tel" placeholder="请填写收货人联系方式"></b-form-input>
+            </div>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
       <b-button
         variant="primary"
         @click="addSubForm()"
@@ -300,12 +294,6 @@
             <div class="lh44">客户:</div>
             <el-select class="marginBot" style="height:40px !important" :disabled="is_update" v-model="updateForm.c_id" filterable placeholder="请选择客户">
               <el-option v-for="(item, index) in clientList" :key="index" :value="item.id" :label="item.name"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-3 mb25">
-            <div class="lh44">合同:</div>
-            <el-select class="marginBot" style="height:40px !important" :disabled="is_update" v-model="updateForm.pact_id" filterable placeholder="请选择合同">
-              <el-option v-for="(item, index) in contractList" :key="index" :value="item.id" :label="item.pact_no"></el-option>
             </el-select>
           </div>
           <div class="col-lg-3 mb25">
@@ -359,46 +347,12 @@
             >
             </el-date-picker>
           </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">发货方式:</div>
-            <el-select
-              class="marginBot"
-              style="height:40px !important"
-              v-model="updateForm.send_type"
-              :disabled="is_update"
-              filterable
-              placeholder="请选择发货方式"
-            >
-              <el-option :value="0" label="零担运输"></el-option>
-              <el-option :value="1" label="整车运输"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-8 mb25"></div>
-          <!--line2-->
-          <div class="col-lg-4 mb25">
-            <div class="lh44">发货地址：</div>
-            <b-form-input v-model="updateForm.send_address" :disabled="is_update" placeholder="请填写发货地址"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">发货人：</div>
-            <b-form-input v-model="updateForm.send_name" :disabled="is_update" placeholder="请填写发货人"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">发货人联系方式：</div>
-            <b-form-input v-model="updateForm.send_tel" :disabled="is_update" placeholder="请填写发货人联系方式"></b-form-input>
-          </div>
-          <!--line3-->
-          <div class="col-lg-4 mb25">
-            <div class="lh44">收货地址：</div>
-            <b-form-input v-model="updateForm.take_address" :disabled="is_update" placeholder="请填写收货地址"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">收货人：</div>
-            <b-form-input v-model="updateForm.take_name" :disabled="is_update" placeholder="请填写收货人"></b-form-input>
-          </div>
-          <div class="col-lg-4 mb25">
-            <div class="lh44">收货人联系方式：</div>
-            <b-form-input v-model="updateForm.take_tel" :disabled="is_update" placeholder="请填写收货人联系方式"></b-form-input>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">线路:</div>
+            <b-form-select v-model="updateForm.dly_way_id" :disabled="is_update" class="marginBot" style="height:40px !important">
+              <option :value="undefined" disabled>请选择线路</option>
+              <option v-for="(item, index) in dlyWayList" :key="index" :value="item.id">{{ item.name }}</option>
+            </b-form-select>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">签收人：</div>
@@ -441,18 +395,43 @@
                   <div class="lh44">产品名称:</div>
                   <b-form-input v-model="item.goods_name" :disabled="is_update" placeholder="请填写产品名称"></b-form-input>
                 </div>
-                <div class="col-lg-3 mb25">
-                  <div class="lh44">线路:</div>
-                  <b-form-select v-model="item.dly_way_id" :disabled="is_update" class="marginBot" style="height:40px !important">
-                    <option :value="undefined" disabled>请选择线路</option>
-                    <option v-for="(item, index) in dlyWayList" :key="index" :value="item.id">{{ item.name }}</option>
-                  </b-form-select>
-                </div>
               </div>
             </el-tab-pane>
           </el-tabs>
         </div>
       </div>
+      <el-collapse v-model="activeNames">
+        <el-collapse-item title="☆☆☆其他附加项☆☆☆">
+          <!--line2-->
+          <div class="row">
+            <div class="col-lg-3 mb25">
+              <div class="lh44">发货地址：</div>
+              <b-form-input v-model="updateForm.send_address" placeholder="请填写发货地址"></b-form-input>
+            </div>
+            <div class="col-lg-3 mb25">
+              <div class="lh44">发货人：</div>
+              <b-form-input v-model="updateForm.send_name" placeholder="请填写发货人"></b-form-input>
+            </div>
+            <div class="col-lg-3 mb25">
+              <div class="lh44">发货人联系方式：</div>
+              <b-form-input v-model="updateForm.send_tel" placeholder="请填写发货人联系方式"></b-form-input>
+            </div>
+            <!--line3-->
+            <div class="col-lg-3 mb25">
+              <div class="lh44">收货地址：</div>
+              <b-form-input v-model="updateForm.take_address" placeholder="请填写收货地址"></b-form-input>
+            </div>
+            <div class="col-lg-3 mb25">
+              <div class="lh44">收货人：</div>
+              <b-form-input v-model="updateForm.take_name" placeholder="请填写收货人"></b-form-input>
+            </div>
+            <div class="col-lg-3 mb25">
+              <div class="lh44">收货人联系方式：</div>
+              <b-form-input v-model="updateForm.take_tel" placeholder="请填写收货人联系方式"></b-form-input>
+            </div>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
       <div class="row">
         <div class="col-lg-4">
           <b-button
@@ -577,7 +556,7 @@ export default {
         op: [{ required: true, message: '请填写操作人' }],
         send_time_hp: [{ required: true, message: '请选择要求发货日期' }],
         reach_time_hp: [{ required: true, message: '请选择要求到达日期' }],
-        send_address: [{ required: true, message: '请选择发货地址' }],
+        // send_address: [{ required: true, message: '请选择发货地址' }],
       }),
       th: ['订单号', '订单人', '订单日期', '备注'],
       filterVal: ['order_no', 'user_name', 'in_date', 'remark'],
@@ -599,6 +578,7 @@ export default {
         sign_name: [{ required: true, message: '请填写操作人' }],
         sign_time: [{ required: true, message: '请选择物流方式' }],
       }),
+      activeNames: ['1'],
     };
   },
   watch: {
@@ -732,6 +712,9 @@ export default {
     //修改
     async update() {
       try {
+        delete this.updateForm.goods_nums;
+        delete this.updateForm.is_in;
+        delete this.updateForm.pact_id;
         await this.orderEdit({ form: this.updateForm, subForm: this.subForm });
         this.closeAlert('update');
         this.updateForm = [];
