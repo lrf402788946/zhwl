@@ -23,6 +23,9 @@
                 <div class="col-lg-6">
                   <button variant="primary" @click="form = {}" style=" margin-top:10px;" class="dengBtn">重&nbsp;&nbsp;置</button>
                 </div>
+                <div class="col-lg-6">
+                  <button type="button" variant="primary" @click="test()" style=" margin-top:10px;" class="dengBtn">test</button>
+                </div>
               </div>
             </div>
           </form>
@@ -53,6 +56,11 @@ export default {
           window.location.href = 'system.html';
         }
       }
+    },
+    async test() {
+      // let result = await this.$axios.get('http://10.16.11.227:7001?age=19');
+      let result = await this.$axios.post('/zhwl', { age: 19 });
+      console.log(result);
     },
   },
 };

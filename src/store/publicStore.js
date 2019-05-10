@@ -120,4 +120,8 @@ export const actions = {
       console.error(err);
     }
   },
+  //注销
+  async logout({ commit }) {
+    commit('logout');
+  },
 };

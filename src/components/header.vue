@@ -26,16 +26,19 @@
             </el-dropdown>
           </div>
           <div class="col-lg-3 newHeaderDiv">
-            <el-dropdown>
+            <el-dropdown v-if="loginOrNot()">
               <span class="el-dropdown-link" style="margin: 50px;">{{ getName() }}<span class="button-down fa fa-caret-down"></span></span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>
                   <a @click="$router.push({ name: 'update_pw' })"><i class="fa fa-lock base-margin-right-5"></i>修改密码</a>
                 </el-dropdown-item>
                 <el-dropdown-item>
-                  <a @click="logout()"><i class="fa fa-sign-out base-margin-right-5"></i>安全退出</a>
+                  <a @click="toLogout()"><i class="fa fa-sign-out base-margin-right-5"></i>安全退出</a>
                 </el-dropdown-item>
               </el-dropdown-menu>
+            </el-dropdown>
+            <el-dropdown v-else>
+              <span class="el-dropdown-link" style="margin: 50px;">{{ getName() }}<span class="button-down fa fa-caret-down"></span></span>
             </el-dropdown>
           </div>
         </div>
@@ -57,7 +60,7 @@ export default {
   },
   computed: {
     ...mapState({
-      userInfo: state => state.userInfo,
+      userInfo: state => state.publics.userInfo,
     }),
   },
   mounted() {
@@ -71,20 +74,21 @@ export default {
   },
   methods: {
     ...mapActions(['login', 'logout']),
-    logout() {
+    toLogout() {
       // sessionStorage.removeItem('userInfo');
       this.logout();
-      this.$router.push({ path: '/login' });
+      window.location.href = '/';
     },
     loginOrNot() {
-      if (this.userInfo) {
+      this.login();
+      if (this.userInfo.user_name) {
         return true;
       } else {
         return false;
       }
     },
     getName() {
-      if (this.userInfo) {
+      if (this.userInfo.user_name) {
         return this.userInfo.user_name ? `欢迎${this.userInfo.user_name}` : '用户';
       } else {
         return '您未登录';

@@ -48,7 +48,7 @@ const api = {
   costEdit: '/zhwl/cost/cost_edit',
   costDelete: '/zhwl/cost/cost_delete',
   //支出单
-  outList: '/zhwl/out/out_list', //transport_main_id
+  outList: '/zhwl/out/out_list', //main_id
   outSave: '/zhwl/out/out_save',
   outEdit: '/zhwl/out/out_edit',
   outDelete: '/zhwl/out/out_delete',
@@ -459,7 +459,7 @@ export const actions = {
     }
   },
   //添加装车记录(运输)
-  async transportSave({ commit }, { form, subForm, costForm }) {
+  async transportSave({ commit }, { form, subForm, outForm }) {
     try {
       let result = await this.$axios.post(api.transportMainSave, {
         data: form,
@@ -467,17 +467,10 @@ export const actions = {
       if (result.rescode === '0') {
         let id = result.id;
         result = await this.$axios.post(api.transportSubSave, {
-          data: { subForm: subForm, id: id },
+          data: { subForm: subForm, id: id, outForm: outForm },
         });
         if (result.rescode === '0') {
-          result = await this.$axios.post(api.outSave, {
-            data: { id: id, outForm: costForm },
-          });
-          if (result.rescode === '0') {
-            Message.success('操作成功');
-          } else {
-            Message.error('操作失败');
-          }
+          Message.success('操作成功');
         } else {
           Message.error('操作失败');
         }
@@ -576,9 +569,9 @@ export const actions = {
     }
   },
   //支出单列表
-  async getOutList({ commit }, { skip, limit, sub_id, order_no, slip_no }) {
+  async getOutList({ commit }, { skip, limit, order_no, main_id }) {
     try {
-      let result = await this.$axios.get(`${api.outList}?skip=${skip}&limit=${limit}&transport_sub_id=${sub_id}&order_no=${order_no}&slip_no=${slip_no}`);
+      let result = await this.$axios.get(`${api.outList}?skip=${skip}&limit=${limit}&main_id=${main_id}&order_no=${order_no}`);
       if (result.rescode === '0') {
         return {
           totalRow: result.totalRow,
@@ -593,10 +586,10 @@ export const actions = {
     }
   },
   //支出表操作
-  async outOperation({ commit }, { type, data }) {
+  async outOperation({ commit }, { type, data, main_id }) {
     let result;
     try {
-      let body = type === 'outDelete' ? { data: { id: data } } : { data: data };
+      let body = type === 'outDelete' ? { data: { id: data } } : { data: { main_id: main_id, outForm: data } };
       result = await this.$axios.post(_.get(api, type), body);
       if (result.rescode === '0') {
         Message.success('操作成功');

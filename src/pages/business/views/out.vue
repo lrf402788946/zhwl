@@ -14,9 +14,7 @@
             <td>支出单查询</td>
           </tr>
           <tr>
-            <td style="padding-right: 10px;"><b-form-input v-model="select_sub_id" placeholder="输入运输单号"></b-form-input></td>
             <td style="padding-right: 10px;"><b-form-input v-model="select_order_no" placeholder="输入订单号"></b-form-input></td>
-            <td style="padding-right: 10px;"><b-form-input v-model="select_slip_no" placeholder="输入拆分单号"></b-form-input></td>
           </tr>
           <tr>
             <td>
@@ -35,21 +33,15 @@
             <tr>
               <th>流水号</th>
               <th>订单号</th>
-              <th>拆分单号</th>
-              <th>供应商</th>
-              <th>线路</th>
+              <th>客户</th>
               <th>长途运费金额</th>
-              <th>状态</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
-              <td>{{ item.what_no }}</td>
+              <td>{{ item.serial_num }}</td>
               <td>{{ item.order_no }}</td>
-              <td>{{ item.slip_no }}</td>
-              <td>{{ { data: clientList, searchItem: 'id', value: item.c_id, label: 'name' } | getName }}</td>
-              <td>{{ { data: dlyWayList, searchItem: 'id', value: item.dly_way_id, label: 'name' } | getName }}</td>
+              <td>{{ item.c_name }}</td>
               <td>{{ item.out_price }}</td>
-              <td>{{ item.status === 1 ? '未指派线路负责人' : item.status === 2 ? '已指派' : '未填写长途运费' }}</td>
               <td>
                 <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">详&nbsp;&nbsp;情</b-button>
               </td>
@@ -88,19 +80,19 @@
               </div>
               <div class="col-lg-3 mb25">
                 <p class="marginBot5">税前应收金额</p>
-                <p>0</p>
+                <p>{{ allMoney.sq_ys ? allMoney.sq_ys : '0' }} 元</p>
               </div>
               <div class="col-lg-3 mb25">
                 <p class="marginBot5">税后应收金额</p>
-                <p>0</p>
+                <p>{{ allMoney.sh_ys ? allMoney.sh_ys : '0' }} 元</p>
               </div>
               <div class="col-lg-3 mb25">
                 <p class="marginBot5">税前实收金额</p>
-                <p>0</p>
+                <p>{{ allMoney.sq_ss ? allMoney.sq_ss : '0' }} 元</p>
               </div>
               <div class="col-lg-3 mb25">
                 <p class="marginBot5">税后实收金额</p>
-                <p>0</p>
+                <p>{{ allMoney.sh_ss ? allMoney.sh_ss : '0' }} 元</p>
               </div>
               <div class="col-lg-4 mb25">
                 <p class="marginBot5">支出项</p>
@@ -144,7 +136,15 @@
                   </el-select>
                 </td>
                 <td>
-                  <el-select :disabled="is_update" class="marginBot" style="height:40px !important" v-model="item.c_id" filterable placeholder="请选择供应商">
+                  <el-select
+                    :disabled="is_update"
+                    class="marginBot"
+                    style="height:40px !important"
+                    v-model="item.c_id"
+                    filterable
+                    placeholder="请选择供应商"
+                    @change="getContract(index)"
+                  >
                     <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
                   </el-select>
                 </td>
@@ -156,9 +156,9 @@
                     filterable
                     :disabled="is_update"
                     placeholder="请选择合同"
-                    @change="changeList(index, outIndex, 'contract')"
+                    @change="changeList(index)"
                   >
-                    <el-option v-for="(contract, index) in contractList" :key="index" :label="contract.pact_no" :value="contract.id"></el-option>
+                    <el-option v-for="(contract, index) in item.contractList" :key="index" :label="contract.pact_no" :value="contract.id"></el-option>
                   </el-select>
                 </td>
                 <td>
@@ -169,22 +169,22 @@
                     filterable
                     :disabled="is_update"
                     placeholder="请选择税率"
-                    @change="changeMoney(index, outIndex, 'rate')"
+                    @change="changeMoney(index, 'rate')"
                   >
                     <el-option v-for="(item, index) in rateList" :key="index" :value="item" :label="item"></el-option>
                   </el-select>
                 </td>
                 <td>
-                  <b-form-input v-model="item.sq_ys" :disabled="is_update"></b-form-input>
+                  <b-form-input v-model="item.sq_ys" type="number" @change="changeMoney(index)" :disabled="is_update"></b-form-input>
                 </td>
                 <td>
-                  <b-form-input v-model="item.sh_ys" :disabled="is_update"></b-form-input>
+                  <b-form-input v-model="item.sh_ys" type="number" @change="computedAllMoney()" :disabled="true"></b-form-input>
                 </td>
                 <td>
-                  <b-form-input v-model="item.sq_ss" :disabled="is_update"></b-form-input>
+                  <b-form-input v-model="item.sq_ss" type="number" @change="changeMoney(index, 'shouldBefore')" :disabled="is_update"></b-form-input>
                 </td>
                 <td>
-                  <b-form-input v-model="item.sh_ss" :disabled="is_update"></b-form-input>
+                  <b-form-input v-model="item.sh_ss" type="number" @change="computedAllMoney()" :disabled="is_update"></b-form-input>
                 </td>
                 <td>
                   <b-form-input v-model="item.remark" :disabled="is_update"></b-form-input>
@@ -205,7 +205,7 @@
               <b-button
                 variant="primary"
                 v-if="!is_update"
-                @click="() => subForm.push({})"
+                @click="() => subForm.push({ rate: 1, sq_ys: 0, sq_ss: 0, sh_ss: 0, sh_ys: 0 })"
                 class="resetButton"
                 style="font-size:16px !important; margin:10px 5% 30px 5% !important; background-color: #17a2b8 !important;  width:70% !important; padding:6px 80px !important;"
                 >添&nbsp;&nbsp;加</b-button
@@ -272,14 +272,13 @@ export default {
       form: {},
       costList: [],
       subForm: [],
+      allMoney: {},
       currentPage: 1,
       countNum: 0,
       totalRow: 0,
       is_update: true,
       deleteItem: '',
-      select_sub_id: '',
       select_order_no: '',
-      select_slip_no: '',
       roleValidator: new Validator({
         // car_id: [{ required: true, message: '请选择供应商' }],
         // driver_id: { required: true, message: '请选择司机' },
@@ -298,10 +297,11 @@ export default {
       carList: state => state.car.carList,
       clientList: state => state.personnel.clientList,
       contractList: state => state.personnel.contractList,
+      orderList: state => state.self.orderList,
     }),
   },
   async created() {
-    // await this.search();
+    await this.search();
     await Promise.all([
       this.getdly_wayList({ skip: 0, limit: 10000 }),
       this.getDriverList({ skip: 0, limit: 10000 }),
@@ -309,10 +309,22 @@ export default {
       this.getClientList({ skip: 0, limit: 10000, type: 1 }),
     ]);
     let { data } = await this.getCostList({ skip: 0, limit: 10000 });
-    (data = data.filter(item => item.cost_type !== '0')), this.$set(this, 'costList', data);
+    data = data.filter(item => item.cost_type !== '0');
+    data = data.filter(item => item.cost_name !== '长途运费');
+    this.$set(this, 'costList', data);
   },
   methods: {
-    ...mapActions(['getOutList', 'getDriverList', 'getdly_wayList', 'getCarList', 'getCostList', 'outOperation', 'getClientList', 'getContractList']),
+    ...mapActions([
+      'getOutList',
+      'getDriverList',
+      'getdly_wayList',
+      'getCarList',
+      'getCostList',
+      'outOperation',
+      'getClientList',
+      'getContractList',
+      'getOrderList',
+    ]),
     //分页
     toSearch(currentPage) {
       this.currentPage = currentPage;
@@ -324,19 +336,87 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let { totalRow, data } = await this.getOutList({
+      let totalRow = await this.getOrderList({
         skip: skip,
         limit: this.limit,
-        sub_id: this.select_sub_id,
         order_no: this.select_order_no,
-        slip_no: this.select_slip_no,
+        c_id: '',
+        start_time: '',
+        end_time: '',
       });
       this.$set(this, 'totalRow', totalRow);
-      if (totalRow == 0) {
+      if (totalRow === 0) {
         this.$set(this, 'list', {});
       } else {
-        this.$set(this, 'list', data);
+        this.$set(this, 'list', this.orderList);
       }
+    },
+    //查询合同
+    async getContract(index) {
+      await this.getContractList({ skip: 0, limit: 10000, pact_no: '', cus_id: this.subForm[index].c_id });
+      this.$set(this.subForm[index], `contractList`, this.contractList);
+    },
+    //选择合同
+    async changeList(index) {
+      let contract = this.subForm[index].contractList.filter(item => item.id === this.subForm[index].pact_id)[0];
+      this.$set(this.subForm[index], `rate`, contract.cess);
+    },
+    //修改金额计算
+    async changeMoney(index, type) {
+      let rate = this.subForm[index].rate ? this.subForm[index].rate * 1 : ((this.subForm[index].rate = 1), this.subForm[index].rate * 1);
+      //判断是否是修改实付,修改实付不需要修改应付部分
+      if (typeof type !== 'string') {
+        //将税前应付*税率,赋给税后应付
+        this.$set(this.subForm[index], 'sh_ys', this.round(rate * 1 * this.subForm[index].sq_ys));
+        //将税前应付赋给税前实付
+        this.$set(this.subForm[index], 'sq_ss', this.round(this.subForm[index].sq_ys));
+        //将税前实付*税率,赋给税后实付
+        this.$set(this.subForm[index], 'sh_ss', this.round(rate * 1 * this.subForm[index].sq_ss));
+      } else if (type === 'shouldBefore') {
+        //将税前实付*税率,赋给税后实付
+        this.$set(this.subForm[index], 'sh_ss', this.round(rate * 1 * this.subForm[index].sq_ss));
+      } else if (type === 'shouldAfter') {
+        //修改税后实付,除法需要四舍五入
+        let newMoney = (this.subForm[index].sh_ss * 1) / (rate * 1);
+        this.$set(this.subForm[index], 'sq_ss', this.round(newMoney));
+      } else if (type === 'rate') {
+        //将税前应付*税率,赋给税后应付
+        this.$set(this.subForm[index], 'sh_ys', this.round(rate * 1 * this.subForm[index].sq_ys));
+        //将税前实付*税率,赋给税后实付
+        this.$set(this.subForm[index], 'sh_ss', this.round(rate * 1 * this.subForm[index].sq_ss));
+      }
+      this.computedAllMoney();
+    },
+    //四舍五入
+    round(newMoney) {
+      newMoney = parseFloat(newMoney);
+      newMoney = Math.round(newMoney * 100) / 100;
+      return newMoney;
+    },
+    //总价计算
+    computedAllMoney() {
+      let allSq_ss = parseFloat(
+        this.subForm.reduce((prev, cur) => {
+          return prev * 1 + (cur.sq_ss ? cur.sq_ss * 1 : 0);
+        }, 0)
+      );
+      let allSh_ss = parseFloat(
+        this.subForm.reduce((prev, cur) => {
+          return prev * 1 + (cur.sh_ss ? cur.sh_ss * 1 : 0);
+        }, 0)
+      );
+      let allSq_ys = parseFloat(
+        this.subForm.reduce((prev, cur) => {
+          return prev * 1 + (cur.sq_ys ? cur.sq_ys * 1 : 0);
+        }, 0)
+      );
+      let allSh_ys = parseFloat(
+        this.subForm.reduce((prev, cur) => {
+          return prev * 1 + (cur.sh_ys ? cur.sh_ys * 1 : 0);
+        }, 0)
+      );
+      let result = { sq_ss: allSq_ss, sh_ss: allSh_ss, sq_ys: allSq_ys, sh_ys: allSh_ys };
+      this.$set(this, `allMoney`, result);
     },
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
     async toValidate(type) {
@@ -364,16 +444,35 @@ export default {
       this.$refs.deleteAlert.hide();
     },
     //打开修改提示框
-    openUpdateAlert(index) {
+    async openUpdateAlert(index) {
       this.$refs.Edit.show();
       this.form = JSON.parse(JSON.stringify(this.list[index]));
       //使用接口请求这个订单所有的支出,赋值,判断权限是否允许更改
       //模拟假数据一条
-      this.subForm.push({});
+      let { totalRow, data } = await this.getOutList({
+        skip: 0,
+        limit: 10000,
+        main_id: this.form.id,
+        order_no: this.form.order_no,
+      });
+      if (totalRow > 0) {
+        this.subForm = data;
+        for (let i = 0; i < this.subForm.length; i++) {
+          this.getContract(i);
+        }
+        this.computedAllMoney();
+      } else {
+        this.subForm.push({ rate: 1, sq_ys: 0, sq_ss: 0, sh_ss: 0, sh_ys: 0 });
+      }
     },
     //修改
     async update() {
-      await this.outOperation({ type: 'outEdit', data: this.form });
+      let newSubForm = this.subForm.map(item => {
+        delete item.contractList;
+        item.order_no = this.form.order_no;
+        return item;
+      });
+      await this.outOperation({ type: 'outEdit', data: newSubForm, main_id: this.form.id });
       this.form = {};
       this.$refs.Edit.hide();
       this.search();
@@ -384,6 +483,7 @@ export default {
       this.is_update = true;
       this.operateId = '';
       this.form = {};
+      this.subForm = [];
     },
     //验证错误
     handleErrors(errors, fields) {
