@@ -13,11 +13,16 @@ const api = {
 
 export const state = () => ({
   clientList: [],
+  billInfo: {},
 });
 
 export const mutations = {
   [types.CLIENT_LIST](state, payload) {
     state.clientList = payload;
+  },
+  [types.BILL_INFO](state, payload) {
+    console.log(payload);
+    state.billInfo = payload;
   },
 };
 

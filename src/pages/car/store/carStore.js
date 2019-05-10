@@ -27,6 +27,7 @@ const api = {
   tripEnd: '/zhwl/transport/trip_end', //params:id
   //查询单车核算
   carCost: '/zhwl/count/car_accounting', //query:car_no,start_time,end_time
+  carCostDetail: '/zhwl/count/car_accounting_info', //query:car_no,start_time,end_time
 };
 
 export const state = () => ({
@@ -219,6 +220,28 @@ export const actions = {
           inCount: result.inCount,
           outCount: result.outCount,
           profitCount: result.profitCount,
+        };
+      } else {
+        return { totalRow: 0, data: null };
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      console.error(error);
+    }
+  },
+  /**
+   * 查询单车核算详情
+   * @param car_no 车号
+   * @param start_time 起始时间
+   * @param end_time 截止时间
+   */
+  async carCostDetail({ commit }, { car_no, start_time, end_time }) {
+    try {
+      let result = await this.$axios.get(`${api.carCostDetail}?car_no=${car_no}&start_time=${start_time}&end_time=${end_time}`);
+      if (result.rescode === '0') {
+        return {
+          outList: result.outList,
+          tipOutList: result.tipOutList,
         };
       } else {
         return { totalRow: 0, data: null };

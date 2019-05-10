@@ -191,22 +191,22 @@
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">税前应付金额</div>
-            {{ out.sq_ys }}
+            {{ out.sq_ys ? out.sq_ys : 0 }}
             <!-- <b-form-input v-model="out.sq_ys" type="number" @change="changeMoney(index)"></b-form-input> -->
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">税前实付金额</div>
-            {{ out.sq_ys }}
+            {{ out.sq_ss ? out.sq_ss : 0 }}
             <!-- <b-form-input v-model="out.sq_ss" type="number" :disabled="true" @change="changeMoney(index, 'shouldBefore')"></b-form-input> -->
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">税后应付金额</div>
-            {{ out.sq_ys }}
+            {{ out.sh_ys ? out.sh_ys : 0 }}
             <!-- <b-form-input v-model="out.sh_ys" type="number" :disabled="true"></b-form-input> -->
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">税后实付金额</div>
-            {{ out.sq_ys }}
+            {{ out.sh_ss ? out.sh_ss : 0 }}
             <!-- <b-form-input v-model="out.sh_ss" type="number" :disabled="out.type === 0" @change="changeMoney(index, 'shouldAfter')"></b-form-input> -->
           </div>
           <div class="col-lg-12 mb25">
@@ -238,7 +238,7 @@
                       <td>{{ item.goods_num }}</td>
                       <td>{{ item.goods_weight }}</td>
                       <td>{{ item.goods_volume }}</td>
-                      <td><el-input v-model="item.price" type="number" @change="changeMoney('item')"></el-input></td>
+                      <td><el-input v-model="item.price" type="number" @input="changeMoney('item')"></el-input></td>
                       <!-- <td>
                         <el-select v-model="item.dly_way_id" placeholder="请选择线路">
                           <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"> </el-option>
@@ -517,7 +517,7 @@ export default {
       this.$refs.addAlert.hide();
       this.form = {};
       this.subForm = [];
-      this.out = {};
+      this.out = { rate: 1 };
       this.order_loading_list = [];
       this.search();
     },

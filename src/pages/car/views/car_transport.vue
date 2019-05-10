@@ -130,7 +130,7 @@
                   <el-date-picker
                     style="width:100%; height: 34px !important; line-height: 34px !important;"
                     v-model="item.create_time"
-                    :disabled="is_update"
+                    :disabled="item.id && is_update"
                     value-format="yyyy-MM-dd"
                     format="yyyy-MM-dd"
                     type="date"
@@ -139,7 +139,7 @@
                   </el-date-picker>
                 </td>
                 <td>
-                  <b-form-input v-model="item.login_id" :disabled="is_update"></b-form-input>
+                  <b-form-input v-model="item.login_id" :disabled="item.id"></b-form-input>
                 </td>
                 <td>
                   <b-form-input v-model="item.remark" :disabled="is_update"></b-form-input>

@@ -56,7 +56,7 @@
             <td>{{ item.inPrice ? item.inPrice : 0 }}</td>
             <td>{{ item.outPrice ? item.outPrice : 0 }}</td>
             <td>{{ item.inPrice * 1 - item.outPrice * 1 }}</td>
-            <td><b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', item.id)">详&nbsp;&nbsp;情</b-button></td>
+            <td><b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', item)">详&nbsp;&nbsp;情</b-button></td>
           </tr>
           <!-- </tbody>
           <tbody v-else>
@@ -74,6 +74,28 @@
                   <div slot="header" class="clearfix">
                     <span>收入</span>
                   </div>
+                  <table class="table table-btransported table-striped ">
+                    <tbody>
+                      <tr>
+                        <td>订单号</td>
+                        <td>收入项目</td>
+                        <td>收入金额</td>
+                      </tr>
+                      <tr v-for="(item, index) in outList" :key="index">
+                        <td>{{ item.order_no }}</td>
+                        <td>{{ item.cost_name }}</td>
+                        <td>
+                          {{ item.sq_ys }}
+                          <!-- <tr>
+                              <td>税前应收:{{ item.sq_ys }}</td>
+                              <td>税后应收:{{ item.sh_ys }}</td>
+                              <td>税前实收:{{ item.sq_ss }}</td>
+                              <td>税后实收:{{ item.sh_ss }}</td>
+                            </tr> -->
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </el-card>
               </div>
               <div class="col-lg-6 mb25">
@@ -81,8 +103,27 @@
                   <div slot="header" class="clearfix">
                     <span>支出</span>
                   </div>
+                  <table class="table table-btransported table-striped ">
+                    <tbody>
+                      <tr>
+                        <td>费用项目</td>
+                        <td>金额</td>
+                      </tr>
+                      <tr v-for="(item, index) in tipOutList" :key="index">
+                        <td>{{ { data: costList, searchItem: 'id', value: item.cost_id, label: 'cost_name' } | getName }}</td>
+                        <td>{{ item.price }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </el-card>
               </div>
+            </div>
+          </div>
+          <div class="d-block text-center">
+            <div class="row">
+              <div class="col-lg-4 mb25">总收入: {{ form.inPrice }}</div>
+              <div class="col-lg-4 mb25">总支出:{{ form.outPrice }}</div>
+              <div class="col-lg-4 mb25">合计:{{ form.inPrice * 1 - form.outPrice * 1 }}</div>
             </div>
           </div>
         </el-dialog>
@@ -112,15 +153,13 @@ export default {
   data() {
     return {
       carCostList: [],
-      inCount: '',
-      outCount: '',
-      profitCount: '',
       form: {},
-      subForm: [],
       select_car_no: '',
       costList: [],
       select_in_date: [],
       dialog: false,
+      outList: [],
+      tipOutList: [],
     };
   },
   computed: {
@@ -134,7 +173,7 @@ export default {
     (data = data.filter(item => item.cost_type !== '0')), this.$set(this, 'costList', data);
   },
   methods: {
-    ...mapActions(['getCarList', 'getCostList', 'getCarCostList']),
+    ...mapActions(['getCarList', 'getCostList', 'getCarCostList', 'carCostDetail']),
     async search() {
       if (this.select_in_date.length <= 0) {
         this.$message.error('请选择查询时间');
@@ -146,32 +185,18 @@ export default {
         end_time: this.select_in_date.length > 0 ? this.select_in_date[1] : '',
       });
       this.$set(this, `carCostList`, data);
-      this.$set(this, `inCount`, inCount);
-      this.$set(this, `outCount`, outCount);
-      this.$set(this, `profitCount`, profitCount);
-    },
-    async add() {
-      let newForm = JSON.parse(JSON.stringify(this.form));
-      newForm['car_no'] = this.select_car_no;
-      await this.tripOperation({ form: newForm, subForm: this.subForm, type: 'tripSave' });
-      this.reset();
-      this.search();
-      this.$refs.pack.hide();
     },
     //打开与关闭修改和删除的弹框
-    async openAlert(type, id) {
+    async openAlert(type, item) {
+      let { outList, tipOutList } = await this.carCostDetail({
+        car_no: item.car_no,
+        start_time: this.select_in_date.length > 0 ? this.select_in_date[0] : '',
+        end_time: this.select_in_date.length > 0 ? this.select_in_date[1] : '',
+      });
+      this.$set(this, `tipOutList`, tipOutList);
+      this.$set(this, `outList`, outList);
+      this.$set(this, `form`, item);
       this.dialog = true;
-    },
-    addSubForm() {
-      this.subForm.push({});
-    },
-    //删除表单中内容
-    clearSubForm(i) {
-      this.subForm.splice(i, 1);
-    },
-    reset() {
-      this.form = {};
-      this.subForm = [{}];
     },
   },
 };

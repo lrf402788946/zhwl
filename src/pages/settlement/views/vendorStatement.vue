@@ -25,7 +25,10 @@
             <el-input v-model="select_order_no" placeholder="请输入订单号"></el-input>
           </div>
         </div>
-        <div><el-button size="medium" @click="searchButton()" type="primary">查&nbsp;&nbsp;询</el-button></div>
+        <div>
+          <el-button size="medium" @click="searchButton()" type="primary">查&nbsp;&nbsp;询</el-button>
+          <el-button size="medium" @click="openAlert()" type="primary">生成单据</el-button>
+        </div>
       </div>
       <table class="table table-bordered table-striped ">
         <tbody v-if="list.length > 0">
@@ -57,20 +60,27 @@
         </tbody>
       </table>
     </div>
+
+    <el-dialog :visible.sync="dialog" title="结算单" width="90%" close-on-click-modal close-on-press-escape center>
+      <bill></bill>
+    </el-dialog>
   </div>
 </template>
 <script>
 import Validator from 'async-validator';
 import entrance from '@/components/entrance.vue';
 import exportExcel from '@/components/exportExcel.vue';
-
+import bill from '@/util/bill.vue';
+import { mapActions, mapState, mapMutations } from 'vuex';
 import _ from 'lodash';
 export default {
   name: 'customerStatement',
   metaInfo: {
     title: '供应商结算单',
   },
-  components: {},
+  components: {
+    bill,
+  },
   data() {
     return {
       clientList: [],
@@ -80,7 +90,7 @@ export default {
       list: [],
       xiangXiList: {},
       xiangXiList1: [],
-      dialogUpdate: false,
+      dialog: false,
       wayname: '',
     };
   },
@@ -88,6 +98,7 @@ export default {
     this.searchClient();
   },
   methods: {
+    ...mapMutations(['BILL_INFO']),
     //获取供应商名
     async searchClient() {
       let result = await this.$axios.get(`/zhwl/client/client_list?skip=0&limit=99999&type=1`);
@@ -105,11 +116,13 @@ export default {
       this.select_order_no = '';
     },
     async openAlert(index) {
-      this.xiangXiList = JSON.parse(JSON.stringify(this.list[index]));
-      this.dialogUpdate = true;
+      // this.xiangXiList = JSON.parse(JSON.stringify(this.list[index]));
+      let object = { value: 0 };
+      this.BILL_INFO(object);
+      this.dialog = true;
     },
     closeAlert() {
-      this.dialogUpdate = false;
+      this.dialog = false;
     },
   },
 };

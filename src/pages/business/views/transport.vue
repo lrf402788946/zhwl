@@ -341,8 +341,6 @@ export default {
         delete this.updateForm.drivername;
         await this.transportEdit({ form: this.updateForm, subForm: this.subForm });
         this.closeAlert('update');
-        this.updateForm = [];
-        this.subForm = [];
         this.is_update = true;
         this.search();
       } catch (error) {
@@ -409,16 +407,14 @@ export default {
     //签收
     async toSign() {
       await this.orderSign({ signForm: this.signForm });
-      this.search();
       await this.getTransportSubList({ id: this.updateForm.id });
       this.$set(this, 'subForm', this.transportSubListVuex);
+      this.search();
       this.signForm = {};
       this.dialogDetail = true;
       this.dialogSign = false;
     },
     reset() {
-      this.form = {};
-      this.subForm = [];
       this.form.user_name = this.userInfo.user_name;
       this.form.login_id = this.userInfo.login_id;
     },

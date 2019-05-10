@@ -10,7 +10,6 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   modules: {
     publics: publics,
-    self: self,
     personnel: personnel,
     car: car,
     settlement: settlement,

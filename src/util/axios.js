@@ -1,13 +1,15 @@
 import Vue from 'vue';
 import axios from 'axios';
+import store from '@/store/index';
 import { Loading } from 'element-ui';
 import { Message } from 'element-ui';
-
+store.dispatch('login');
 process.env.NODE_ENV === 'production' ? (axios.defaults.baseURL = 'http://192.168.1.217') : '';
 axios.defaults.headers.post['Content-Type'] = 'multipart/form-data';
 
 axios.interceptors.request.use(
   config => {
+    // console.log(store.state.publics.userInfo);
     let url = config.url;
     if (filterUrl(url)) {
       let loading = Loading.service({
