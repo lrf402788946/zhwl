@@ -7,6 +7,7 @@ Vue.use(Vuex);
 
 const api = {
   login: '/zhwl/user/login',
+  updatePassword: '/zhwl/user/pwd_edit',
   deptList: '/zhwl/dept/dept_list?skip=0&limit=100',
   postList: '/zhwl/post/post_list?skip=0&limit=100',
   //行政区划
@@ -26,6 +27,7 @@ export const mutations = {
   login(state) {
     if (sessionStorage.getItem('userInfo')) {
       state.userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+      state.userRoleList = JSON.parse(sessionStorage.getItem('userRoleList'));
       return true;
     } else {
       return false;
@@ -123,5 +125,24 @@ export const actions = {
   //注销
   async logout({ commit }) {
     commit('logout');
+  },
+
+  /**
+   * 修改密码
+   * @param form 含有login_id;password;newPassword
+   */
+  async updatePassword({ commit }, { form }) {
+    try {
+      let result = await this.$axios.post(api.updatePassword, { data: form });
+      if (result.rescode === '0') {
+        Message.success('修改成功');
+        return true;
+      } else {
+        Message.error(result.msg);
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+    }
   },
 };

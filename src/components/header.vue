@@ -30,7 +30,7 @@
               <span class="el-dropdown-link" style="margin: 50px;">{{ getName() }}<span class="button-down fa fa-caret-down"></span></span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>
-                  <a @click="$router.push({ name: 'update_pw' })"><i class="fa fa-lock base-margin-right-5"></i>修改密码</a>
+                  <a href="/system.html#/password"><i class="fa fa-lock base-margin-right-5"></i>修改密码</a>
                 </el-dropdown-item>
                 <el-dropdown-item>
                   <a @click="toLogout()"><i class="fa fa-sign-out base-margin-right-5"></i>安全退出</a>

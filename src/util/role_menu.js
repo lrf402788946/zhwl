@@ -26,17 +26,17 @@ export const SYSTEM = {
 export const PERSONNEL = {
   name: '人员管理',
   menu: [
+    // {
+    //   name: '员工管理',
+    //   uri: '/personnel.html#/staff',
+    // },
     {
-      name: '员工管理',
-      uri: '/personnel.html#/staff',
+      name: '司机管理',
+      uri: '/personnel.html#/driver',
     },
     {
       name: '客户管理',
       uri: '/personnel.html#/client',
-    },
-    {
-      name: '司机管理',
-      uri: '/personnel.html#/driver',
     },
     {
       name: '客户合同管理',
@@ -86,10 +86,6 @@ export const BUSINESS = {
     //   uri: '/business.html#/in_page',
     // },
     {
-      name: '支出单管理',
-      uri: '/business.html#/out',
-    },
-    {
       name: '订单管理',
       uri: '/business.html#/order',
     },
@@ -102,6 +98,10 @@ export const BUSINESS = {
       uri: '/business.html#/car_loading',
     },
     {
+      name: '支出单管理',
+      uri: '/business.html#/out',
+    },
+    {
       name: '运输管理',
       uri: '/business.html#/transport',
     },
@@ -109,10 +109,10 @@ export const BUSINESS = {
       name: '线路管理',
       uri: '/business.html#/dly_way',
     },
-    {
-      name: '货物管理',
-      uri: '/business.html#/goods',
-    },
+    // {
+    //   name: '货物管理',
+    //   uri: '/business.html#/goods',
+    // },
   ],
 };
 

@@ -113,7 +113,7 @@
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">操作人：</div>
-            <b-form-input v-model="form.op" placeholder="操作人"></b-form-input>
+            <b-form-input v-model="form.login_id" placeholder="操作人"></b-form-input>
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">客户:</div>
@@ -288,7 +288,7 @@
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">操作人：</div>
-            <b-form-input v-model="updateForm.op" :disabled="true" placeholder="操作人"></b-form-input>
+            <b-form-input v-model="updateForm.login_id" :disabled="true" placeholder="操作人"></b-form-input>
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">客户:</div>
@@ -553,13 +553,12 @@ export default {
       form: {},
       updateForm: {},
       mainValidator: new Validator({
-        op: [{ required: true, message: '请填写操作人' }],
         send_time_hp: [{ required: true, message: '请选择要求发货日期' }],
         reach_time_hp: [{ required: true, message: '请选择要求到达日期' }],
         // send_address: [{ required: true, message: '请选择发货地址' }],
       }),
-      th: ['订单号', '订单人', '订单日期', '备注'],
-      filterVal: ['order_no', 'user_name', 'in_date', 'remark'],
+      th: ['订单号', '订单日期', '备注'],
+      filterVal: ['order_no', 'in_date', 'remark'],
       select_order_no: '',
       select_c_id: '',
       select_in_date: [],
@@ -722,7 +721,7 @@ export default {
         this.is_update = true;
         this.search();
       } catch (error) {
-        console.error('error in line 504');
+        console.error('error in line update');
       }
     },
     //删除
@@ -747,8 +746,7 @@ export default {
         this.$refs.deleteAlert.show();
         this.operateId = id;
       } else if (type === 'add') {
-        this.form.login_id = this.userInfo.login_id;
-        this.form.user_name = this.userInfo.user_name;
+        this.$set(this.form, `login_id`, this.userInfo.login_id);
         this.addSubForm();
         // this.getOrderNum();
         this.dialogAdd = true;
@@ -796,8 +794,7 @@ export default {
     reset() {
       this.form = {};
       this.subForm = [];
-      this.form.user_name = this.userInfo.user_name;
-      this.form.login_id = this.userInfo.login_id;
+      this.$set(this.form, `login_id`, this.userInfo.login_id);
     },
     //导出
     exportExcel() {
@@ -814,7 +811,7 @@ export default {
                       </tr>
                       <tr style="text-align: center;">
                           <td>${this.updateForm.order_num}&nbsp;</td>
-                          <td>${this.updateForm.user_name}</td>
+                          <td>${this.updateForm.login_id}</td>
                           <td>${this.getName(this.updateForm.cus_id)}</td>
                           <td>${this.updateForm.in_date}</td>
                           <td>${this.updateForm.create_time}</td>
