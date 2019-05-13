@@ -14,6 +14,7 @@ axios.interceptors.request.use(
     let url = config.url;
     //过滤是否是管理员,管理员则不写login_id
     if (!(userRoleList.filter(item => item.role_code === 'ROLE_ADMIN').length > 0)) url = isLoginFilter(url);
+    console.log(url)
     if (filterUrl(url)) {
       let loading = Loading.service({
         fullscreen: true,
@@ -68,7 +69,9 @@ let isLoginFilter = url => {
   } else if (url.includes('transport_list')) {
     url = newUrl(url);
   } else if (url.includes('client_list')) {
-    url = newUrl(url);
+    if (!url.includes('type=1')) {
+      url = newUrl(url);
+    }
   } else if (url.includes('transportorder_sub_list')) {
     url = newUrl(url);
   }

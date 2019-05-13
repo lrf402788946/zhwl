@@ -9,6 +9,7 @@
           <div class="col-lg-3">
             <ul class="top-nav-ul">
               <li><a href="/system.html#/">首 &nbsp;&nbsp; 页</a></li>
+              <li><a @click="test()">test</a></li>
             </ul>
           </div>
           <div class="col-lg-5"></div>
@@ -56,6 +57,7 @@ export default {
     return {
       avatar: require('@/assets/img/8082.jpg'),
       infoList: [{ message: 'test Infomation 1' }, { message: 'test Infomation 2' }, { message: 'test Infomation 3' }],
+      Ws: '',
     };
   },
   computed: {
@@ -71,6 +73,7 @@ export default {
   },
   created() {
     // this.isLogin();
+    this.initWebSocket();
   },
   methods: {
     ...mapActions(['login', 'logout']),
@@ -93,6 +96,29 @@ export default {
       } else {
         return '您未登录';
       }
+    },
+    test() {
+      this.refreshInfo('{data:test info}');
+    },
+    async refreshInfo(data) {
+      if (this.Ws.readyState === 1) {
+        console.log('can use');
+        this.toSendMessage(data);
+      }
+    },
+    async initWebSocket() {
+      this.Ws = new WebSocket('ws://10.16.11.186:15674/ws');
+      this.Ws.onmessage = this.toGetMessage;
+      console.log(this.Ws);
+    },
+    toSendMessage(data) {
+      this.Ws.send(data);
+    },
+    toGetMessage(data) {
+      console.log(data);
+    },
+    toOpen(data) {
+      this.Ws.send('Hello WebSockets!');
     },
   },
 };
