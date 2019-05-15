@@ -11,45 +11,54 @@
         <div class="row" style="margin-bottom: 15px !important;">
           <div class="col-lg-3 marginBot4">
             <p class="marginBot4">请选择客户:</p>
-            <el-select class="marginBot" style="height:40px !important" v-model="select_client_id" filterable placeholder="请选择客户">
-              <!-- <el-option label="全部" value=""></el-option> -->
+            <el-select class="marginBot" style="height:40px !important" v-model="select_c_id" filterable placeholder="请选择客户">
               <el-option v-for="item in clientList" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
           <div class="col-lg-3 mb25">
             <p class="marginBot4">请输入项目名:</p>
-            <el-input v-model="select_xm_name" placeholder="请输入项目"></el-input>
+            <el-input v-model="select_item_name" placeholder="请输入项目"></el-input>
           </div>
           <div class="col-lg-3 mb25">
             <p class="marginBot4">请输入订单号:</p>
             <el-input v-model="select_order_no" placeholder="请输入订单号"></el-input>
           </div>
+          <div class="col-lg-3 marginBot4">
+            <p class="marginBot4">订单日期查询:</p>
+            <el-date-picker
+              style="width:100%; height: 34px !important; line-height: 34px !important;"
+              v-model="select_in_date"
+              value-format="yyyy-MM-dd"
+              format="yyyy-MM-dd"
+              type="daterange"
+              range-separator="-"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+            >
+            </el-date-picker>
+          </div>
         </div>
-        <div><el-button size="medium" @click="searchButton()" type="primary">查&nbsp;&nbsp;询</el-button></div>
+        <div><el-button size="medium" @click="searchButton('vague')" type="primary">查&nbsp;&nbsp;询</el-button></div>
       </div>
       <table class="table table-bordered table-striped ">
         <tbody v-if="list.length > 0">
           <tr>
-            <th>提货日期</th>
-            <th>发货日期</th>
+            <th><el-button size="medium" type="primary" @click="openAlert()">结&nbsp;&nbsp;算</el-button></th>
             <th>要求到达日期</th>
             <th>客户名</th>
             <th>项目</th>
-            <th>提货单号</th>
-            <th>起始地</th>
-            <th>目的地</th>
-            <th>操作</th>
+            <th>税后实收</th>
           </tr>
           <tr v-for="(item, index) in list" :key="index">
-            <td>{{ item.sign_time }}</td>
-            <td>{{ item.send_time }}</td>
+            <td>
+              <b-form-checkbox-group id="order_loading_list" name="order_loading_list" v-model="order_loading_list">
+                <b-form-checkbox :value="item.id"></b-form-checkbox>
+              </b-form-checkbox-group>
+            </td>
             <td>{{ item.reach_time_hp }}</td>
             <td>{{ item.c_name }}</td>
             <td>{{ item.item_name }}</td>
-            <td>{{ item.transport_no }}</td>
-            <td>{{ item.send_address }}</td>
-            <td>{{ item.take_address }}</td>
-            <td><b-button variant="danger" @click="openAlert(index)">详&nbsp;&nbsp;情</b-button></td>
+            <td>{{ item.sh_ss }}</td>
           </tr>
         </tbody>
         <tbody v-else>
@@ -58,6 +67,17 @@
           </tr>
         </tbody>
       </table>
+      <el-pagination
+        layout="total, prev, pager, next"
+        :background="true"
+        :page-size="15"
+        prev-text="上一页"
+        next-text="下一页"
+        :current-page="currentPage"
+        @current-change="toSearch"
+        :total="totalRow"
+      >
+      </el-pagination>
     </div>
     <!-- 详情 -->
     <el-dialog width="80%" title="客户结算单" :visible.sync="dialogUpdate" :fullscreen="false">
@@ -66,91 +86,41 @@
           <table class="table table-bordered table-striped ">
             <tbody>
               <tr>
-                <td>提货日期：</td>
-                <td>发货日期：</td>
-                <td>要求到达日期：</td>
-                <td>客户名：</td>
-                <td>项目：</td>
-                <td>提货单号：</td>
+                <td>订单号</td>
+                <td>费用项目名称</td>
+                <td>税后应收</td>
+                <td>税后实收</td>
               </tr>
-              <tr>
-                <td>{{ xiangXiList.sign_time }}</td>
-                <td>{{ xiangXiList.send_time }}</td>
-                <td>{{ xiangXiList.reach_time_hp }}</td>
-                <td>{{ xiangXiList.c_name }}</td>
-                <td>{{ xiangXiList.item_name }}</td>
-                <td>{{ xiangXiList.transport_no }}</td>
-              </tr>
-              <tr>
-                <td>起始地：</td>
-                <td>目的地：</td>
-                <td>运输方式：</td>
-                <td>货物名称：</td>
-                <td>数量：</td>
-                <td>重量/吨：</td>
-              </tr>
-              <tr>
-                <td>{{ xiangXiList.send_address }}</td>
-                <td>{{ xiangXiList.take_address }}</td>
-                <td>{{ xiangXiList.send_type === '0' ? '零担' : '整车' }}</td>
-                <td>{{ xiangXiList.goods_name }}</td>
-                <td>{{ xiangXiList.goods_num }}</td>
-                <td>{{ xiangXiList.goods_weight }}</td>
-              </tr>
-              <tr>
-                <td>体积/m³：</td>
-                <td>运输内容：</td>
-                <td>按重量/体积计费：</td>
-                <td>单价(不含税)：</td>
-                <td>长途运费(不含税)：</td>
-                <td>提送货费单价(不含税)：</td>
-              </tr>
-              <tr>
-                <td>{{ xiangXiList.goods_volume }}</td>
-                <td>{{ xiangXiList.content }}</td>
-                <td>{{ xiangXiList.count_type === '0' ? '体积' : '重量' }}</td>
-                <td>{{ xiangXiList.price }}</td>
-                <td>{{ xiangXiList.yf_price }}</td>
-                <td>{{ xiangXiList.ts_price }}</td>
-              </tr>
-              <tr>
-                <td>提送货费(不含税)：</td>
-                <td>运费税前合计：</td>
-                <td>税金(10%)：</td>
-                <td>应收运费(含税)：</td>
-              </tr>
-              <tr>
-                <td>{{ xiangXiList.ts_prices }}</td>
-                <td>{{ xiangXiList.sq_ss }}</td>
-                <td>{{ xiangXiList.rate }}</td>
-                <td>{{ xiangXiList.sh_ss }}</td>
-              </tr>
-            </tbody>
-          </table>
-          <table class="table table-bordered table-striped ">
-            <tbody>
-              <tr>
-                <td>发货人：</td>
-                <td>运费：</td>
-                <td>付款日期：</td>
-                <td>保险费：</td>
-                <td>结算月份：</td>
-                <td>付款月份：</td>
-              </tr>
-              <tr v-for="(item, index) in xiangXiList1" :key="index">
-                <td v-if="item.type === '0'">{{ item.car_no }}</td>
-                <td v-if="item.type != '0'">{{ item.name }}</td>
+              <tr v-for="(item, index) in detailList" :key="index">
+                <td>{{ item.order_no }}</td>
+                <td>{{ item.cost_name }}</td>
+                <td>{{ item.sh_ys }}</td>
                 <td>{{ item.sh_ss }}</td>
-                <td>{{ item.js_time }}</td>
-                <td></td>
-                <td>{{ item.js_time }}</td>
-                <td>{{ item.js_time }}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
       <div class="row">
+        <div class="col-lg-4">
+          <!-- <b-button
+            variant="primary"
+            @click="toExcel()"
+            class="resetButton"
+            style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+            >导&nbsp;&nbsp;出</b-button
+          > -->
+          <exportExcel
+            class="resetButton"
+            style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+            :exportTitle="th"
+            :db_nameList="filterVal"
+            dataName="detailList"
+            :fileName="`${fileName}结算单${new Date().toLocaleDateString()}`"
+            sheetName="客户结算单"
+            @edit="toEdit"
+          ></exportExcel>
+        </div>
         <div class="col-lg-4">
           <b-button
             variant="secondary"
@@ -170,52 +140,90 @@ import entrance from '@/components/entrance.vue';
 import exportExcel from '@/components/exportExcel.vue';
 
 import _ from 'lodash';
+import { mapActions, mapState } from 'vuex';
 export default {
   name: 'customerStatement',
   metaInfo: {
     title: '客户结算单',
   },
-  components: {},
+  components: {
+    exportExcel,
+  },
   data() {
     return {
-      clientList: [],
-      select_client_id: '',
-      select_xm_name: '',
+      select_c_id: '',
+      select_item_name: '',
       select_order_no: '',
+      select_in_date: [],
+      order_loading_list: [],
       list: [],
+      detailList: [],
       xiangXiList: {},
       xiangXiList1: [],
       dialogUpdate: false,
-      wayname: '',
+      currentPage: 1,
+      totalRow: 0,
+      th: ['订单号', '费用项目', '税后应收', '税后实收'],
+      filterVal: ['order_no', 'cost_name', 'sh_ys', 'sh_ss'],
+      fileName: '',
     };
   },
-  created() {
-    this.searchClient();
+  async created() {
+    await this.getClientList({ skip: 0, limit: 10000, type: 0 });
+  },
+  computed: {
+    ...mapState({
+      clientList: state => state.personnel.clientList,
+      limit: state => state.publics.limit,
+    }),
   },
   methods: {
-    //获取客户名
-    async searchClient() {
-      let result = await this.$axios.get(`/zhwl/client/client_list?skip=0&limit=99999&type=0`);
-      this.$set(this, 'clientList', result.clientList);
+    ...mapActions(['clientInList', 'getClientList', 'clientSelectList', 'clientToEdit']),
+    toSearch(currentPage) {
+      this.currentPage = currentPage;
+      this.search();
     },
     //查询按钮
-    async searchButton() {
-      let result = await this.$axios.get(
-        `/zhwl/count/client_count?skip=0&limit=99999&c_id=${this.select_client_id}&item_name=${this.select_xm_name}&order_no=${this.select_order_no}`
-      );
+    async searchButton(type) {
+      if (type === 'vague') {
+        this.currentPage = 1;
+      }
+      let skip = (this.currentPage - 1) * this.limit;
+      let result = await this.clientInList({
+        c_id: this.select_c_id,
+        item_name: this.select_item_name,
+        order_no: this.select_order_no,
+        startTime: this.select_in_date.length > 0 ? this.select_in_date[0] : '',
+        endTime: this.select_in_date.length > 0 ? this.select_in_date[1] : '',
+        limit: this.limit,
+        skip: skip,
+      });
       this.$set(this, 'list', result.dataList);
-      this.select_client_id = '';
-      this.select_xm_name = '';
-      this.select_order_no = '';
     },
-    async openAlert(index) {
-      this.xiangXiList = JSON.parse(JSON.stringify(this.list[index]));
-      let result = await this.$axios.get(`/zhwl/count/out_list?transport_sub_id=${this.xiangXiList.transport_sub_id}`);
-      this.$set(this, 'xiangXiList1', result.outList);
+    async openAlert() {
+      if (this.order_loading_list <= 0) {
+        this.$message.error('请选择要结算的订单');
+        return false;
+      }
+      let result = await this.clientSelectList({ ids: this.order_loading_list });
+      this.$set(this, `detailList`, result.dataList);
+      console.log(this.list.filter(item => item.id === this.order_loading_list[0])[0]);
+      this.$set(
+        this,
+        `fileName`,
+        this.select_c_id !== ''
+          ? this.clientList.filter(item => item.id === this.select_c_id)[0].name
+          : this.order_loading_list.length > 0
+          ? this.list.filter(item => item.id === this.order_loading_list[0])[0].c_name
+          : ''
+      );
       this.dialogUpdate = true;
     },
     closeAlert() {
       this.dialogUpdate = false;
+    },
+    async toEdit() {
+      await this.clientToEdit({ ids: this.order_loading_list });
     },
   },
 };

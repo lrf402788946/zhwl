@@ -1,6 +1,7 @@
 <template lang="html">
   <div id="bill">
-    <el-button size="medium" v-if="!dialog" @click="openAlert()" type="primary">生成单据</el-button>
+    <el-button size="medium" v-if="!routerName.includes('already')" @click="openAlert()" type="primary">生成单据</el-button>
+    <el-button type="primary" @click="openAlert()" v-else>详&nbsp;&nbsp;情</el-button>
     <el-dialog :visible.sync="dialog" title="结算单" width="60%" close-on-click-modal close-on-press-escape center>
       <div class="contExt" ref="print">
         <div class="topExt">
@@ -27,16 +28,16 @@
         </div>
         <div class="applicantExt mar0">
           <p class="payment">款项 支付单位</p>
-          <p class="paymentTxt"><input size="small" placeholder="请填写支付单位" v-model="billInfo.pay_unit" /></p>
+          <p class="paymentTxt"><input size="small" placeholder="请填写支付单位" :disabled="routerName.includes('already')" v-model="billInfo.pay_unit" /></p>
         </div>
         <div class="applicantExt ">
           <p class="payment">薪金类型</p>
           <div class="paymentTxt">
-            <div class="pay" @click="payType(0)">
-              <div class="payList" style="padding-left: 70px;">{{ billInfo.pay_type === 0 ? '√' : '' }}现金</div>
+            <div class="pay" @click="payType('0')">
+              <div class="payList" style="padding-left: 70px;">{{ billInfo.pay_type === '0' ? '√' : '' }}现金</div>
             </div>
-            <div class="pay marNone" @click="payType(1)">
-              <div class="payList" style="padding-left: 70px;">{{ billInfo.pay_type === 1 ? '√' : '' }}银行汇款</div>
+            <div class="pay marNone" @click="payType('1')">
+              <div class="payList" style="padding-left: 70px;">{{ billInfo.pay_type === '1' ? '√' : '' }}银行汇款</div>
             </div>
           </div>
         </div>
@@ -48,17 +49,17 @@
         <div class="applicantExt mar0" v-for="(item, index) in billList" :key="index">
           <div class="serial">{{ index + 1 }}</div>
           <div class="use">{{ item.cost_name }}</div>
-          <div class="money"><input v-model="item.sh_ss" @change="getMoney()" style="margin-left: 30px;" /></div>
+          <div class="money"><input v-model="item.sh_ss" :disabled="routerName.includes('already')" @change="getMoney()" style="margin-left: 30px;" /></div>
         </div>
         <div class="applicantExt mar0">
           <p class="payment">合计（小写）</p>
           <div class="paymentTxt">
-            ￥：<span><input v-model="billInfo.count_price" style="width:80%"/></span>
+            ￥：<span><input :disabled="routerName.includes('already')" v-model="billInfo.count_price" style="width:80%"/></span>
           </div>
         </div>
         <div class="applicantExt">
           <p class="payment">付款金额（大写）</p>
-          <div class="paymentTxt">￥：<input v-model="billInfo.count_price_up" style="width:80%" /></div>
+          <div class="paymentTxt">￥：<input :disabled="routerName.includes('already')" v-model="billInfo.count_price_up" style="width:80%" /></div>
         </div>
         <div class="applicantExt mar0">
           <p class="payment">收款单位（全称）</p>
@@ -93,6 +94,9 @@ import { mapActions, mapState, mapMutations } from 'vuex';
 export default {
   name: 'bill',
   components: {},
+  props: {
+    id: { defalut: '' },
+  },
   data() {
     return {
       dialog: false,
@@ -100,6 +104,7 @@ export default {
       billInfo: {},
       info: {},
       client: {},
+      routerName: this.$route.name,
     };
   },
   computed: {
@@ -108,33 +113,50 @@ export default {
     }),
   },
   methods: {
-    ...mapActions(['gysGysSelectList', 'gysEditAndPrint']),
+    ...mapActions(['gysGysSelectList', 'gysEditAndPrint', 'gysBillInfo']),
     async openAlert() {
       let loading_list = this.$parent.loading_list;
-      if (loading_list <= 0) {
+      if (loading_list <= 0 && !this.routerName.includes('already')) {
         this.$message.error('请选择要生成单据的数据');
         return false;
       }
-      let { result, ids } = await this.gysGysSelectList({ ids: loading_list });
-      let allMoney = result.outList.reduce((prev, cur) => {
-        return prev * 1 + cur.sh_ss * 1;
-      }, 0);
-      let billInfo = {};
-      let idsStr = '';
-      ids.map(item => {
-        idsStr = idsStr === '' ? `${item},` : `${idsStr}${item},`;
-      });
-      billInfo.out_id = idsStr;
-      billInfo.count_price = allMoney;
-      billInfo.count_price_up = this.Arabia_To_SimplifiedChinese(allMoney);
-      this.$set(this, `billList`, result.outList);
-      this.$set(this, `billInfo`, billInfo);
-      let client = {};
-      client.c_id = result.id;
-      client.c_name = result.client.name;
-      client.c_bank = result.client.bank;
-      client.c_account = result.client.card_account;
-      this.$set(this, `client`, client);
+      if (this.routerName.includes('already')) {
+        let result = await this.gysBillInfo({ id: this.id });
+        let out_idList = result.bill.out_id.split(',');
+        let out_itemList = result.bill.out_item.split(',');
+        let out_priceList = result.bill.out_price.split(',');
+        let billList = [];
+        for (let index = 0; index < out_idList.length - 1; index++) {
+          let object = {};
+          object.cost_name = out_itemList[index];
+          object.sh_ss = out_priceList[index];
+          billList.push(object);
+        }
+        this.$set(this, `billList`, billList);
+        this.$set(this, `billInfo`, result.bill);
+      } else {
+        let { result, ids } = await this.gysGysSelectList({ ids: loading_list });
+        let allMoney = result.outList.reduce((prev, cur) => {
+          return prev * 1 + cur.sh_ss * 1;
+        }, 0);
+        let billInfo = {};
+        let idsStr = '';
+        ids.map(item => {
+          idsStr = idsStr === '' ? `${item},` : `${idsStr}${item},`;
+        });
+        billInfo.out_id = idsStr;
+        billInfo.count_price = allMoney;
+        billInfo.count_price_up = this.Arabia_To_SimplifiedChinese(allMoney);
+        this.$set(this, `billList`, result.outList);
+        this.$set(this, `billInfo`, billInfo);
+        let client = {};
+        client.c_id = result.id;
+        client.c_name = result.client.name;
+        client.c_bank = result.client.bank;
+        client.c_account = result.client.card_account;
+        this.$set(this, `client`, client);
+      }
+
       this.dialog = true;
     },
     closeAlert() {
@@ -142,21 +164,23 @@ export default {
     },
     async toPrint() {
       this.$print(this.$refs.print);
-      let form = JSON.parse(JSON.stringify(this.billInfo));
-      form.login_id = this.userInfo.login_id;
-      let out_item = '';
-      let out_price = '';
-      this.billList.map(item => {
-        out_item = out_item === '' ? `${item.cost_name},` : `${out_item}${item.cost_name},`;
-        out_price = out_price === '' ? `${item.sh_ss},` : `${out_price}${item.sh_ss},`;
-      });
-      form.out_item = out_item;
-      form.out_price = out_price;
-      form = Object.assign(form, this.client);
-      await this.gysEditAndPrint({ form: form });
+      if (!this.routerName.includes('already')) {
+        let form = JSON.parse(JSON.stringify(this.billInfo));
+        form.login_id = this.userInfo.login_id;
+        let out_item = '';
+        let out_price = '';
+        this.billList.map(item => {
+          out_item = out_item === '' ? `${item.cost_name},` : `${out_item}${item.cost_name},`;
+          out_price = out_price === '' ? `${item.sh_ss},` : `${out_price}${item.sh_ss},`;
+        });
+        form.out_item = out_item;
+        form.out_price = out_price;
+        form = Object.assign(form, this.client);
+        await this.gysEditAndPrint({ form: form });
+      }
     },
     payType(data) {
-      this.$set(this.billInfo, `pay_type`, data);
+      this.$set(this.billInfo, `pay_type`, `${data}`);
     },
     getDate() {
       let date = new Date();

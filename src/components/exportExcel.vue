@@ -18,11 +18,11 @@ import needAllDataList from '@/util/exportExcelNeedAllData.js';
 export default {
   name: 'exportExcel',
   props: {
-    exportTitle: { type: Array, defalut: [] },
-    db_nameList: { type: Array, defalut: [] },
-    dataName: { type: String, defalut: '' },
-    fileName: { type: String, default: `exportFileName${Date.parse(new Date())}` },
-    sheetName: { type: String, default: 'sheet1' },
+    exportTitle: { type: Array, defalut: [] }, //数据库字段名称
+    db_nameList: { type: Array, defalut: [] }, //数据库字段名称对应导出的中文
+    dataName: { type: String, defalut: '' }, //获取父组件那个数据集作为数据源
+    fileName: { type: String, default: `exportFileName${Date.parse(new Date())}` }, //文件名
+    sheetName: { type: String, default: 'sheet1' }, //excel表格名,也用来判断如何取数据
   },
   components: {},
   data() {
@@ -56,21 +56,22 @@ export default {
       }
     },
     async excel() {
-      await this.search();
       let th = this.exportTitle;
       let filterVar = this.db_nameList;
       let routerName = this.$route.name;
       let originData;
-      if (routerName === 'staff' || routerName === 'kind') {
-        originData = this.newData(routerName);
-      } else {
-        originData = this.list;
+      if (this.sheetName === '客户结算单') {
+        originData = _.get(this.$parent.$parent, this.dataName);
       }
       if (originData.length > 0) {
         const data = originData.map(v => filterVar.map(k => v[k]));
         const [fileName, fileType, sheetName] = [this.fileName, 'xlsx', this.sheetName];
         this.$message('正在导出,请耐心等待');
         this.$toExcel({ th, data, fileName, fileType, sheetName });
+        if (this.sheetName === '客户结算单') {
+          this.$emit('edit');
+        }
+        this.$message.success('导入成功');
       } else {
         this.$message.error('无可导出的数据');
       }

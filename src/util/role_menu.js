@@ -124,8 +124,16 @@ export const SETTLEMENT = {
       uri: '/settlement.html#/customerStatement',
     },
     {
+      name: '客户已结算的结算单',
+      uri: '/settlement.html#/cus_already',
+    },
+    {
       name: '供应商结算单',
       uri: '/settlement.html#/vendorStatement',
+    },
+    {
+      name: '供应商已结算的结算单',
+      uri: '/settlement.html#/vendor_already',
     },
   ],
 };

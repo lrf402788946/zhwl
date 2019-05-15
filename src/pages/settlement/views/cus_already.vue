@@ -1,60 +1,63 @@
 <template lang="html">
-  <div id="customerStatement">
+  <div id="cus_already">
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">供应商结算单</a>
+          <a class="base-margin-left-20">客户结算单</a>
           <div class="button-table"></div>
         </div>
       </div>
       <div class="base-padding-20 base-bg-fff">
         <div class="row" style="margin-bottom: 15px !important;">
           <div class="col-lg-3 marginBot4">
-            <p class="marginBot4">请选择供应商:</p>
-            <el-select class="marginBot" style="height:40px !important" v-model="select_client_id" filterable placeholder="请选择供应商">
-              <!-- <el-option label="全部" value=""></el-option> -->
+            <p class="marginBot4">请选择客户:</p>
+            <el-select class="marginBot" style="height:40px !important" v-model="select_c_id" filterable placeholder="请选择客户">
               <el-option v-for="item in clientList" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
-          <!-- <div class="col-lg-3 mb25">
+          <div class="col-lg-3 mb25">
             <p class="marginBot4">请输入项目名:</p>
-            <el-input v-model="select_xm_name" placeholder="请输入项目"></el-input>
+            <el-input v-model="select_item_name" placeholder="请输入项目"></el-input>
           </div>
           <div class="col-lg-3 mb25">
             <p class="marginBot4">请输入订单号:</p>
             <el-input v-model="select_order_no" placeholder="请输入订单号"></el-input>
-          </div> -->
+          </div>
+          <div class="col-lg-3 marginBot4">
+            <p class="marginBot4">订单日期查询:</p>
+            <el-date-picker
+              style="width:100%; height: 34px !important; line-height: 34px !important;"
+              v-model="select_in_date"
+              value-format="yyyy-MM-dd"
+              format="yyyy-MM-dd"
+              type="daterange"
+              range-separator="-"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+            >
+            </el-date-picker>
+          </div>
         </div>
-        <div>
-          <el-button size="medium" @click="searchButton('vague')" type="primary">查&nbsp;&nbsp;询</el-button>
-        </div>
+        <div><el-button size="medium" @click="searchButton('vague')" type="primary">查&nbsp;&nbsp;询</el-button></div>
       </div>
       <table class="table table-bordered table-striped ">
         <tbody v-if="list.length > 0">
           <tr>
-            <th><bill></bill></th>
-            <th>发货日期</th>
-            <th>供应商</th>
-            <th>订单号</th>
+            <th><el-button size="medium" type="primary" @click="openAlert()">结&nbsp;&nbsp;算</el-button></th>
+            <th>要求到达日期</th>
+            <th>客户名</th>
             <th>项目</th>
-            <th>单价(不含税)</th>
-            <th>运费合计(不含税)</th>
-            <th>税率</th>
-            <th>应收运费</th>
+            <th>税后实收</th>
           </tr>
           <tr v-for="(item, index) in list" :key="index">
             <td>
-              <b-form-checkbox-group id="order_loading_list" name="order_loading_list" v-model="loading_list">
+              <b-form-checkbox-group id="order_loading_list" name="order_loading_list" v-model="order_loading_list">
                 <b-form-checkbox :value="item.id"></b-form-checkbox>
               </b-form-checkbox-group>
             </td>
-            <td>{{ item.create_time }}</td>
-            <td>{{ item.client_name }}</td>
-            <td>{{ item.order_no }}</td>
-            <td>{{ { data: contractList, searchItem: `id`, value: item.pact_id, label: `item_name` } | getName }}</td>
-            <td>{{ { data: contractList, searchItem: `id`, value: item.pact_id, label: `price` } | getName }}</td>
-            <td>{{ item.sh_ys }}</td>
-            <td>{{ item.rate }}</td>
+            <td>{{ item.reach_time_hp }}</td>
+            <td>{{ item.c_name }}</td>
+            <td>{{ item.item_name }}</td>
             <td>{{ item.sh_ss }}</td>
           </tr>
         </tbody>
@@ -76,50 +79,106 @@
       >
       </el-pagination>
     </div>
+    <!-- 详情 -->
+    <el-dialog width="80%" title="客户结算单" :visible.sync="dialogUpdate" :fullscreen="false">
+      <div class="d-block">
+        <div class="row">
+          <table class="table table-bordered table-striped ">
+            <tbody>
+              <tr>
+                <td>订单号</td>
+                <td>费用项目名称</td>
+                <td>税后应收</td>
+                <td>税后实收</td>
+              </tr>
+              <tr v-for="(item, index) in detailList" :key="index">
+                <td>{{ item.order_no }}</td>
+                <td>{{ item.cost_name }}</td>
+                <td>{{ item.sh_ys }}</td>
+                <td>{{ item.sh_ss }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-4">
+          <!-- <b-button
+            variant="primary"
+            @click="toExcel()"
+            class="resetButton"
+            style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+            >导&nbsp;&nbsp;出</b-button
+          > -->
+          <exportExcel
+            class="resetButton"
+            style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+            :exportTitle="th"
+            :db_nameList="filterVal"
+            dataName="detailList"
+            :fileName="`${fileName}结算单${new Date().toLocaleDateString()}`"
+            sheetName="客户结算单"
+            @edit="toEdit"
+          ></exportExcel>
+        </div>
+        <div class="col-lg-4">
+          <b-button
+            variant="secondary"
+            @click="closeAlert()"
+            class="resetButton"
+            style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+            >返&nbsp;&nbsp;回</b-button
+          >
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import Validator from 'async-validator';
 import entrance from '@/components/entrance.vue';
 import exportExcel from '@/components/exportExcel.vue';
-import bill from '@/util/bill.vue';
-import { mapActions, mapState, mapMutations } from 'vuex';
+
 import _ from 'lodash';
+import { mapActions, mapState } from 'vuex';
 export default {
-  name: 'customerStatement',
+  name: 'cus_alreadly',
   metaInfo: {
-    title: '供应商结算单',
+    title: '客户结算单',
   },
   components: {
-    bill,
+    exportExcel,
   },
   data() {
     return {
-      select_client_id: '',
-      select_xm_name: '',
+      select_c_id: '',
+      select_item_name: '',
       select_order_no: '',
+      select_in_date: [],
+      order_loading_list: [],
       list: [],
+      detailList: [],
       xiangXiList: {},
       xiangXiList1: [],
-      wayname: '',
-      loading_list: [],
+      dialogUpdate: false,
       currentPage: 1,
       totalRow: 0,
+      th: ['订单号', '费用项目', '税后应收', '税后实收'],
+      filterVal: ['order_no', 'cost_name', 'sh_ys', 'sh_ss'],
+      fileName: '',
     };
   },
   async created() {
-    await this.getContractList({ skip: 0, limit: 10000, cus_id: '', pact_no: '' });
-    await this.getClientList({ skip: 0, limit: 10000, type: 1 });
+    await this.getClientList({ skip: 0, limit: 10000, type: 0 });
   },
   computed: {
     ...mapState({
-      contractList: state => state.personnel.contractList,
       clientList: state => state.personnel.clientList,
       limit: state => state.publics.limit,
     }),
   },
   methods: {
-    ...mapActions(['getContractList', 'getClientList', 'gysCostList', 'getGysCostList', 'gysGysSelectList']),
+    ...mapActions(['clientAlreadyList', 'getClientList', 'clientSelectList']),
     toSearch(currentPage) {
       this.currentPage = currentPage;
       this.search();
@@ -130,11 +189,41 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.getGysCostList({ c_id: this.select_client_id, skip: 0, limit: this.limit });
+      let result = await this.clientAlreadyList({
+        c_id: this.select_c_id,
+        item_name: this.select_item_name,
+        order_no: this.select_order_no,
+        startTime: this.select_in_date.length > 0 ? this.select_in_date[0] : '',
+        endTime: this.select_in_date.length > 0 ? this.select_in_date[1] : '',
+        limit: this.limit,
+        skip: skip,
+      });
       this.$set(this, 'list', result.dataList);
-      this.select_client_id = '';
-      this.select_xm_name = '';
-      this.select_order_no = '';
+    },
+    async openAlert() {
+      if (this.order_loading_list <= 0) {
+        this.$message.error('请选择要结算的订单');
+        return false;
+      }
+      let result = await this.clientSelectList({ ids: this.order_loading_list });
+      this.$set(this, `detailList`, result.dataList);
+      console.log(this.list.filter(item => item.id === this.order_loading_list[0])[0]);
+      this.$set(
+        this,
+        `fileName`,
+        this.select_c_id !== ''
+          ? this.clientList.filter(item => item.id === this.select_c_id)[0].name
+          : this.order_loading_list.length > 0
+          ? this.list.filter(item => item.id === this.order_loading_list[0])[0].c_name
+          : ''
+      );
+      this.dialogUpdate = true;
+    },
+    closeAlert() {
+      this.dialogUpdate = false;
+    },
+    async toEdit() {
+      await this.clientToEdit({ ids: this.order_loading_list });
     },
   },
 };

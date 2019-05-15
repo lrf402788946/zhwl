@@ -32,30 +32,22 @@
       <table class="table table-bordered table-striped ">
         <tbody v-if="list.length > 0">
           <tr>
-            <th><bill></bill></th>
-            <th>发货日期</th>
             <th>供应商</th>
-            <th>订单号</th>
-            <th>项目</th>
-            <th>单价(不含税)</th>
-            <th>运费合计(不含税)</th>
-            <th>税率</th>
-            <th>应收运费</th>
+            <th>银行</th>
+            <th>卡号</th>
+            <th>支付单位</th>
+            <th>实收合计</th>
+            <th>支付类型</th>
+            <th>操作</th>
           </tr>
           <tr v-for="(item, index) in list" :key="index">
-            <td>
-              <b-form-checkbox-group id="order_loading_list" name="order_loading_list" v-model="loading_list">
-                <b-form-checkbox :value="item.id"></b-form-checkbox>
-              </b-form-checkbox-group>
-            </td>
-            <td>{{ item.create_time }}</td>
-            <td>{{ item.client_name }}</td>
-            <td>{{ item.order_no }}</td>
-            <td>{{ { data: contractList, searchItem: `id`, value: item.pact_id, label: `item_name` } | getName }}</td>
-            <td>{{ { data: contractList, searchItem: `id`, value: item.pact_id, label: `price` } | getName }}</td>
-            <td>{{ item.sh_ys }}</td>
-            <td>{{ item.rate }}</td>
-            <td>{{ item.sh_ss }}</td>
+            <td>{{ item.c_name }}</td>
+            <td>{{ item.c_bank }}</td>
+            <td>{{ item.c_account }}</td>
+            <td>{{ item.pay_unit }}</td>
+            <td>{{ item.count_price }}</td>
+            <td>{{ item.pay_type === '0' ? '现金' : '银行汇款' }}</td>
+            <td><bill :id="item.id"></bill></td>
           </tr>
         </tbody>
         <tbody v-else>
@@ -119,7 +111,7 @@ export default {
     }),
   },
   methods: {
-    ...mapActions(['getContractList', 'getClientList', 'gysCostList', 'getGysCostList', 'gysGysSelectList']),
+    ...mapActions(['getContractList', 'getClientList', 'gysCostList', 'gysAlreadylist']),
     toSearch(currentPage) {
       this.currentPage = currentPage;
       this.search();
@@ -130,11 +122,8 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.getGysCostList({ c_id: this.select_client_id, skip: 0, limit: this.limit });
+      let result = await this.gysAlreadylist({ c_id: this.select_client_id, skip: 0, limit: this.limit });
       this.$set(this, 'list', result.dataList);
-      this.select_client_id = '';
-      this.select_xm_name = '';
-      this.select_order_no = '';
     },
   },
 };
