@@ -10,7 +10,9 @@ import '@/plugins/element';
 import '@/plugins/filters';
 import '@/plugins/axios';
 import toExcel from '@/util/json2excel';
+import MyPlugin from '@/util/print';
 
+Vue.use(MyPlugin);
 Vue.config.productionTip = false;
 Vue.use(BootstrapVue);
 Vue.prototype.$toExcel = toExcel;

@@ -9,7 +9,7 @@
           <div class="col-lg-3">
             <ul class="top-nav-ul">
               <li><a href="/system.html#/">首 &nbsp;&nbsp; 页</a></li>
-              <li><a @click="test()">test</a></li>
+              <!-- <li><a @click="test()">test</a></li> -->
             </ul>
           </div>
           <div class="col-lg-5"></div>
@@ -50,6 +50,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
+var Stomp = require('@stomp/stompjs');
 export default {
   name: 'Header',
   components: {},
@@ -58,6 +59,8 @@ export default {
       avatar: require('@/assets/img/8082.jpg'),
       infoList: [{ message: 'test Infomation 1' }, { message: 'test Infomation 2' }, { message: 'test Infomation 3' }],
       Ws: '',
+      Client: '',
+      mqObj: { username: 'wy', pwd: '1' },
     };
   },
   computed: {
@@ -98,7 +101,8 @@ export default {
       }
     },
     test() {
-      this.refreshInfo('{data:test info}');
+      console.log('in');
+      this.Client.send('/exchange/my/MarketMQ', {}, 'test send');
     },
     async refreshInfo(data) {
       if (this.Ws.readyState === 1) {
@@ -109,16 +113,34 @@ export default {
     async initWebSocket() {
       this.Ws = new WebSocket('ws://10.16.11.186:15674/ws');
       this.Ws.onmessage = this.toGetMessage;
-      console.log(this.Ws);
-    },
-    toSendMessage(data) {
-      this.Ws.send(data);
+      this.Ws.onclose = this.toClose;
+      this.Client = Stomp.Stomp.over(this.Ws);
+      let on_connect = info => {
+        this.Client.subscribe('/exchange/my/MarketMQ', data => {
+          var msg = data.body;
+          this.toGetMessage(msg);
+        });
+      };
+      let on_error = () => {
+        console.log('error');
+      };
+      this.Client.connect(this.mqObj.username, this.mqObj.pwd, on_connect, on_error, '/');
     },
     toGetMessage(data) {
-      console.log(data);
+      var info;
+      if (typeof json == 'object') {
+        info = data;
+      } else {
+        info = JSON.parse(data);
+      }
+      // var _instrID = _jObj.instrumentID;
+      // _jObj.upsDownsRate = _jObj.upsDownsRate + '%';
+      // var _fuArr = [_jObj.lastPrice, _jObj.upsDowns, _jObj.upsDownsRate];
+      console.warn(info);
     },
-    toOpen(data) {
-      this.Ws.send('Hello WebSockets!');
+    toClose() {
+      // 关闭 websocket
+      console.log('连接已关闭...');
     },
   },
 };

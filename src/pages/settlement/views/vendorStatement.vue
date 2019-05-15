@@ -27,27 +27,32 @@
         </div>
         <div>
           <el-button size="medium" @click="searchButton()" type="primary">查&nbsp;&nbsp;询</el-button>
-          <el-button size="medium" @click="openAlert()" type="primary">生成单据</el-button>
         </div>
       </div>
       <table class="table table-bordered table-striped ">
         <tbody v-if="list.length > 0">
           <tr>
+            <th><bill></bill></th>
             <th>发货日期</th>
-            <th>提货单号</th>
-            <th>货物</th>
-            <th>线路</th>
+            <th>供应商</th>
+            <th>订单号</th>
+            <th>项目</th>
             <th>单价(不含税)</th>
             <th>运费合计(不含税)</th>
-            <th>税金(10%)</th>
+            <th>税率</th>
             <th>应收运费</th>
           </tr>
           <tr v-for="(item, index) in list" :key="index">
+            <td>
+              <b-form-checkbox-group id="order_loading_list" name="order_loading_list" v-model="loading_list">
+                <b-form-checkbox :value="item.id"></b-form-checkbox>
+              </b-form-checkbox-group>
+            </td>
             <td>{{ item.create_time }}</td>
-            <td>{{ item.transport_no }}</td>
-            <td>{{ item.goods_name }}</td>
-            <td>{{ item.dly_name }}</td>
-            <td>{{ item.price }}</td>
+            <td>{{ item.client_name }}</td>
+            <td>{{ item.order_no }}</td>
+            <td>{{ { data: contractList, searchItem: `id`, value: item.pact_id, label: `item_name` } | getName }}</td>
+            <td>{{ { data: contractList, searchItem: `id`, value: item.pact_id, label: `price` } | getName }}</td>
             <td>{{ item.sh_ys }}</td>
             <td>{{ item.rate }}</td>
             <td>{{ item.sh_ss }}</td>
@@ -60,10 +65,6 @@
         </tbody>
       </table>
     </div>
-
-    <el-dialog :visible.sync="dialog" title="结算单" width="90%" close-on-click-modal close-on-press-escape center>
-      <bill></bill>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -83,46 +84,36 @@ export default {
   },
   data() {
     return {
-      clientList: [],
       select_client_id: '',
       select_xm_name: '',
       select_order_no: '',
       list: [],
       xiangXiList: {},
       xiangXiList1: [],
-      dialog: false,
       wayname: '',
+      loading_list: [],
+      test: 0,
     };
   },
-  created() {
-    this.searchClient();
+  async created() {
+    await this.getContractList({ skip: 0, limit: 10000, cus_id: '', pact_no: '' });
+    await this.getClientList({ skip: 0, limit: 10000, type: 1 });
+  },
+  computed: {
+    ...mapState({
+      contractList: state => state.personnel.contractList,
+      clientList: state => state.personnel.clientList,
+    }),
   },
   methods: {
-    ...mapMutations(['BILL_INFO']),
-    //获取供应商名
-    async searchClient() {
-      let result = await this.$axios.get(`/zhwl/client/client_list?skip=0&limit=99999&type=1`);
-      this.$set(this, 'clientList', result.clientList);
-    },
+    ...mapActions(['getContractList', 'getClientList', 'gysCostList', 'getGysCostList', 'gysGysSelectList']),
     //查询按钮
     async searchButton() {
-      let result = await this.$axios.get(
-        // `/zhwl/count/gys_count?skip=0&limit=99999&c_id=${this.select_client_id}&item_name=${this.select_xm_name}&order_no=${this.select_order_no}`
-        `/zhwl/count/gys_count?skip=0&limit=99999&c_id=${this.select_client_id}`
-      );
+      let result = await this.getGysCostList({ c_id: this.select_client_id });
       this.$set(this, 'list', result.dataList);
       this.select_client_id = '';
       this.select_xm_name = '';
       this.select_order_no = '';
-    },
-    async openAlert(index) {
-      // this.xiangXiList = JSON.parse(JSON.stringify(this.list[index]));
-      let object = { value: 0 };
-      this.BILL_INFO(object);
-      this.dialog = true;
-    },
-    closeAlert() {
-      this.dialog = false;
     },
   },
 };
