@@ -23,9 +23,9 @@
                 <div class="col-lg-6">
                   <button variant="primary" @click="form = {}" style=" margin-top:10px;" class="dengBtn">重&nbsp;&nbsp;置</button>
                 </div>
-                <div class="col-lg-6">
+                <!-- <div class="col-lg-6">
                   <button type="button" variant="primary" @click="test()" style=" margin-top:10px;" class="dengBtn">test</button>
-                </div>
+                </div> -->
               </div>
             </div>
           </form>

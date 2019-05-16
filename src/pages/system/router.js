@@ -6,9 +6,10 @@ import user from './views/user.vue';
 import role from './views/role.vue';
 import user_role from './views/user_role.vue';
 import password from './views/password.vue';
+import toLogin from '@/components/toLogin.vue';
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -42,5 +43,26 @@ export default new Router({
         },
       ],
     },
+    {
+      path: '/toLogin',
+      name: 'toLogin',
+      component: toLogin,
+    },
   ],
 });
+router.beforeEach((to, from, next) => {
+  const is_login = sessionStorage.getItem('userInfo');
+  if (is_login) {
+    next();
+  } else {
+    if (to.path.includes('login') || to.path.includes('toLogin')) {
+      next();
+    } else if (to.path.includes('test')) {
+      next();
+    } else {
+      next({ path: '/toLogin' });
+    }
+  }
+});
+
+export default router;

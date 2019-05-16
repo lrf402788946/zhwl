@@ -9,9 +9,10 @@ import staff from './views/staff.vue';
 import contract from './views/contract.vue';
 import supplier from './views/supplier.vue';
 import supplier_contract from './views/supplier_contract.vue';
+import toLogin from '@/components/toLogin.vue';
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -60,5 +61,26 @@ export default new Router({
         },
       ],
     },
+    {
+      path: '/toLogin',
+      name: 'toLogin',
+      component: toLogin,
+    },
   ],
 });
+router.beforeEach((to, from, next) => {
+  const is_login = sessionStorage.getItem('userInfo');
+  if (is_login) {
+    next();
+  } else {
+    if (to.path.includes('login') || to.path.includes('toLogin')) {
+      next();
+    } else if (to.path.includes('test')) {
+      next();
+    } else {
+      next({ path: '/toLogin' });
+    }
+  }
+});
+
+export default router;

@@ -82,7 +82,7 @@
 import Validator from 'async-validator';
 import entrance from '@/components/entrance.vue';
 import exportExcel from '@/components/exportExcel.vue';
-import bill from '@/util/bill.vue';
+import bill from '@/components/bill.vue';
 import { mapActions, mapState, mapMutations } from 'vuex';
 import _ from 'lodash';
 export default {

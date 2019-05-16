@@ -10,10 +10,11 @@ import split_cargo from './views/split_cargo.vue';
 import cost from './views/cost.vue';
 import out from './views/out.vue';
 import in_page from './views/in.vue';
+import toLogin from '@/components/toLogin.vue';
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -67,5 +68,25 @@ export default new Router({
         },
       ],
     },
+    {
+      path: '/toLogin',
+      name: 'toLogin',
+      component: toLogin,
+    },
   ],
 });
+router.beforeEach((to, from, next) => {
+  const is_login = sessionStorage.getItem('userInfo');
+  if (is_login) {
+    next();
+  } else {
+    if (to.path.includes('login') || to.path.includes('toLogin')) {
+      next();
+    } else if (to.path.includes('test')) {
+      next();
+    } else {
+      next({ path: '/toLogin' });
+    }
+  }
+});
+export default router;

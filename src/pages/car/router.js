@@ -6,10 +6,11 @@ import car_daily_detail from './views/car_daily_detail.vue';
 import car_transport from './views/car_transport.vue';
 import transport_pack from './views/transport_pack.vue';
 import car_cost from './views/car_cost.vue';
+import toLogin from '@/components/toLogin.vue';
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -48,5 +49,26 @@ export default new Router({
         },
       ],
     },
+    {
+      path: '/toLogin',
+      name: 'toLogin',
+      component: toLogin,
+    },
   ],
 });
+router.beforeEach((to, from, next) => {
+  const is_login = sessionStorage.getItem('userInfo');
+  if (is_login) {
+    next();
+  } else {
+    if (to.path.includes('login') || to.path.includes('toLogin')) {
+      next();
+    } else if (to.path.includes('test')) {
+      next();
+    } else {
+      next({ path: '/toLogin' });
+    }
+  }
+});
+
+export default router;
