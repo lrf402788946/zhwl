@@ -4,7 +4,7 @@
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">运输管理</a>
+          <a class="base-margin-left-20">签收管理</a>
           <div class="button-table"></div>
         </div>
       </div>
@@ -57,6 +57,7 @@
             <td>{{ item.status | getStatus }}</td>
             <td>
               <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">详&nbsp;&nbsp;情</b-button>
+              <b-button variant="success" style="color:white; margin-right:5px;" @click="openAlert('sign', item.id)">签&nbsp;&nbsp;收</b-button>
               <b-button v-if="!(item.status === 2)" variant="danger" style="color:white;" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button>
             </td>
           </tr>
@@ -113,17 +114,17 @@
               <tr>
                 <td>订单号</td>
                 <td>货物名称</td>
-                <td>状态</td>
-                <td>操作</td>
+                <!-- <td>状态</td> -->
+                <!-- <td>操作</td> -->
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
                 <td>{{ item.order_no }}</td>
                 <td>{{ item.goods_name }}</td>
-                <td>{{ item.status === 1 ? '未到达' : '已到达' }}</td>
-                <td>
+                <!-- <td>{{ item.status === 1 ? '未到达' : '已到达' }}</td> -->
+                <!-- <td>
                   <el-button v-if="item.status === 1" type="primary" icon="el-icon-edit" @click="openAlert('sign', item.id)">签收</el-button>
                   <p v-else>已签收</p>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>
@@ -224,7 +225,7 @@ import _ from 'lodash';
 export default {
   name: 'transport',
   metaInfo: {
-    title: '运输管理',
+    title: '签收管理',
   },
   data() {
     return {
@@ -407,11 +408,10 @@ export default {
     //签收
     async toSign() {
       await this.orderSign({ signForm: this.signForm });
-      await this.getTransportSubList({ id: this.updateForm.id });
       this.$set(this, 'subForm', this.transportSubListVuex);
       this.search();
       this.signForm = {};
-      this.dialogDetail = true;
+      // this.dialogDetail = true;//现在一键签收,不需要开详情窗口
       this.dialogSign = false;
     },
     reset() {

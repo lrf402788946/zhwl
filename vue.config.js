@@ -28,7 +28,7 @@ module.exports = {
     //api地址前缀
     proxy: {
       '/zhwl': {
-        target: 'http://10.16.11.186:80',
+        target: 'http://10.16.11.186:80', //10.16.11.186:80  10.16.11.227:7001
         changeOrigin: true,
         ws: true,
         pathRewrite: {

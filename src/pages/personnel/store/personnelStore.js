@@ -37,6 +37,22 @@ const api = {
   contractSave: '/zhwl/clientpact/client_pact_save',
   contractEdit: '/zhwl/clientpact/client_pact_edit',
   contractDelete: '/zhwl/clientpact/client_pact_delete',
+  //项目
+  itemList: '/zhwl/clientpactitem/client_pact_item_list',
+  itemSave: '/zhwl/clientpactitem/client_pact_item_save',
+  itemEdit: '/zhwl/clientpactitem/client_pact_item_edit',
+  itemDelete: '/zhwl/clientpactitem/client_pact_item_delete',
+  //路线
+  dlywayList: '/zhwl/dlyway/dly_way_list',
+  dlywaySave: '/zhwl/dlyway/dly_way_save',
+  dlywayEdit: '/zhwl/dlyway/dly_way_edit',
+  dlywayDelete: '/zhwl/dlyway/dly_way_delete',
+  //方式
+  wayList: '/zhwl/clientpactitemwaytype/client_pact_item_way_type_list',
+  wayInfo: '/zhwl/clientpactitemwaytype/client_pact_item_way_type_info',
+  waySave: '/zhwl/clientpactitemwaytype/client_pact_item_way_type_save',
+  wayEdit: '/zhwl/clientpactitemwaytype/client_pact_item_way_type_edit',
+  wayDelete: '/zhwl/clientpactitemwaytype/client_pact_item_way_type_delete',
 };
 
 export const state = () => ({
@@ -448,9 +464,9 @@ export const actions = {
   },
   //查询合同列表
   async getContractList({ commit }, payload) {
-    const { skip, limit, pact_no, cus_id } = payload;
+    const { skip, limit, pact_no, cus_id, type = '' } = payload;
     try {
-      let result = await this.$axios.get(`${api.contractList}?skip=${skip}&limit=${limit}&pact_no=${pact_no}&cus_id=${cus_id}`);
+      let result = await this.$axios.get(`${api.contractList}?skip=${skip}&limit=${limit}&pact_no=${pact_no}&cus_id=${cus_id}&type=${type}`);
       if (result.rescode === '0') {
         result.totalRow > 0 ? commit(types.CONTRACT_LIST, result.clientPactList) : commit(types.CONTRACT_LIST, []);
         return result.totalRow;
@@ -484,6 +500,101 @@ export const actions = {
         Message.error('操作失败');
         console.warn(`error in:${type}`);
       }
+    } catch (err) {
+      Message.error('操作失败');
+      console.error(err);
+    }
+  },
+  //项目列表
+  async getItemList({ commit }, { skip, limit, pact_id }) {
+    try {
+      let result = await this.$axios.get(`${api.itemList}?skip=${skip}&limit=${limit}&pact_id=${pact_id}`);
+      if (result.rescode === '0') {
+        return { result: true, data: result };
+      } else {
+        return { result: false };
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
+      console.error(err);
+    }
+  },
+  //项目操作
+  async itemOperation({ commit }, { type, data }) {
+    let result;
+    try {
+      result = await this.$axios.post(_.get(api, type), { data: data });
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+        console.warn(`error in:${type}`);
+      }
+      return result;
+    } catch (err) {
+      Message.error('操作失败');
+      console.error(err);
+    }
+  },
+  //查询线路
+  async item_getDlyList({ commit }, { skip, limit, item_id, name = '', start_city = '', end_city = '' }) {
+    try {
+      let result = await this.$axios.get(
+        `${api.dlywayList}?skip=${skip}&limit=${limit}&item_id=${item_id}&name=${name}&start_city=${start_city}&end_city=${end_city}`
+      );
+      if (result.rescode === '0') {
+        return { result: true, data: result };
+      } else {
+        return { result: false };
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
+      console.error(err);
+    }
+  },
+  //线路操作
+  async item_dlyOperation({ commit }, { type, data }) {
+    let result;
+    try {
+      result = await this.$axios.post(_.get(api, type), { data: data });
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+        console.warn(`error in:${type}`);
+      }
+      return result;
+    } catch (err) {
+      Message.error('操作失败');
+      console.error(err);
+    }
+  },
+  //查询方式
+  async getWayList({ commit }, { skip, limit, dly_way_id }) {
+    try {
+      let result = await this.$axios.get(`${api.wayList}?skip=${skip}&limit=${limit}&dly_way_id=${dly_way_id}`);
+      if (result.rescode === '0') {
+        return { result: true, data: result };
+      } else {
+        return { result: false };
+      }
+    } catch (err) {
+      Message.error('接口加载失败');
+      console.error(err);
+    }
+  },
+  //方式操作
+  async wayOperation({ commit }, { type, data }) {
+    let result;
+    try {
+      result = await this.$axios.post(_.get(api, type), { data: data });
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+        console.warn(`error in:${type}`);
+      }
+      return result;
     } catch (err) {
       Message.error('操作失败');
       console.error(err);

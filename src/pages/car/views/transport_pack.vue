@@ -43,7 +43,11 @@
           <!-- <tbody v-if="transportList.length > 0"> -->
           <tr>
             <th><el-button type="warning" @click="() => (loading_list = [])">重新选择</el-button></th>
+            <th>车号</th>
             <th>运输单号</th>
+            <th>发车日期</th>
+            <th>到达日期</th>
+            <th>线路</th>
           </tr>
           <tr v-for="(item, index) in transportList" :key="index">
             <td>
@@ -51,7 +55,11 @@
                 <b-form-checkbox :value="item"></b-form-checkbox>
               </b-form-checkbox-group>
             </td>
+            <td>{{ item.car_no }}</td>
             <td>{{ item.transport_no }}</td>
+            <td>{{ item.send_time }}</td>
+            <td>{{ item.sign_time }}</td>
+            <td>{{ item.content }}</td>
           </tr>
           <!-- </tbody>
           <tbody v-else>
@@ -69,7 +77,7 @@
                 <b-form-input v-model="form.login_id"></b-form-input>
               </div>
               <div class="col-lg-4 mb25">
-                <div class="lh44">操作日期</div>
+                <div class="lh44">创建日期</div>
                 <el-date-picker
                   style="width: 100%;"
                   v-model="form.create_time"
@@ -111,6 +119,7 @@
                         format="yyyy-MM-dd"
                         type="date"
                         placeholder="请选择操作时间"
+                        :disabled="true"
                       >
                       </el-date-picker>
                     </td>
@@ -133,7 +142,7 @@
             @click="addSubForm()"
             class="resetButton"
             style="font-size:16px !important; margin-top:25px; width:30% !important; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-            >添加商品</b-button
+            >添加费用</b-button
           >
           <b-button
             variant="primary"
@@ -211,23 +220,23 @@ export default {
     },
     //打开与关闭修改和删除的弹框
     async openAlert(type, id) {
-      if (this.loading_list.length <= 0) {
-        this.$message.error('请选择要合并的运输单');
-        return false;
-      }
-      let transport_ids;
-      let transport_nos;
-      this.loading_list.map(item => {
-        transport_ids = transport_ids === undefined ? `${item.id}` : `${transport_ids},${item.id}`;
-        transport_nos = transport_nos === undefined ? `${item.transport_no}` : `${transport_nos},${item.transport_no}`;
-      });
-      this.$set(this.form, `transport_ids`, transport_ids);
-      this.$set(this.form, `transport_nos`, transport_nos);
-      this.subForm.length > 0 ? '' : this.addSubForm();
+      // if (this.loading_list.length <= 0) {
+      //   this.$message.error('请选择要合并的运输单');
+      //   return false;
+      // }
+      // let transport_ids;
+      // let transport_nos;
+      // this.loading_list.map(item => {
+      //   transport_ids = transport_ids === undefined ? `${item.id}` : `${transport_ids},${item.id}`;
+      //   transport_nos = transport_nos === undefined ? `${item.transport_no}` : `${transport_nos},${item.transport_no}`;
+      // });
+      // this.$set(this.form, `transport_ids`, transport_ids);
+      // this.$set(this.form, `transport_nos`, transport_nos);
+      // this.subForm.length > 0 ? '' : this.addSubForm();
       this.$refs.pack.show();
     },
     addSubForm() {
-      this.subForm.push({});
+      this.subForm.push({ create_time: new Date() });
     },
     //删除表单中内容
     clearSubForm(i) {

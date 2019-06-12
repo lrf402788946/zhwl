@@ -107,8 +107,8 @@
     <el-dialog title="指派负责人" :visible.sync="assignAlert" width="35%">
       <div>
         <p>请选择负责人</p>
-        <el-select v-model="aaaa" class="marginBot" style="height:40px !important" filterable>
-          <el-option v-for="(item, index) in taxRateList" :key="index" :label="item.name" :value="item.id"></el-option>
+        <el-select v-model="chargeForm.charge_login" class="marginBot" style="height:40px !important" filterable>
+          <el-option v-for="(item, index) in userList" :key="index" :label="item.user_name" :value="item.login_id"></el-option>
         </el-select>
       </div>
       <b-button
@@ -132,8 +132,8 @@
     <el-dialog title="添加/修改收入" :visible.sync="dialogVisible" width="80%">
       <div>
         是否按辆份收费？
-        <el-radio v-model="radio" disabled label="1">否</el-radio>
-        <el-radio v-model="radio" disabled label="0">是</el-radio>
+        <el-radio v-model="radio" label="1">否</el-radio>
+        <el-radio v-model="radio" label="0">是</el-radio>
       </div>
       <div class="d-block text-center">
         <div class="row">
@@ -330,7 +330,7 @@ import _ from 'lodash';
 import { constants } from 'fs';
 //import exportExcel from '@/components/exportExcel.vue';
 export default {
-  name: 'car_loading',
+  name: 'split_cargo',
   metaInfo: {
     title: '收入管理',
   },
@@ -368,13 +368,14 @@ export default {
       select_in_date: [],
       dlyWayList: [{}],
       goodsNums: 0,
-      aaaa: '',
+      chargeForm: {},
     };
   },
   computed: {
     ...mapState({
       limit: state => state.publics.limit,
       orderList: state => state.self.orderList,
+      userList: state => state.system.userList,
     }),
   },
   async created() {
@@ -384,9 +385,10 @@ export default {
     this.getClientList();
     let result = await this.$axios.get(`/zhwl/dlyway/dly_way_list?skip=0&limit=9999`);
     this.dlyWayList = JSON.parse(JSON.stringify(result.dlyWayList));
+    await this.getUserList({ skip: 0, limit: 10000 });
   },
   methods: {
-    ...mapActions(['orderIncome', 'updateIncome', 'getOrderList']),
+    ...mapActions(['orderIncome', 'updateIncome', 'getOrderList', 'getUserList', 'orderCharge']),
     zhuangTai(a) {
       if (a === '1') {
         this.num = JSON.parse(JSON.stringify(this.yunfeiList.num));
@@ -731,13 +733,17 @@ export default {
     // 打开指派负责人弹窗
     assignPerson(id) {
       this.assignAlert = true;
+      this.chargeForm.order_id = id;
     },
     // 关闭指派负责人弹窗
     closeAssignAlert() {
       this.assignAlert = false;
     },
     // 保存指派负责人
-    async saveAssign() {},
+    async saveAssign() {
+      await this.orderCharge({ form: this.chargeForm });
+      this.assignAlert = false;
+    },
   },
   filters: {
     getWayName(id, dlyWayList) {

@@ -6,7 +6,10 @@ import dept from './views/dept.vue';
 import driver from './views/driver.vue';
 import post from './views/post.vue';
 import staff from './views/staff.vue';
-import contract from './views/contract.vue';
+import contract from './views/contract/contract.vue';
+import contract_project from './views/contract/contract_project.vue';
+import dly_way from './views/contract/dly_way.vue';
+import way from './views/contract/way.vue';
 import supplier from './views/supplier.vue';
 import supplier_contract from './views/supplier_contract.vue';
 import toLogin from '@/components/toLogin.vue';
@@ -50,6 +53,11 @@ const router = new Router({
           component: contract,
         },
         {
+          path: '/contract_project',
+          name: 'contract_project',
+          component: contract_project,
+        },
+        {
           path: '/supplier',
           name: 'supplier',
           component: supplier,
@@ -58,6 +66,16 @@ const router = new Router({
           path: '/supplier_contract',
           name: 'supplier_contract',
           component: supplier_contract,
+        },
+        {
+          path: '/dly_way',
+          name: 'dly_way',
+          component: dly_way,
+        },
+        {
+          path: '/way',
+          name: 'way',
+          component: way,
         },
       ],
     },

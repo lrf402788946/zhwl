@@ -57,6 +57,8 @@ const api = {
   inSave: '/zhwl/in/in_save',
   inEdit: '/zhwl/in/in_edit',
   inDelete: '/zhwl/in/in_delete',
+  //指派负责人
+  orderCharge: '/zhwl/order/order_charge', //params:order_id,charge_login=>login_id
 };
 
 export const state = () => ({
@@ -524,9 +526,9 @@ export const actions = {
     }
   },
   //获取订单号
-  async getTransportNo({ commit }, { car_no }) {
+  async getTransportNo({ commit }) {
     try {
-      let result = await this.$axios.get(`${api.transportNO}?car_no=${car_no}`);
+      let result = await this.$axios.get(`${api.transportNO}`);
       return result.transport_no;
     } catch (error) {
       Message.error('接口加载失败');
@@ -657,6 +659,22 @@ export const actions = {
       } else {
         Message.error('操作失败');
         console.warn(`error in method:orderSign`);
+        throw new Error('操作失败');
+      }
+    } catch (error) {
+      Message.error('操作失败');
+      console.error(error);
+    }
+  },
+  //指派负责人
+  async orderCharge({ commit }, { form }) {
+    try {
+      let result = await this.$axios.post(api.orderCharge, { data: form });
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+        console.warn(`error in method:orderCharge`);
         throw new Error('操作失败');
       }
     } catch (error) {

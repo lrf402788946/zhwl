@@ -12,7 +12,7 @@
           <div class="col-lg-3 marginBot4">
             <p class="marginBot4">请选择客户:</p>
             <el-select class="marginBot" style="height:40px !important" v-model="select_c_id" filterable placeholder="请选择客户">
-              <el-option v-for="item in clientList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              <el-option v-for="(item, index) in clientList" :key="index" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </div>
           <div class="col-lg-3 mb25">

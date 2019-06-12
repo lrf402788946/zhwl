@@ -63,7 +63,8 @@
           @current-change="toSearch"
           :total="totalRow"
         ></el-pagination>
-        <b-modal id="Edit" title="修改支出单" ref="Edit" size="xl" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+
+        <el-dialog :visible.sync="dialog" title="修改支出单" :fullscreen="true" :close-on-click-modal="false">
           <div class="d-block text-center">
             <div class="row">
               <div class="col-lg-4 mb25">
@@ -79,22 +80,22 @@
                 <p>{{ form.slip_no }}</p>
               </div>
               <div class="col-lg-3 mb25">
-                <p class="marginBot5">税前应收金额</p>
+                <p class="marginBot5">税前应付金额</p>
                 <p>{{ allMoney.sq_ys ? allMoney.sq_ys : '0' }} 元</p>
               </div>
               <div class="col-lg-3 mb25">
-                <p class="marginBot5">税后应收金额</p>
+                <p class="marginBot5">税后应付金额</p>
                 <p>{{ allMoney.sh_ys ? allMoney.sh_ys : '0' }} 元</p>
               </div>
               <div class="col-lg-3 mb25">
-                <p class="marginBot5">税前实收金额</p>
+                <p class="marginBot5">税前实付金额</p>
                 <p>{{ allMoney.sq_ss ? allMoney.sq_ss : '0' }} 元</p>
               </div>
               <div class="col-lg-3 mb25">
-                <p class="marginBot5">税后实收金额</p>
+                <p class="marginBot5">税后实付金额</p>
                 <p>{{ allMoney.sh_ss ? allMoney.sh_ss : '0' }} 元</p>
               </div>
-              <div class="col-lg-4 mb25">
+              <!-- <div class="col-lg-4 mb25">
                 <p class="marginBot5">支出项</p>
                 <p>长途运费</p>
               </div>
@@ -105,7 +106,7 @@
               <div class="col-lg-4 mb25">
                 <p class="marginBot5">金额</p>
                 <p>0</p>
-              </div>
+              </div> -->
             </div>
           </div>
 
@@ -116,10 +117,10 @@
                 <th>供应商</th>
                 <th>合同</th>
                 <th>税率</th>
-                <th>税前应收金额</th>
-                <th>税后应收金额</th>
-                <th>税前实收金额</th>
-                <th>税后实收金额</th>
+                <th>税前应付金额</th>
+                <th>税后应付金额</th>
+                <th>税前实付金额</th>
+                <th>税后实付金额</th>
                 <th>备注</th>
               </tr>
               <tr v-for="(item, index) in subForm" :key="index">
@@ -231,7 +232,8 @@
               >
             </div>
           </div>
-        </b-modal>
+        </el-dialog>
+        <b-modal id="Edit" ref="Edit" size="xl" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close> </b-modal>
 
         <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
           <div class="d-block text-center">
@@ -286,6 +288,7 @@ export default {
         // cost_id: { required: true, message: '请选择支出项' },
         // out_price: { required: true, message: '请填写支出金额' },
       }),
+      dialog: false,
       rateList: [1, 1.03, 1.06, 1.1, 1.13],
     };
   },
@@ -310,7 +313,6 @@ export default {
     ]);
     let { data } = await this.getCostList({ skip: 0, limit: 10000 });
     data = data.filter(item => item.cost_type !== '0');
-    data = data.filter(item => item.cost_name !== '长途运费');
     this.$set(this, 'costList', data);
   },
   methods: {
@@ -445,7 +447,8 @@ export default {
     },
     //打开修改提示框
     async openUpdateAlert(index) {
-      this.$refs.Edit.show();
+      // this.$refs.Edit.show();
+      this.dialog = true;
       this.form = JSON.parse(JSON.stringify(this.list[index]));
       //使用接口请求这个订单所有的支出,赋值,判断权限是否允许更改
       //模拟假数据一条
@@ -479,7 +482,7 @@ export default {
     },
     //关闭弹框
     closeAlert() {
-      this.$refs.Edit.hide();
+      this.dialog = false;
       this.is_update = true;
       this.operateId = '';
       this.form = {};

@@ -42,30 +42,30 @@
           <tbody v-if="list.length > 0">
             <tr>
               <th>客户</th>
-              <th>项目名称</th>
               <th>合同编号</th>
               <th>甲方</th>
               <th>乙方</th>
               <th>合同周期</th>
               <th>结算方式</th>
               <th>结算周期</th>
-              <th>价格</th>
-              <th>税率</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ { data: clientList, searchItem: 'id', value: item.cus_id, label: 'name' } | getName }}</td>
-              <td>{{ item.item_name }}</td>
               <td>{{ item.pact_no }}</td>
               <td>{{ item.jf }}</td>
               <td>{{ item.yf }}</td>
               <td>{{ item.cycle }}</td>
               <td>{{ item.js_type }}</td>
               <td>{{ item.js_cycle }}</td>
-              <td>{{ item.price }}</td>
-              <td>{{ item.cess }}</td>
               <td>
                 <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">修&nbsp;&nbsp;改</b-button>
+                <b-button
+                  style="color:white; margin-right:5px;"
+                  @click="$router.push({ path: `/contract_project`, query: { id: item.id, pact_no: item.pact_no || `` } })"
+                >
+                  查看项目
+                </b-button>
                 <b-button variant="danger" style="color:white;" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
               </td>
             </tr>
@@ -97,8 +97,6 @@
               <tbody>
                 <tr>
                   <td>选择客户</td>
-                  <td>合同编号</td>
-                  <td>项目名称</td>
                 </tr>
                 <tr>
                   <td>
@@ -106,57 +104,30 @@
                       <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
                     </el-select>
                   </td>
+                </tr>
+                <tr>
+                  <td>合同编号</td>
+                  <td>合同周期</td>
+                </tr>
+                <tr>
                   <td><b-form-input v-model="form.pact_no"></b-form-input></td>
-                  <td><b-form-input v-model="form.item_name"></b-form-input></td>
+                  <td><b-form-input v-model="form.cycle"></b-form-input></td>
                 </tr>
                 <tr>
                   <td>甲方</td>
                   <td>乙方</td>
-                  <td>合同周期</td>
                 </tr>
                 <tr>
                   <td><b-form-input v-model="form.jf"></b-form-input></td>
                   <td><b-form-input v-model="form.yf"></b-form-input></td>
-                  <td><b-form-input v-model="form.cycle"></b-form-input></td>
                 </tr>
                 <tr>
                   <td>结算方式</td>
                   <td>结算周期</td>
-                  <td>税率</td>
                 </tr>
                 <tr>
                   <td><b-form-input v-model="form.js_type"></b-form-input></td>
                   <td><b-form-input v-model="form.js_cycle"></b-form-input></td>
-                  <td><b-form-input v-model="form.cess"></b-form-input></td>
-                </tr>
-              </tbody>
-            </table>
-            <table class="table table-bordered table-striped ">
-              <tbody>
-                <tr>
-                  <td>是否按辆份收费？</td>
-                  <td v-if="radio === '1'">发货方式</td>
-                  <td v-if="(radio === '1') & (form.send_type === '0')">计价方式</td>
-                  <td>单价</td>
-                </tr>
-                <tr>
-                  <td>
-                    <el-radio v-model="radio" label="1">否</el-radio>
-                    <el-radio v-model="radio" label="0">是</el-radio>
-                  </td>
-                  <td v-if="radio === '1'">
-                    <!-- 选择发货方式 -->
-                    <el-select v-model="form.send_type" class="marginBot" style="height:40px !important" filterable>
-                      <el-option v-for="(item, index) in deliveryList" :key="index" :label="item.name" :value="item.id"></el-option>
-                    </el-select>
-                  </td>
-                  <td v-if="(radio === '1') & (form.send_type === '0')">
-                    <!-- 选择计价方式 -->
-                    <el-select v-model="form.count_type" class="marginBot" style="height:40px !important" filterable>
-                      <el-option v-for="(item, index) in calculationList" :key="index" :label="item.name" :value="item.id"></el-option>
-                    </el-select>
-                  </td>
-                  <td><b-form-input v-model="form.price"></b-form-input></td>
                 </tr>
               </tbody>
             </table>
@@ -208,8 +179,6 @@
               <tbody>
                 <tr>
                   <td>选择客户</td>
-                  <td>合同编号</td>
-                  <td>项目名称</td>
                 </tr>
                 <tr>
                   <td>
@@ -217,57 +186,30 @@
                       <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
                     </el-select>
                   </td>
+                </tr>
+                <tr>
+                  <td>合同编号</td>
+                  <td>合同周期</td>
+                </tr>
+                <tr>
                   <td><b-form-input v-model="updateForm.pact_no"></b-form-input></td>
-                  <td><b-form-input v-model="updateForm.item_name"></b-form-input></td>
+                  <td><b-form-input v-model="updateForm.cycle"></b-form-input></td>
                 </tr>
                 <tr>
                   <td>甲方</td>
                   <td>乙方</td>
-                  <td>合同周期</td>
                 </tr>
                 <tr>
                   <td><b-form-input v-model="updateForm.jf"></b-form-input></td>
                   <td><b-form-input v-model="updateForm.yf"></b-form-input></td>
-                  <td><b-form-input v-model="updateForm.cycle"></b-form-input></td>
                 </tr>
                 <tr>
                   <td>结算方式</td>
                   <td>结算周期</td>
-                  <td>税率</td>
                 </tr>
                 <tr>
                   <td><b-form-input v-model="updateForm.js_type"></b-form-input></td>
                   <td><b-form-input v-model="updateForm.js_cycle"></b-form-input></td>
-                  <td><b-form-input v-model="updateForm.cess"></b-form-input></td>
-                </tr>
-              </tbody>
-            </table>
-            <table class="table table-bordered table-striped ">
-              <tbody>
-                <tr>
-                  <td>是否按辆份收费？</td>
-                  <td v-if="radio === '1'">发货方式</td>
-                  <td v-if="(radio === '1') & (updateForm.send_type === '0')">计价方式</td>
-                  <td>单价</td>
-                </tr>
-                <tr>
-                  <td>
-                    <el-radio v-model="radio" label="1">否</el-radio>
-                    <el-radio v-model="radio" label="0">是</el-radio>
-                  </td>
-                  <td v-if="radio === '1'">
-                    <!-- 选择发货方式 -->
-                    <el-select v-model="updateForm.send_type" class="marginBot" style="height:40px !important" filterable>
-                      <el-option v-for="(item, index) in deliveryList" :key="index" :label="item.name" :value="item.id"></el-option>
-                    </el-select>
-                  </td>
-                  <td v-if="(radio === '1') & (updateForm.send_type === '0')">
-                    <!-- 选择计价方式 -->
-                    <el-select v-model="updateForm.count_type" class="marginBot" style="height:40px !important" filterable>
-                      <el-option v-for="(item, index) in calculationList" :key="index" :label="item.name" :value="item.id"></el-option>
-                    </el-select>
-                  </td>
-                  <td><b-form-input v-model="updateForm.price"></b-form-input></td>
                 </tr>
               </tbody>
             </table>
@@ -304,7 +246,7 @@ import _ from 'lodash';
 export default {
   name: 'client',
   metaInfo: {
-    title: '合同管理',
+    title: '客户-合同管理',
   },
   components: {
     entrance,
@@ -324,17 +266,14 @@ export default {
       contractValidator: new Validator({
         cus_id: { required: true, message: '请选择此合同的客户' },
         pact_no: { type: 'string', required: true, message: '请填写合同编号' },
-        item_name: { type: 'string', required: true, message: '请填写项目名称' },
         jf: { type: 'string', required: true, message: '请填写甲方' },
         yf: { type: 'string', required: true, message: '请填写乙方' },
         cycle: { type: 'string', required: true, message: '请填写合同周期' },
         js_type: { type: 'string', required: true, message: '请填写结算方式' },
         js_cycle: { type: 'string', required: true, message: '请填写结算周期' },
-        price: { required: true, message: '请填写价格' },
-        cess: { required: true, message: '请填写税率' },
       }),
-      th: ['合同编号', '甲方', '乙方', '合同周期', '结算方式', '结算周期', '价格', '税率'],
-      filterVal: ['pact_no', 'jf', 'yf', 'cycle', 'js_type', 'js_cycle', 'price', 'cess'],
+      th: ['合同编号', '甲方', '乙方', '合同周期', '结算方式', '结算周期'],
+      filterVal: ['pact_no', 'jf', 'yf', 'cycle', 'js_type', 'js_cycle'],
       countNum: 0,
       addDialog: false,
       updateDialog: false,
@@ -367,7 +306,7 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let totalRow = await this.getContractList({ skip: skip, limit: this.limit, pact_no: this.select_pact_no, cus_id: this.select_cus_id });
+      let totalRow = await this.getContractList({ skip: skip, limit: this.limit, pact_no: this.select_pact_no, cus_id: this.select_cus_id, type: `0` });
       this.$set(this, 'list', this.contractList);
       this.$set(this, 'totalRow', totalRow);
     },
@@ -741,7 +680,7 @@ li {
 }
 </style>
 <style scoped>
-@import '../../../assets/style/Font-Awesome-master/css/font-awesome.css';
-@import '../../../assets/style/layout/base-Layout-bootstrap.css';
-@import '../../../assets/style/base-style-bootstrap.css';
+@import '../../../../assets/style/Font-Awesome-master/css/font-awesome.css';
+@import '../../../../assets/style/layout/base-Layout-bootstrap.css';
+@import '../../../../assets/style/base-style-bootstrap.css';
 </style>

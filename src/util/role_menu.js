@@ -102,7 +102,7 @@ export const BUSINESS = {
       uri: '/business.html#/out',
     },
     {
-      name: '运输管理',
+      name: '签收管理',
       uri: '/business.html#/transport',
     },
     {

@@ -71,6 +71,12 @@
               <td>{{ item.cess }}</td>
               <td>
                 <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">修&nbsp;&nbsp;改</b-button>
+                <b-button
+                  style="color:white; margin-right:5px;"
+                  @click="$router.push({ path: `/contract_project`, query: { id: item.id, pact_no: item.pact_no || `` } })"
+                >
+                  查看项目
+                </b-button>
                 <b-button variant="danger" style="color:white;" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
               </td>
             </tr>
@@ -291,7 +297,7 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let totalRow = await this.getContractList({ skip: skip, limit: this.limit, pact_no: this.select_pact_no, cus_id: this.select_cus_id });
+      let totalRow = await this.getContractList({ skip: skip, limit: this.limit, pact_no: this.select_pact_no, cus_id: this.select_cus_id, type: `1` });
       this.$set(this, 'list', this.contractList);
       this.$set(this, 'totalRow', totalRow);
     },

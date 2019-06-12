@@ -4,34 +4,45 @@
     <div class="base-form">
       <div class="form-inline">
         <div class="base-form-title" style="width:100%;">
-          <a class="base-margin-left-20">路线列表</a>
+          <a class="base-margin-left-20">项目: {{ itemName }}</a>
           <div class="button-table"></div>
         </div>
       </div>
       <div class="base-padding-20 base-bg-fff">
-        <table>
-          <tr>
-            <td>路线名称查询</td>
-            <td>起始地城市查询</td>
-            <td>目的地城市查询</td>
-          </tr>
-          <tr>
-            <td><b-form-input v-model="select_name" placeholder="输入路线名称"></b-form-input></td>
-            <td><b-form-input v-model="select_start_city" placeholder="输入起始地城市"></b-form-input></td>
-            <td><b-form-input v-model="select_end_city" placeholder="输入目的地城市"></b-form-input></td>
-          </tr>
-          <tr>
-            <td>
-              <b-button
-                variant="primary"
-                style="font-size: 14px !important; color: rgb(255, 255, 255) !important; width: 60% !important; padding: 5px 10px !important; margin-top:28px; margin-right: 0px !important;"
-                @click="searchButton()"
-                >点击查询</b-button
-              >
-            </td>
-          </tr>
-        </table>
-
+        <el-row>
+          <el-col :span="21">&nbsp;</el-col>
+          <el-col :span="3">
+            <b-button
+              @click="$router.go(-1)"
+              variant="primary"
+              style="font-size:14px !important; color:#efe !important; padding: 6px 12px !important;margin-bottom:2px !important;"
+            >
+              返回
+            </b-button>
+          </el-col>
+        </el-row>
+        <el-row style="margin-bottom:2%;">
+          <el-col :span="18">
+            <el-row>
+              <el-col :span="6" class="searchInput">路线名称查询</el-col>
+              <el-col :span="6" class="searchInput">起始地城市查询</el-col>
+              <el-col :span="6" class="searchInput">目的地城市查询</el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="6" class="searchInput"><b-form-input v-model="searchInfo.name" placeholder="输入路线名称"></b-form-input></el-col>
+              <el-col :span="6" class="searchInput"><b-form-input v-model="searchInfo.start_city" placeholder="输入起始地城市"></b-form-input></el-col>
+              <el-col :span="6" class="searchInput"><b-form-input v-model="searchInfo.end_city" placeholder="输入目的地城市"></b-form-input></el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="6">
+            <b-button
+              variant="primary"
+              style="font-size: 14px !important; color: rgb(255, 255, 255) !important; width: 60% !important; padding: 5px 10px !important; margin-top:28px; margin-right: 0px !important;"
+              @click="search('vague')"
+              >点击查询</b-button
+            >
+          </el-col>
+        </el-row>
         <div class="base-align-right" style="margin-bottom:20px;">
           <a
             class="btn btn-info base-margin-bottom"
@@ -39,7 +50,7 @@
             style="font-size:14px !important; color:#fff !important; padding: 6px 12px !important;"
             title=""
             role="button"
-            v-b-modal="'toAdd'"
+            @click="openAlert('add')"
           >
             <i class="base-margin-right-5 fa fa-plus-square"></i>添加路线
           </a>
@@ -65,8 +76,11 @@
               <td>{{ item.end_city }}</td>
               <td>{{ item.end_site }}</td>
               <td>
-                <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">修&nbsp;&nbsp;改</b-button>
-                <b-button variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
+                <b-button variant="primary" style="color:white;" @click="openAlert('update', index)">修&nbsp;&nbsp;改</b-button>
+                <b-button style="color:white; margin-right:5px;" @click="$router.push({ path: '/way', query: { id: item.id, name: item.name } })">
+                  添加方式
+                </b-button>
+                <b-button variant="danger" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button>
               </td>
             </tr>
           </tbody>
@@ -86,12 +100,9 @@
           @current-change="toSearch"
           :total="totalRow"
         ></el-pagination>
-        <b-modal id="toAdd" title="添加路线" ref="toAdd" hide-footer>
-          <p class="marginBot5">所属项目</p>
-          <b-form-select v-model="form.item_id" class="marginBot20">
-            <option :value="undefined" disabled>请选择起始地省份</option>
-            <option v-for="(item, index) in itemList" :key="index" :value="item.id">{{ item.item_name }}</option>
-          </b-form-select>
+
+        <el-dialog :title="dialogTitle" :visible.sync="dialog" width="70%">
+          <p class="marginBot5">所属项目: {{ itemName }}</p>
           <p class="marginBot5">路线名称</p>
           <b-form-input v-model="form.name" class="marginBot20" placeholder="请填写路线名称"></b-form-input>
           <p class="marginBot5">起始地省份</p>
@@ -104,7 +115,6 @@
             <option label="----------------------" :value="undefined" disabled></option>
             <option v-for="(item, index) in startCityList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
           </b-form-select>
-          <b-tooltip target="startCityTip" title="请选择起始地城市" placement="right"></b-tooltip>
           <p class="marginBot5">起始站点</p>
           <b-form-input v-model="form.start_site" class="marginBot20" placeholder="请填写起始站点"></b-form-input>
           <p class="marginBot5">目的地省份</p>
@@ -117,94 +127,23 @@
             <option label="----------------------" :value="undefined" disabled></option>
             <option v-for="(item, index) in endCityList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
           </b-form-select>
-          <b-tooltip target="endCityTip" title="请选择目的地城市" placement="right"></b-tooltip>
           <p class="marginBot5">目的站点</p>
           <b-form-input v-model="form.end_site" class="marginBot20" placeholder="请填写目的站点"></b-form-input>
           <b-button
             variant="secondary"
-            @click="form = { p_id: 0 }"
-            style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+            style="font-size:16px !important; margin-top:35px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+            @click="form = {}"
           >
-            重&nbsp;&nbsp;置
-          </b-button>
+            重&nbsp;&nbsp;置</b-button
+          >
           <b-button
+            style="font-size:16px !important; margin-top:35px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
             variant="primary"
-            @click="toValidate('add')"
-            style="font-size:16px !important; margin-top:25px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+            @click="toValidate()"
           >
-            保&nbsp;&nbsp;存
-          </b-button>
-        </b-modal>
-
-        <b-modal id="Edit" title="修改路线" ref="Edit" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
-          <p class="marginBot5">所属项目</p>
-          <b-form-select v-model="form.item_id" class="marginBot20">
-            <option :value="undefined" disabled>请选择起始地省份</option>
-            <option v-for="(item, index) in itemList" :key="index" :value="item.id">{{ item.item_name }}</option>
-          </b-form-select>
-          <p class="marginBot5">路线名称</p>
-          <b-form-input v-model="form.name" class="marginBot20" placeholder="请填写路线名称"></b-form-input>
-          <p class="marginBot5">起始地省份</p>
-          <b-form-select v-model="form.start_province" class="marginBot20">
-            <option :value="undefined" disabled>请选择起始地省份</option>
-            <option v-for="(item, index) in startProvinceList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
-          </b-form-select>
-          <p class="marginBot5">起始地城市</p>
-          <b-form-select v-model="form.start_city" class="marginBot20" id="startCityTip">
-            <option label="----------------------" :value="undefined" disabled></option>
-            <option v-for="(item, index) in startCityList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
-          </b-form-select>
-          <b-tooltip target="startCityTip" title="请选择起始地城市" placement="right"></b-tooltip>
-          <p class="marginBot5">起始站点</p>
-          <b-form-input v-model="form.start_site" class="marginBot20" placeholder="请填写起始站点"></b-form-input>
-          <p class="marginBot5">目的地省份</p>
-          <b-form-select v-model="form.end_province" class="marginBot20">
-            <option :value="undefined" disabled>请选择目的地省份</option>
-            <option v-for="(item, index) in endProvinceList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
-          </b-form-select>
-          <p class="marginBot5">目的地城市</p>
-          <b-form-select v-model="form.end_city" class="marginBot20" id="endCityTip">
-            <option label="----------------------" :value="undefined" disabled></option>
-            <option v-for="(item, index) in endCityList" :key="index" :value="item.city_name">{{ item.city_name }}</option>
-          </b-form-select>
-          <b-tooltip target="endCityTip" title="请选择目的地城市" placement="right"></b-tooltip>
-          <p class="marginBot5">目的站点</p>
-          <b-form-input v-model="form.end_site" class="marginBot20" placeholder="请填写目的站点"></b-form-input>
-          <b-button
-            variant="secondary"
-            @click="closeAlert()"
-            style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
+            保&nbsp;&nbsp;存</b-button
           >
-            返&nbsp;&nbsp;回
-          </b-button>
-          <b-button
-            variant="primary"
-            @click="toValidate('update')"
-            style="font-size:16px !important; margin-top:25px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-          >
-            修&nbsp;&nbsp;改
-          </b-button>
-        </b-modal>
-
-        <b-modal id="deleteAlert" title="确认删除" ref="deleteAlert" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
-          <div class="d-block text-center">
-            <b-alert variant="danger" show>确定删除该路线?</b-alert>
-          </div>
-          <b-button
-            variant="danger"
-            style="font-size:16px !important; margin-top:25px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-            @click="toDelete()"
-          >
-            删&nbsp;&nbsp;除
-          </b-button>
-          <b-button
-            variant="primary"
-            style="font-size:16px !important; margin-top:25px; float:right; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
-            @click="$refs.deleteAlert.hide(), (deleteItem = '')"
-          >
-            返&nbsp;&nbsp;回
-          </b-button>
-        </b-modal>
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -216,13 +155,14 @@ import Validator from 'async-validator';
 export default {
   name: 'dly_way',
   metaInfo: {
-    title: '线路管理',
+    title: '合同-线路管理',
   },
   components: {},
   data() {
     return {
       list: [],
       form: {},
+      searchInfo: {},
       startProvinceList: [],
       endProvinceList: [],
       startCityList: [],
@@ -244,7 +184,10 @@ export default {
         end_city: { required: true, message: '请填写目的地城市' },
         end_site: { required: true, message: '请填写目的站点' },
       }),
-      itemList: [],
+      itemName: this.$route.query.name || '',
+      dialog: false,
+      operateId: '',
+      dialogTitle: '',
     };
   },
   computed: {
@@ -272,116 +215,73 @@ export default {
   async created() {
     await this.search();
     let { data } = await this.getRegion({ pid: 1 });
+    console.log(data);
     this.$set(this, 'startProvinceList', data);
     this.$set(this, 'endProvinceList', data);
-    this.getListItem();
   },
   methods: {
-    ...mapActions(['getdly_wayList', 'dlywayOperation', 'adddly_wayList', 'getdly_wayListlike', 'getRegion', 'getItemList']),
-    async search() {
-      //查询方法
-      let skip = (this.currentPage - 1) * this.limit;
-      await this.getdly_wayList({ skip: skip, limit: this.limit });
-      console.log(this.dlyWayList);
-      this.$set(this, 'list', this.dlyWayList);
-    },
+    ...mapActions(['getRegion', 'item_getDlyList', 'item_dlyOperation']),
     toSearch(currentPage) {
       this.currentPage = currentPage;
-      if (this.is_title_search) {
-        this.titlesearch();
-      } else {
-        this.search();
-      }
+      this.search();
     },
-    async titlesearch() {
-      if (!this.is_title_search) {
-        this.is_title_search = true;
-        return;
+    //查询
+    async search(type) {
+      if (type === 'vague') {
+        this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.getdly_wayList();
-      if (result.data.msg === '成功') {
-        this.$set(this, 'list', result.data.List);
-        this.$set(this, 'totalRow', result.data.totalRow);
-        this.$set(this, 'countNum', result.data.countNum);
-      }
-      if (result.data.msg === '没有数据') {
-        this.list = '';
-        this.totalRow = 0;
-        this.countNum = 0;
-      }
-    },
-    async getListItem() {
-      let { result, data } = await this.getItemList({ skip: 0, limit: 10000, pact_id: '' });
+      let { result, data } = await this.item_getDlyList({ skip: skip, limit: this.limit, item_id: this.$route.query.id, ...this.searchInfo });
       if (result) {
-        this.$set(this, `itemList`, data.dataList);
+        this.$set(this, 'list', data.dlyWayList);
+        this.$set(this, 'totalRow', data.totalRow);
+      } else {
+        this.$set(this, 'list', []);
+        this.$set(this, 'totalRow', 0);
       }
-    },
-    //模糊查询按钮
-    async searchButton() {
-      this.currentPage = 1;
-      if (this.select_name === null) this.select_name = '';
-      if (this.select_start_city === null) this.select_start_city = '';
-      if (this.select_end_city === null) this.select_end_city = '';
-      let skip = (this.currentPage - 1) * this.limit;
-      await this.getdly_wayListlike({
-        skip: skip,
-        limit: this.limit,
-        select_name: this.select_name,
-        select_start_city: this.select_start_city,
-        select_end_city: this.select_end_city,
-      });
-      this.$set(this, 'list', this.dlyWayList);
     },
     //验证,因为添加和修改的验证内容都是一样的,所以用一个方法
-    async toValidate(type) {
+    async toValidate() {
+      this.form[`item_id`] = this.$route.query.id;
       this.mainValidator.validate(this.form, (errors, fields) => {
         if (errors) {
           return this.handleErrors(errors, fields);
         }
-        if (type === 'add') {
-          return this.add();
-        } else {
-          return this.update();
-        }
+        return this.operation();
       });
     },
-    //添加
-    async add() {
-      await this.adddly_wayList({ type: 'dlywaySave', data: this.form });
-      this.form = {};
-      this.$refs.toAdd.hide();
+    async operation() {
+      let has_id = Object.keys(this.form).filter(item => item === 'id').length;
+      let type;
+      has_id > 0 ? (type = 'dlywayEdit') : (type = 'dlywaySave');
+      let result = await this.item_dlyOperation({ data: this.form, type: type });
       this.search();
+      this.dialog = false;
     },
-    //打开删除提示框
-    openDeleteAlert(id) {
-      this.$refs.deleteAlert.show();
-      this.deleteItem = id;
-    },
-    //删除
-    async toDelete() {
-      await this.dlywayOperation({ type: 'dlywayDelete', data: this.deleteItem });
-      this.search();
-      this.deleteItem = '';
-      this.$refs.deleteAlert.hide();
-    },
-    //打开修改提示框
-    openUpdateAlert(index) {
-      this.$refs.Edit.show();
-      this.form = JSON.parse(JSON.stringify(this.list[index]));
-    },
-    //修改
-    async update() {
-      await this.dlywayOperation({ type: 'dlywayEdit', data: this.form });
-      this.form = {};
-      this.$refs.Edit.hide();
-      this.search();
-    },
-    //关闭弹框
-    closeAlert() {
-      this.$refs.Edit.hide();
-      this.operateId = '';
-      this.form = {};
+    async openAlert(type, item) {
+      if (type === 'update') {
+        this.dialog = true;
+        this.dialogTitle = '修改线路';
+        this.form = JSON.parse(JSON.stringify(this.list[item]));
+      } else if (type === 'add') {
+        this.dialog = true;
+        this.dialogTitle = '添加线路';
+        this.form = {};
+      } else if (type === 'delete') {
+        this.operateId = item;
+        await this.$confirm('确认要删除该项目吗?', `删除提示`, {
+          type: 'warning',
+        })
+          .then(async () => {
+            //确认删除
+            await this.item_dlyOperation({ data: { id: this.operateId }, type: 'dlywayDelete' });
+            this.search();
+          })
+          .catch(() => {
+            //不删除
+          });
+        return;
+      }
     },
     //验证错误
     handleErrors(errors, fields) {
@@ -399,6 +299,9 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.searchInput{
+  margin-right:2%;
+}
 .marginBot4 {
   margin-bottom: 4px;
 }

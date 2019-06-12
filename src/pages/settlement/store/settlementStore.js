@@ -154,7 +154,6 @@ export const actions = {
         return false;
       }
     } catch (err) {
-      commit(types.CLIENT_LIST, []);
       Message.error('接口加载失败');
       console.error(err);
     }

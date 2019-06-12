@@ -94,7 +94,7 @@
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">操作人：</div>
-            <b-form-input v-model="form.op"></b-form-input>
+            <b-form-input v-model="form.op" :disabled="true"></b-form-input>
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">线路：</div>
@@ -423,6 +423,7 @@ export default {
       };
       return newObject;
     });
+    this.$set(this.form, `op`, this.userInfo.login_id);
   },
   methods: {
     ...mapActions([
@@ -545,7 +546,7 @@ export default {
     },
     //获得运输单号
     async toGetTransportNo() {
-      let result = await this.getTransportNo({ car_no: 'transport-' });
+      let result = await this.getTransportNo();
       this.$set(this.form, 'transport_no', result);
     },
     //是否选择供应商
@@ -563,6 +564,7 @@ export default {
         //选择合同后的变化=>改税率
         case 'contract':
           this.$set(this.out, 'rate', this.contractList.filter(item => item.id === this.out.pact_id)[0].cess * 1);
+          this.changeMoney();
           break;
         default:
           break;
