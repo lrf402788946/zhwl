@@ -410,6 +410,11 @@ export default {
     async dialogRequest(item, type, need) {
       let info = { skip: 0, limit: 10000 };
       if (type === 'searchItem') {
+        let selected = this.contractList.filter(items => items.id === item);
+        if (selected.length > 0) {
+          this.form.rate = selected[0].cess;
+          this.$set(this.form, `rate`, selected[0].cess);
+        }
         let { result, data } = await this.getItemList({ ...info, pact_id: item });
         if (result) {
           this.$set(this, `itemList`, data.dataList);
@@ -431,7 +436,6 @@ export default {
       } else if (type === 'way') {
         let selected = this.wayList.filter(items => items.id === item);
         if (selected.length > 0) {
-          this.$set(this.form, `rate`, selected[0].cess);
           this.$set(this.form, `price`, selected[0].price);
           this.form.is_lf = selected[0].is_lf;
           this.formMoney();
@@ -521,13 +525,11 @@ export default {
         this.$set(this.form, `item_id`);
         delete this.form.item_id;
       }
-      this.$set(this.form, `rate`);
       this.$set(this.form, `price`);
       this.$set(this.form, `sq_ys`);
       this.$set(this.form, `sh_ys`);
       this.$set(this.form, `sq_ss`);
       this.$set(this.form, `sh_ss`);
-      delete this.form.rate;
       delete this.form.price;
       delete this.form.sq_ys;
       delete this.form.sh_ys;

@@ -192,12 +192,10 @@
           <div class="col-lg-3 mb25">
             <div class="lh44">税前应付金额</div>
             {{ out.sq_ys ? out.sq_ys : 0 }}
-            <!-- <b-form-input v-model="out.sq_ys" type="number" @change="changeMoney(index)"></b-form-input> -->
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">税前实付金额</div>
             {{ out.sq_ss ? out.sq_ss : 0 }}
-            <!-- <b-form-input v-model="out.sq_ss" type="number" :disabled="true" @change="changeMoney(index, 'shouldBefore')"></b-form-input> -->
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">税后应付金额</div>
@@ -207,7 +205,6 @@
           <div class="col-lg-3 mb25">
             <div class="lh44">税后实付金额</div>
             {{ out.sh_ss ? out.sh_ss : 0 }}
-            <!-- <b-form-input v-model="out.sh_ss" type="number" :disabled="out.type === 0" @change="changeMoney(index, 'shouldAfter')"></b-form-input> -->
           </div>
           <div class="col-lg-12 mb25">
             <div class="lh44">备注</div>
@@ -238,7 +235,7 @@
                       <td>{{ item.goods_num }}</td>
                       <td>{{ item.goods_weight }}</td>
                       <td>{{ item.goods_volume }}</td>
-                      <td><el-input v-model="item.price" type="number" @input="changeMoney('item')"></el-input></td>
+                      <td><el-input v-model="item.price" type="number" @input="changeMoney()"></el-input></td>
                       <!-- <td>
                         <el-select v-model="item.dly_way_id" placeholder="请选择线路">
                           <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"> </el-option>
@@ -511,9 +508,6 @@ export default {
         object.type = `${this.out.type}`;
         outForm.push(object);
       });
-      console.log(transportMain);
-      console.log(transportSub);
-      console.log(outForm);
       await this.transportSave({ form: transportMain, subForm: transportSub, outForm: outForm });
       this.$refs.addAlert.hide();
       this.form = {};
@@ -556,6 +550,8 @@ export default {
         case 'type':
           this.out.c_id = this.out.type === 0 ? 1 : '';
           if (this.out.type === 0) this.$set(this.out, `pact_id`, '');
+          this.$set(this.out, `rate`, 1);
+          this.changeMoney();
           break;
         //选择供应商后的变化=>查合同
         case 'client':
@@ -572,56 +568,18 @@ export default {
     },
     //计算价钱
     changeMoney(type) {
-      //判断供应商是不是自己
-      if (this.out.type === 0) {
-        console.log('in');
-        if (type === 'item') {
-          let price = parseFloat(
-            this.subForm.reduce((prev, cur) => {
-              return prev * 1 + (cur.price ? cur.price * 1 : 0);
-            }, 0)
-          );
-          this.$set(this.out, 'sq_ys', price);
-        }
-        this.$set(this.out, 'sq_ss', this.out.sq_ys);
-        this.$set(this.out, 'sh_ys', this.out.sq_ys);
-        this.$set(this.out, 'sh_ss', this.out.sq_ys);
-        return;
-      }
       //获取税率
       let rate = this.out.rate ? this.out.rate * 1 : ((this.out.rate = 1), this.out.rate * 1);
-      //判断是否是修改实付,修改实付不需要修改应付部分
-      if (typeof type !== 'string') {
-        //将税前应付*税率,赋给税后应付
-        this.$set(this.out, 'sh_ys', rate * 1 * this.out.sq_ys);
-        //将税前应付赋给税前实付
-        this.$set(this.out, 'sq_ss', this.out.sq_ys);
-        //将税前实付*税率,赋给税后实付
-        this.$set(this.out, 'sh_ss', rate * 1 * this.out.sq_ss);
-      } else if (type === 'shouldBefore') {
-        //将税前实付*税率,赋给税后实付
-        this.$set(this.out, 'sh_ss', rate * 1 * this.out.sq_ss);
-      } else if (type === 'shouldAfter') {
-        //修改税后实付,除法需要四舍五入
-        let newMoney = (this.out.sh_ss * 1) / (rate * 1);
-        newMoney = parseFloat(newMoney);
-        newMoney = Math.round(newMoney * 100) / 100;
-        this.$set(this.out, 'sq_ss', newMoney);
-      } else if (type === 'rate') {
-        //将税前应付*税率,赋给税后应付
-        this.$set(this.out, 'sh_ys', rate * 1 * this.out.sq_ys);
-        //将税前实付*税率,赋给税后实付
-        this.$set(this.out, 'sh_ss', rate * 1 * this.out.sq_ss);
-      } else if (type === 'item') {
-        //修改每个货物的运费,然后加和赋给实付
-        let price = parseFloat(
-          this.subForm.reduce((prev, cur) => {
-            return prev * 1 + (cur.price ? cur.price * 1 : 0);
-          }, 0)
-        );
-        this.$set(this.out, 'sq_ys', price * rate);
-        this.changeMoney();
-      }
+      //修改每个货物的运费,然后加和赋给实付
+      let price = parseFloat(
+        this.subForm.reduce((prev, cur) => {
+          return prev * 1 + (cur.price ? cur.price * 1 : 0);
+        }, 0)
+      );
+      this.$set(this.out, 'sq_ys', price);
+      this.$set(this.out, 'sq_ss', price);
+      this.$set(this.out, 'sh_ys', price * rate);
+      this.$set(this.out, 'sh_ss', price * rate);
     },
     //关闭弹框
     closeAlert(type) {
