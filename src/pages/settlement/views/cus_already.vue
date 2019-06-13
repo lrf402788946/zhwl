@@ -189,7 +189,7 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.clientAlreadyList({
+      let { result, data } = await this.clientAlreadyList({
         c_id: this.select_c_id,
         item_name: this.select_item_name,
         order_no: this.select_order_no,
@@ -198,7 +198,14 @@ export default {
         limit: this.limit,
         skip: skip,
       });
-      this.$set(this, 'list', result.dataList);
+      if (result && data.totalRow > 0) {
+        this.$set(this, 'list', data.dataList);
+        this.$set(this, 'totalRow', data.totalRow);
+      } else {
+        this.$message.warning('没有数据');
+        this.$set(this, 'list', []);
+        this.$set(this, 'totalRow', 0);
+      }
     },
     async openAlert() {
       if (this.order_loading_list <= 0) {

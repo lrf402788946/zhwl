@@ -130,8 +130,15 @@ export default {
         this.currentPage = 1;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.getGysCostList({ c_id: this.select_client_id, skip: 0, limit: this.limit });
-      this.$set(this, 'list', result.dataList);
+      let { result, data } = await this.getGysCostList({ c_id: this.select_client_id, skip: 0, limit: this.limit });
+      if (result && data.totalRow > 0) {
+        this.$set(this, 'list', data.dataList);
+        this.$set(this, 'totalRow', data.totalRow);
+      } else {
+        this.$message.warning('没有数据');
+        this.$set(this, 'list', []);
+        this.$set(this, 'totalRow', 0);
+      }
       this.select_client_id = '';
       this.select_xm_name = '';
       this.select_order_no = '';
