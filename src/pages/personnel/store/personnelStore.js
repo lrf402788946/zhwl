@@ -464,7 +464,7 @@ export const actions = {
   },
   //查询合同列表
   async getContractList({ commit }, payload) {
-    const { skip, limit, pact_no, cus_id, type = '' } = payload;
+    const { skip, limit, pact_no = '', cus_id = '', type = '' } = payload;
     try {
       let result = await this.$axios.get(`${api.contractList}?skip=${skip}&limit=${limit}&pact_no=${pact_no}&cus_id=${cus_id}&type=${type}`);
       if (result.rescode === '0') {
