@@ -136,6 +136,12 @@ export default {
         }
         this.$set(this, `billList`, billList);
         this.$set(this, `billInfo`, result.bill);
+        let client = {};
+        client.c_id = result.bill.c_id;
+        client.c_name = result.bill.c_name;
+        client.c_bank = result.bill.c_bank;
+        client.c_account = result.bill.c_account;
+        this.$set(this, `client`, client);
       } else {
         let { result, ids } = await this.gysGysSelectList({ ids: loading_list });
         let allMoney = result.countPrice;
