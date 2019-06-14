@@ -46,7 +46,6 @@
             <th><el-button size="medium" type="primary" @click="openAlert()">结&nbsp;&nbsp;算</el-button></th>
             <th>要求到达日期</th>
             <th>客户名</th>
-            <th>项目</th>
             <th>税后实收</th>
           </tr>
           <tr v-for="(item, index) in list" :key="index">
@@ -57,8 +56,11 @@
             </td>
             <td>{{ item.reach_time_hp }}</td>
             <td>{{ item.c_name }}</td>
-            <td>{{ item.item_name }}</td>
             <td>{{ item.sh_ss }}</td>
+          </tr>
+          <tr>
+            <td colspan="2" style="text-align:center;">税后实收合计:</td>
+            <td colspan="3" style="text-align:center;">{{ sh_total || 0 }} 元</td>
           </tr>
         </tbody>
         <tbody v-else>
@@ -166,6 +168,7 @@ export default {
       th: ['订单号', '费用项目', '税后应收', '税后实收'],
       filterVal: ['order_no', 'cost_name', 'sh_ys', 'sh_ss'],
       fileName: '',
+      sh_total: 0,
     };
   },
   async created() {
@@ -201,10 +204,15 @@ export default {
       if (result && data.totalRow > 0) {
         this.$set(this, 'list', data.dataList);
         this.$set(this, 'totalRow', data.totalRow);
+        let totalMoney = this.list.reduce((prev, curr) => {
+          return prev * 1 + curr.sh_ss * 1;
+        }, 0);
+        this.$set(this, `sh_total`, totalMoney);
       } else {
         this.$message.warning('没有数据');
         this.$set(this, 'list', []);
         this.$set(this, 'totalRow', 0);
+        this.$set(this, `sh_total`, 0);
       }
     },
     async openAlert() {
