@@ -17,7 +17,7 @@
             <p style="width: 39%;float: left;border-right: 1px solid #999;text-align: center;">部门经理</p>
             <p style="width: 60%;float: left;text-align: center;"></p>
           </div>
-          <div style="width: 33%;float: left;border-right: 1px solid #999;">
+          <div style="width: 33%;float: left;border-right: 0px solid #999;">
             <p style="width: 39%;float: left;border-right: 1px solid #999;text-align: center;">财务经理</p>
             <p style="width: 60%;float: left;text-align: center;"></p>
           </div>
@@ -136,6 +136,12 @@ export default {
         }
         this.$set(this, `billList`, billList);
         this.$set(this, `billInfo`, result.bill);
+        let client = {};
+        client.c_id = result.bill.c_id;
+        client.c_name = result.bill.c_name;
+        client.c_bank = result.bill.c_bank;
+        client.c_account = result.bill.c_account;
+        this.$set(this, `client`, client);
       } else {
         let { result, ids } = await this.gysGysSelectList({ ids: loading_list });
         let allMoney = result.countPrice;
