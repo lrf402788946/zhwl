@@ -17,7 +17,7 @@
             <p style="width: 39%;float: left;border-right: 1px solid #999;text-align: center;">部门经理</p>
             <p style="width: 60%;float: left;text-align: center;"></p>
           </div>
-          <div style="width: 33%;float: left;border-right: 1px solid #999;">
+          <div style="width: 33%;float: left;border-right: 0px solid #999;">
             <p style="width: 39%;float: left;border-right: 1px solid #999;text-align: center;">财务经理</p>
             <p style="width: 60%;float: left;text-align: center;"></p>
           </div>
