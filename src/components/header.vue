@@ -12,7 +12,8 @@
               <!-- <li><a @click="test()">test</a></li> -->
             </ul>
           </div>
-          <div class="col-lg-5"></div>
+          <div class="col-lg-2" style="padding-top: 1%;"><el-button type="primary" size="mini" @click="toDownload()">点击下载打印组件</el-button></div>
+          <div class="col-lg-3"></div>
           <div class="col-lg-1 newHeaderDiv">
             <el-dropdown>
               <el-badge :value="infoList.length" v-if="infoList.length <= 0" class="item" type="primary">
@@ -80,6 +81,8 @@ export default {
   },
   methods: {
     ...mapActions(['login', 'logout']),
+    //下载打印插件
+    toDownload() {},
     toLogout() {
       // sessionStorage.removeItem('userInfo');
       this.logout();
