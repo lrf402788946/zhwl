@@ -82,7 +82,9 @@ export default {
   methods: {
     ...mapActions(['login', 'logout']),
     //下载打印插件
-    toDownload() {},
+    async toDownload() {
+      window.location.href = 'http://10.16.11.186:80/upload/clodop_setup.zip';
+    },
     toLogout() {
       // sessionStorage.removeItem('userInfo');
       this.logout();
