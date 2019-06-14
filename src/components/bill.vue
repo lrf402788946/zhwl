@@ -7,80 +7,188 @@
         <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;padding-left: 34%;font-weight: bold;font-size: 17px;">
           请款审批单
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;padding-left: 33%;margin-top: 20px;margin-bottom: 20px;font-size: 14px;" v-html="getDate()">{{ getDate() }}</div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999; height:40px;line-height: 40px;width: 600px;">
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;padding-left: 33%;margin-top: 20px;margin-bottom: 20px;font-size: 14px;"
+          v-html="getDate()"
+        >
+          {{ getDate() }}
+        </div>
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999; height:40px;line-height: 40px;width: 600px;"
+        >
           <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 33%;float: left;border-right: 1px solid #999;">
-            <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 39%;float: left;border-right: 1px solid #999;text-align: center;">申请人</p>
+            <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 39%;float: left;border-right: 1px solid #999;text-align: center;">
+              申请人
+            </p>
             <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 60%;float: left;text-align: center;">{{ userInfo.user_name }}</p>
           </div>
           <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 33%;float: left;border-right: 1px solid #999;">
-            <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 39%;float: left;border-right: 1px solid #999;text-align: center;">部门经理</p>
+            <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 39%;float: left;border-right: 1px solid #999;text-align: center;">
+              部门经理
+            </p>
             <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 60%;float: left;text-align: center;"></p>
           </div>
           <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 33%;float: left;border-right: 0px solid #999;">
-            <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 39%;float: left;border-right: 1px solid #999;text-align: center;">财务经理</p>
+            <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 39%;float: left;border-right: 1px solid #999;text-align: center;">
+              财务经理
+            </p>
             <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 60%;float: left;text-align: center;"></p>
           </div>
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999; height:40px;line-height: 40px;width: 600px;">
-          <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:13%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;">总经理</p>
-          <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 77%;float: left;height:40px;padding-left: 2%;line-height: 40px;"></p>
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999; height:40px;line-height: 40px;width: 600px;"
+        >
+          <p
+            style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:13%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;"
+          >
+            总经理
+          </p>
+          <p
+            style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 77%;float: left;height:40px;padding-left: 2%;line-height: 40px;"
+          ></p>
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;">
-          <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;">款项 支付单位</p>
-          <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;">{{ billInfo.pay_unit }}</p>
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;"
+        >
+          <p
+            style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;"
+          >
+            款项 支付单位
+          </p>
+          <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;">
+            {{ billInfo.pay_unit }}
+          </p>
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;">
-          <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;">薪金类型</p>
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;"
+        >
+          <p
+            style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;"
+          >
+            薪金类型
+          </p>
           <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;">
-            <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 49%;float: left;border-right: 1px solid #999;" @click="payType('0')">
-              <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;float: left;padding-left: 70px;">{{ billInfo.pay_type === '0' ? '√' : '' }}现金</div>
+            <div
+              style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 49%;float: left;border-right: 1px solid #999;"
+              @click="payType('0')"
+            >
+              <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;float: left;padding-left: 70px;">
+                {{ billInfo.pay_type === '0' ? '√' : '' }}现金
+              </div>
             </div>
-            <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 49%;float: left;border-right: 1px solid #999;border-right: none !important;" @click="payType('1')">
-              <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;float: left;padding-left: 70px;">{{ billInfo.pay_type === '1' ? '√' : '' }}银行汇款</div>
+            <div
+              style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 49%;float: left;border-right: 1px solid #999;border-right: none !important;"
+              @click="payType('1')"
+            >
+              <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;float: left;padding-left: 70px;">
+                {{ billInfo.pay_type === '1' ? '√' : '' }}银行汇款
+              </div>
             </div>
           </div>
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;">
-          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 13%;float: left;border-right: 1px solid #999;text-align: center;">序号</div>
-          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 66%;float: left;border-right: 1px solid #999;text-align: center;">用途</div>
-          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 13%;float: left;text-align: center;margin-left:20px;">金额(税后)</div>
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;"
+        >
+          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 13%;float: left;border-right: 1px solid #999;text-align: center;">
+            序号
+          </div>
+          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 66%;float: left;border-right: 1px solid #999;text-align: center;">
+            用途
+          </div>
+          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 13%;float: left;text-align: center;margin-left:20px;">
+            金额(税后)
+          </div>
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;" v-for="(item, index) in billList" :key="index">
-          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 13%;float: left;border-right: 1px solid #999;text-align: center;">{{ index + 1 }}</div>
-          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 66%;float: left;border-right: 1px solid #999;text-align: center;">{{ item.cost_name }}</div>
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;"
+          v-for="(item, index) in billList"
+          :key="index"
+        >
+          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 13%;float: left;border-right: 1px solid #999;text-align: center;">
+            {{ index + 1 }}
+          </div>
+          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 66%;float: left;border-right: 1px solid #999;text-align: center;">
+            {{ item.cost_name }}
+          </div>
           <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 13%;float: left;text-align: center;">{{ item.sh_ss }}.00</div>
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;">
-          <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;">合计（小写）</p>
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;"
+        >
+          <p
+            style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;"
+          >
+            合计（小写）
+          </p>
           <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;">
             ￥：<span style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;padding: 0 5px;">{{ billInfo.count_price }}.00元</span>
           </div>
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999; height:40px;line-height: 40px;width: 600px;">
-          <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;">付款金额（大写）</p>
-          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;">￥：{{ billInfo.count_price_up }}元整</div>
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999; height:40px;line-height: 40px;width: 600px;"
+        >
+          <p
+            style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;"
+          >
+            付款金额（大写）
+          </p>
+          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;">
+            ￥：{{ billInfo.count_price_up }}元整
+          </div>
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;">
-          <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;">收款单位（全称）</p>
-          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;">{{ client.c_name }}</div>
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;"
+        >
+          <p
+            style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;"
+          >
+            收款单位（全称）
+          </p>
+          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;">
+            {{ client.c_name }}
+          </div>
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;">
-          <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;">开户行</p>
-          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;">{{ client.c_bank }}</div>
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height:40px;line-height: 40px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;"
+        >
+          <p
+            style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;"
+          >
+            开户行
+          </p>
+          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;">
+            {{ client.c_bank }}
+          </div>
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999; height:40px;line-height: 40px;width: 600px;">
-          <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;">账号</p>
-          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;">{{ client.c_account }}</div>
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999; height:40px;line-height: 40px;width: 600px;"
+        >
+          <p
+            style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;"
+          >
+            账号
+          </p>
+          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;">
+            {{ client.c_account }}
+          </div>
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height: 250px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;">
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999;height: 250px;width: 600px;margin-bottom: 0 !important;border-bottom: none !important;"
+        >
           <span style="padding: 0;margin: 0;list-style-type: none;text-decoration: none; padding:8px 10px;">粘贴处（可付背面）</span>
         </div>
-        <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999; height:40px;line-height: 40px;width: 600px;">
-          <p style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;">附原始账单张数</p>
-          <div style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;"></div>
+        <div
+          style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;margin-bottom: 8px;border: 1px solid #999; height:40px;line-height: 40px;width: 600px;"
+        >
+          <p
+            style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width:33%;float: left;text-align: center;border-right: 1px solid #999;height:40px;line-height: 40px;"
+          >
+            附原始账单张数
+          </p>
+          <div
+            style="padding: 0;margin: 0;list-style-type: none;text-decoration: none;width: 64%;float: left;height:40px;padding-left: 2%;line-height: 40px;"
+          ></div>
         </div>
-        
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialog = false">返回</el-button>
@@ -92,7 +200,7 @@
 
 <script>
 import { mapActions, mapState, mapMutations } from 'vuex';
-import {getLodop} from '../util/LodopFuncs';
+import { getLodop } from '../util/LodopFuncs';
 export default {
   name: 'bill',
   components: {},
@@ -171,13 +279,13 @@ export default {
     },
     async toPrint() {
       //this.$print(this.$refs.print);
-      let  LODOP = getLodop();
-      LODOP.PRINT_INIT("订货单");
-      LODOP.SET_PRINT_STYLE("FontSize", 18);
-      LODOP.SET_PRINT_STYLE("Bold", 1);
-      
-      LODOP.ADD_PRINT_HTM(10, 100, 800, 1000,document.getElementById("printDiv").innerHTML);
-//        LODOP.PRINT();
+      let LODOP = getLodop();
+      LODOP.PRINT_INIT('订货单');
+      LODOP.SET_PRINT_STYLE('FontSize', 18);
+      LODOP.SET_PRINT_STYLE('Bold', 1);
+
+      LODOP.ADD_PRINT_HTM(10, 100, 800, 1000, document.getElementById('printDiv').innerHTML);
+      //        LODOP.PRINT();
       LODOP.PREVIEW();
       if (!this.routerName.includes('already')) {
         let form = JSON.parse(JSON.stringify(this.billInfo));
@@ -193,8 +301,6 @@ export default {
         form.out_price = out_price;
         form = Object.assign(form, this.client);
         await this.gysEditAndPrint({ form: form });
-
-        
       }
     },
     payType(data) {
@@ -321,4 +427,3 @@ export default {
   },
 };
 </script>
-
