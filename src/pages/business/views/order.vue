@@ -113,7 +113,7 @@
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">操作人：</div>
-            <b-form-input v-model="form.login_id" placeholder="操作人"></b-form-input>
+            <b-form-input v-model="form.login_id" placeholder="操作人" :disabled="true"></b-form-input>
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">客户:</div>

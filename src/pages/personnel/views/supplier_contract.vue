@@ -50,25 +50,23 @@
             <tr>
               <th>供应商</th>
               <th>合同编号</th>
+              <th>税率</th>
               <th>甲方</th>
               <th>乙方</th>
               <th>合同周期</th>
               <th>结算方式</th>
               <th>结算周期</th>
-              <th>价格</th>
-              <th>税率</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ { data: clientList, searchItem: 'id', value: item.cus_id, label: 'name' } | getName }}</td>
               <td>{{ item.pact_no }}</td>
+              <td>{{ item.cess }}</td>
               <td>{{ item.jf }}</td>
               <td>{{ item.yf }}</td>
               <td>{{ item.cycle }}</td>
               <td>{{ item.js_type }}</td>
               <td>{{ item.js_cycle }}</td>
-              <td>{{ item.price }}</td>
-              <td>{{ item.cess }}</td>
               <td>
                 <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">修&nbsp;&nbsp;改</b-button>
                 <b-button
@@ -100,29 +98,27 @@
       </div>
     </div>
     <!--添加-->
-    <b-modal id="toAdd" title="添加合同" ref="toAdd" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
+    <b-modal id="toAdd" title="添加合同" ref="toAdd" hide-footer>
       <div style="margin-bottom: 7px;">选择供应商:</div>
       <el-select class="marginBot" style="height:40px !important" v-model="form.cus_id" filterable placeholder="请选择供应商">
         <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
       </el-select>
+      <div style="margin-bottom: 7px;">税率:</div>
+      <el-tooltip class="item" effect="dark" content="请填写1.X,如:1/1.04" placement="top">
+        <b-form-input v-model="form.cess"></b-form-input>
+      </el-tooltip>
       <div style="margin-bottom: 7px;">合同编号:</div>
       <b-form-input v-model="form.pact_no"></b-form-input>
-      <div style="margin-bottom: 7px;">项目名称:</div>
-      <b-form-input v-model="form.item_name"></b-form-input>
+      <div style="margin-bottom: 7px;">合同周期:</div>
+      <b-form-input v-model="form.cycle"></b-form-input>
       <div style="margin-bottom: 7px;">甲方:</div>
       <b-form-input v-model="form.jf"></b-form-input>
       <div style="margin-bottom: 7px;">乙方:</div>
       <b-form-input v-model="form.yf"></b-form-input>
-      <div style="margin-bottom: 7px;">合同周期:</div>
-      <b-form-input v-model="form.cycle"></b-form-input>
       <div style="margin-bottom: 7px;">结算方式:</div>
       <b-form-input v-model="form.js_type"></b-form-input>
       <div style="margin-bottom: 7px;">结算周期:</div>
       <b-form-input v-model="form.js_cycle"></b-form-input>
-      <div style="margin-bottom: 7px;">价格:</div>
-      <b-form-input v-model="form.price"></b-form-input>
-      <div style="margin-bottom: 7px;">税率:</div>
-      <b-form-input v-model="form.cess"></b-form-input>
       <b-button
         variant="secondary"
         style="font-size:16px !important; margin-top:35px; padding:6px 80px !important;margin-bottom:30px !important;margin-right:0 !important;"
@@ -170,12 +166,18 @@
             </el-select>
           </div>
           <div class="col-lg-12 marginBot4">
+            <p class="marginBot4">税率</p>
+            <el-tooltip class="item" effect="dark" content="请填写1.X,如:1/1.04" placement="top">
+              <b-form-input v-model="updateForm.cess"></b-form-input>
+            </el-tooltip>
+          </div>
+          <div class="col-lg-12 marginBot4">
             <p class="marginBot4">合同编号</p>
             <b-form-input v-model="updateForm.pact_no"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">项目名称</p>
-            <b-form-input v-model="updateForm.item_name"></b-form-input>
+            <p class="marginBot4">合同周期</p>
+            <b-form-input v-model="updateForm.cycle"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
             <p class="marginBot4">甲方</p>
@@ -186,24 +188,12 @@
             <b-form-input v-model="updateForm.yf"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">合同周期</p>
-            <b-form-input v-model="updateForm.cycle"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
             <p class="marginBot4">结算方式</p>
             <b-form-input v-model="updateForm.js_type"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
             <p class="marginBot4">结算周期</p>
             <b-form-input v-model="updateForm.js_cycle"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">价格</p>
-            <b-form-input v-model="updateForm.price"></b-form-input>
-          </div>
-          <div class="col-lg-12 marginBot4">
-            <p class="marginBot4">税率</p>
-            <b-form-input v-model="updateForm.cess"></b-form-input>
           </div>
           <div class="col-lg-12 marginBot4">
             <b-button
@@ -257,16 +247,13 @@ export default {
       select_cus_id: '',
       select_pact_no: '',
       contractValidator: new Validator({
-        cus_id: { required: true, message: '请选择此合同的客户' },
+        cus_id: { required: true, message: '请选择此合同的供应商' },
         pact_no: { type: 'string', required: true, message: '请填写合同编号' },
-        item_name: { type: 'string', required: true, message: '请填写项目名称' },
         jf: { type: 'string', required: true, message: '请填写甲方' },
         yf: { type: 'string', required: true, message: '请填写乙方' },
         cycle: { type: 'string', required: true, message: '请填写合同周期' },
         js_type: { type: 'string', required: true, message: '请填写结算方式' },
         js_cycle: { type: 'string', required: true, message: '请填写结算周期' },
-        price: { required: true, message: '请填写价格' },
-        cess: { required: true, message: '请填写税率' },
       }),
       th: ['合同编号', '甲方', '乙方', '合同周期', '结算方式', '结算周期', '价格', '税率'],
       filterVal: ['pact_no', 'jf', 'yf', 'cycle', 'js_type', 'js_cycle', 'price', 'cess'],

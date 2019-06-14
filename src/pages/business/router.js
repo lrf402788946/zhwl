@@ -10,6 +10,7 @@ import split_cargo from './views/split_cargo.vue';
 import cost from './views/cost.vue';
 import out from './views/out.vue';
 import in_page from './views/in.vue';
+import newIn from './views/newIn.vue';
 import toLogin from '@/components/toLogin.vue';
 
 Vue.use(Router);
@@ -65,6 +66,11 @@ const router = new Router({
           path: '/in_page',
           name: 'in_page',
           component: in_page,
+        },
+        {
+          path: '/newIn',
+          name: 'newIn',
+          component: newIn,
         },
       ],
     },

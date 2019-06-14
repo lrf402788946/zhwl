@@ -66,48 +66,34 @@
 
         <el-dialog :visible.sync="dialog" title="修改支出单" :fullscreen="true" :close-on-click-modal="false">
           <div class="d-block text-center">
-            <div class="row">
-              <div class="col-lg-4 mb25">
-                <p class="marginBot5">流水号</p>
-                <p>{{ form.what_no }}</p>
-              </div>
-              <div class="col-lg-4 mb25">
-                <p class="marginBot5">订单号</p>
-                <p>{{ form.order_no }}</p>
-              </div>
-              <div class="col-lg-4 mb25">
-                <p class="marginBot5">拆分单号</p>
-                <p>{{ form.slip_no }}</p>
-              </div>
-              <div class="col-lg-3 mb25">
-                <p class="marginBot5">税前应付金额</p>
-                <p>{{ allMoney.sq_ys ? allMoney.sq_ys : '0' }} 元</p>
-              </div>
-              <div class="col-lg-3 mb25">
-                <p class="marginBot5">税后应付金额</p>
-                <p>{{ allMoney.sh_ys ? allMoney.sh_ys : '0' }} 元</p>
-              </div>
-              <div class="col-lg-3 mb25">
-                <p class="marginBot5">税前实付金额</p>
-                <p>{{ allMoney.sq_ss ? allMoney.sq_ss : '0' }} 元</p>
-              </div>
-              <div class="col-lg-3 mb25">
-                <p class="marginBot5">税后实付金额</p>
-                <p>{{ allMoney.sh_ss ? allMoney.sh_ss : '0' }} 元</p>
-              </div>
-              <!-- <div class="col-lg-4 mb25">
-                <p class="marginBot5">支出项</p>
-                <p>长途运费</p>
-              </div>
-              <div class="col-lg-4 mb25">
-                <p class="marginBot5">供应商</p>
-                <p>{{ { data: clientList, searchItem: 'id', value: form.c_id, label: 'name' } | getName }}</p>
-              </div>
-              <div class="col-lg-4 mb25">
-                <p class="marginBot5">金额</p>
-                <p>0</p>
-              </div> -->
-            </div>
+            <table class="table table-bordered table-striped ">
+              <tbody>
+                <tr>
+                  <th style="width:10%">流水号</th>
+                  <th style="width:15%">订单号</th>
+                </tr>
+                <tr>
+                  <td>{{ form.serial_num }}</td>
+                  <td>{{ form.order_no }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <table class="table table-bordered table-striped ">
+              <tbody>
+                <tr>
+                  <th style="width:10%">税前应付金额</th>
+                  <th style="width:15%">税后应付金额</th>
+                  <th style="width:15%">税前实付金额</th>
+                  <th style="width:15%">税后实付金额</th>
+                </tr>
+                <tr>
+                  <td>{{ allMoney.sq_ys ? allMoney.sq_ys : '0' }} 元</td>
+                  <td>{{ allMoney.sh_ys ? allMoney.sh_ys : '0' }} 元</td>
+                  <td>{{ allMoney.sq_ss ? allMoney.sq_ss : '0' }} 元</td>
+                  <td>{{ allMoney.sh_ss ? allMoney.sh_ss : '0' }} 元</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           <table class="table table-bordered table-striped ">
@@ -464,9 +450,10 @@ export default {
           this.getContract(i);
         }
         this.computedAllMoney();
-      } else {
-        this.subForm.push({ rate: 1, sq_ys: 0, sq_ss: 0, sh_ss: 0, sh_ys: 0 });
       }
+      //  else {
+      //   this.subForm.push({ rate: 1, sq_ys: 0, sq_ss: 0, sh_ss: 0, sh_ys: 0 });
+      // }
     },
     //修改
     async update() {

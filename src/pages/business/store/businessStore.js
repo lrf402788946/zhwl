@@ -246,6 +246,20 @@ export const actions = {
       console.error(error);
     }
   },
+  //整合收入的添加修改
+  async toInCome({ commit }, { data, main_id, type }) {
+    try {
+      let result = await this.$axios.post(_.get(api, type), { data: data, main_id: main_id });
+      if (result.rescode === '0') {
+        Message.success('操作成功');
+      } else {
+        Message.error('操作失败');
+      }
+    } catch (error) {
+      Message.error('接口加载失败');
+      console.error(error);
+    }
+  },
   //添加拆分的收入
   async orderIncome({ commit }, { main_id, data }) {
     try {

@@ -30,8 +30,7 @@
             <tr>
               <th>方式名称</th>
               <th>价格</th>
-              <th>税率</th>
-              <th>是否辆份收费</th>
+              <th>是否量份收费</th>
               <th>发货方式</th>
               <th>计算方式</th>
               <th>操作时间</th>
@@ -40,7 +39,6 @@
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.type_name }}</td>
               <td>{{ item.price }}</td>
-              <td>{{ item.cess }}</td>
               <td>{{ item.is_lf === `0` ? '是' : '否' }}</td>
               <td>{{ item.send_type === `0` ? '零担' : '整车' }}</td>
               <td>{{ item.count_type === `0` ? '按体积' : '按重量' }}</td>
@@ -85,13 +83,7 @@
             <el-col><b-form-input v-model="form.price"></b-form-input></el-col>
           </el-row>
           <el-row style="margin-bottom:1%;">
-            <el-col :span="4">税率:</el-col>
-            <el-tooltip class="item" effect="dark" content="请填写1.X,如:1/1.04" placement="top">
-              <el-col><b-form-input v-model="form.cess"></b-form-input></el-col>
-            </el-tooltip>
-          </el-row>
-          <el-row style="margin-bottom:1%;">
-            <el-col :span="4">是否辆份收费:</el-col>
+            <el-col :span="4">是否量份收费:</el-col>
             <el-col>
               <el-radio v-model="form.is_lf" :label="`0`" border>是</el-radio>
               <el-radio v-model="form.is_lf" :label="`1`" border>否</el-radio>
@@ -154,7 +146,7 @@ export default {
         type_name: { required: true, message: '请填写方式名称' },
         price: { required: true, message: '请填写价格' },
         cess: { required: true, message: '请填写方税率' },
-        is_lf: { required: true, message: '请选择是否为辆份收费' },
+        is_lf: { required: true, message: '请选择是否为量份收费' },
         dly_way_id: { required: true, message: '此处为系统bug,若出现请联系' },
       }),
       subValidator: new Validator({

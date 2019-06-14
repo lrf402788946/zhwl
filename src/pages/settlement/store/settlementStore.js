@@ -55,7 +55,7 @@ export const actions = {
     try {
       let result = await this.$axios.get(`${api.gysCostList}?skip=0&limit=10000&c_id=${c_id}&skip=${skip}&limit=${limit}`);
       if (result.rescode === '0') {
-        return result;
+        return { result: true, data: result };
       } else {
         return false;
       }
@@ -109,7 +109,7 @@ export const actions = {
     try {
       let result = await this.$axios.get(`${api.gysAlreadyList}?skip=0&limit=10000&c_id=${c_id}&skip=${skip}&limit=${limit}`);
       if (result.rescode === '0') {
-        return result;
+        return { result: true, data: result };
       } else {
         return false;
       }
@@ -149,7 +149,7 @@ export const actions = {
         `${api.clientList}?c_id=${c_id}&item_name=${item_name}&order_no=${order_no}&startTime=${startTime}&endTime=${endTime}&skip=${skip}&limit=${limit}`
       );
       if (result.rescode === '0') {
-        return result;
+        return { result: true, data: result };
       } else {
         return false;
       }
@@ -211,7 +211,7 @@ export const actions = {
         `${api.clientList}?c_id=${c_id}&item_name=${item_name}&order_no=${order_no}&startTime=${startTime}&endTime=${endTime}&skip=${skip}&limit=${limit}`
       );
       if (result.rescode === '0') {
-        return result;
+        return { result: true, data: result };
       } else {
         return false;
       }
