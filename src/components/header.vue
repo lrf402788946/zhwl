@@ -88,7 +88,7 @@ export default {
     toLogout() {
       // sessionStorage.removeItem('userInfo');
       this.logout();
-      window.location.href = '/';
+      window.location.href = 'zhwl/login.html';
     },
     loginOrNot() {
       this.login();
