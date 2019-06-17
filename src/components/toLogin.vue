@@ -11,7 +11,7 @@ export default {
   },
   computed: {},
   created() {
-    window.location.href = '/';
+    window.location.href = '/login.html';
   },
   methods: {},
 };
