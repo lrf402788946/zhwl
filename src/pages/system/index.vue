@@ -5,7 +5,7 @@
       <div class="base-main" id="base-main">
         <sideMenu style="float:left;"></sideMenu>
         <div id="base-main-right" class="base-main-right">
-          <router-view />
+          <router-view :key="key" />
         </div>
       </div>
     </div>
@@ -25,6 +25,11 @@ export default {
   components: {
     Header,
     sideMenu,
+  },
+  computed: {
+    key() {
+      return this.$route.path + Math.random();
+    },
   },
   mounted() {
     $('#base-main').height($(window).height() - 60);

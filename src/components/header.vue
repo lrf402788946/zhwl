@@ -8,7 +8,7 @@
         <div class="row">
           <div class="col-lg-3">
             <ul class="top-nav-ul">
-              <li><a href="/system.html#/">首 &nbsp;&nbsp; 页</a></li>
+              <li><a href="index.html">首 &nbsp;&nbsp; 页</a></li>
               <!-- <li><a @click="test()">test</a></li> -->
             </ul>
           </div>
