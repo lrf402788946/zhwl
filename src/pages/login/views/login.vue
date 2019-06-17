@@ -53,7 +53,7 @@ export default {
       if (this.form.login_id && this.form.password) {
         let result = await this.login({ data: this.form });
         if (result) {
-          window.location.href = 'system.html';
+          window.location.href = 'index.html';
         }
       }
     },
