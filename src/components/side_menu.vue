@@ -1,6 +1,6 @@
 <template lang="html">
   <div id="sideMenu" style="height: 100vh; display: block; background: #1c2b36;overflow-y: scroll !important;" class="rowBar">
-    <div class="base-main-left" id="menuBox">
+    <div class="base-main-left" id="menuBox" style="text-align: left;">
       <el-col :span="24" style="margin-bottom: 70px;">
         <span class="title">操作面板</span>
         <el-menu class="el-menu-vertical-demo" background-color="#1c2b36" text-color="#7ba0bb" active-text-color="#ffd04b" :unique-opened="true">

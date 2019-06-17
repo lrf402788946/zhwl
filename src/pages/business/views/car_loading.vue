@@ -343,6 +343,40 @@
         >返&nbsp;&nbsp;回</b-button
       >
     </b-modal>
+    <el-dialog :visible.sync="printDialog" title="发车单" width="60%" close-on-click-modal close-on-press-escape>
+      <div id="printDiv">
+        <test></test>
+        <!-- <div style="">
+          <div style="font-size:20px;font-weight:700;">
+            运输单
+          </div>
+          <div style="text-align:center;">
+            <table style="width: -webkit-fill-available;">
+              <tbody>
+                <tr>
+                  <th colspan="2">运输单号</th>
+                  <th colspan="2">发货日期</th>
+                </tr>
+                <tr>
+                  <td colspan="2">{{ form.transport_no || 'none' }}</td>
+                  <td colspan="2">{{ form.send_time || 'none' }}</td>
+                </tr>
+                <tr>
+                  <th colspan="4">运输线路内容</th>
+                </tr>
+                <tr>
+                  <td colspan="4">{{ form.content || 'none' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div> -->
+      </div>
+      <div slot="footer" class="dialog-footer" style="text-align:center;">
+        <el-button @click="printDialog = false" style="margin-right:15%;">返回</el-button>
+        <el-button type="primary" @click="toPrint()">打印</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -350,12 +384,17 @@
 import { mapActions, mapState } from 'vuex';
 import Validator from 'async-validator';
 import _ from 'lodash';
+import { getLodop } from '@/util/LodopFuncs';
 import { throws } from 'assert';
+import test from './test.vue';
 //import exportExcel from '@/components/exportExcel.vue';
 export default {
   name: 'car_loading',
   metaInfo: {
     title: '装车管理',
+  },
+  components: {
+    test,
   },
   data() {
     return {
@@ -384,6 +423,7 @@ export default {
       rateList: [1, 1.03, 1.06, 1.1, 1.13],
       orderList: {},
       splitForm: [],
+      printDialog: false,
     };
   },
   computed: {
@@ -508,6 +548,9 @@ export default {
         object.type = `${this.out.type}`;
         outForm.push(object);
       });
+      // console.log(transportMain);
+      // console.log(transportSub);
+      // console.log(outForm);
       await this.transportSave({ form: transportMain, subForm: transportSub, outForm: outForm });
       this.$refs.addAlert.hide();
       this.form = {};
@@ -515,6 +558,16 @@ export default {
       this.out = { rate: 1 };
       this.order_loading_list = [];
       this.search();
+    },
+    async toPrint() {
+      let LODOP = getLodop();
+      LODOP.PRINT_INIT('订货单');
+      LODOP.SET_PRINT_STYLE('FontSize', 18);
+      LODOP.SET_PRINT_STYLE('Bold', 1);
+
+      LODOP.ADD_PRINT_HTM(10, 100, 800, 1000, document.getElementById('printDiv').innerHTML);
+      //        LODOP.PRINT();
+      LODOP.PREVIEW();
     },
     //打开与关闭修改和删除的弹框
     async openAlert() {
