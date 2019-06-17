@@ -6,7 +6,7 @@ import { Message } from 'element-ui';
 store.dispatch('login');
 let userInfo = store.state.publics.userInfo;
 let userRoleList = store.state.publics.userRoleList;
-process.env.NODE_ENV === 'production' ? (axios.defaults.baseURL = 'http://192.168.1.217') : '';
+process.env.NODE_ENV === 'production' ? (axios.defaults.baseURL = 'http://localhost') : '';
 axios.defaults.headers.post['Content-Type'] = 'multipart/form-data';
 
 axios.interceptors.request.use(
