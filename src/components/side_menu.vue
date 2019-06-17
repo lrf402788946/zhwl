@@ -9,7 +9,7 @@
               <i class="fa-stack fa fa-cogs"></i>
               <span>{{ item.name }}</span>
             </template>
-            <a v-for="(menu_item, menu_index) in item.menu" :key="menu_index" :href="menu_item.uri">
+            <a v-for="(menu_item, menu_index) in item.menu" :key="menu_index" @click="turnTo(menu_item.uri)">
               <el-menu-item :index="`${index}-${menu_index}`">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ menu_item.name }}</el-menu-item>
             </a>
           </el-submenu>
@@ -44,6 +44,9 @@ export default {
     this.menuList();
   },
   methods: {
+    turnTo(uri) {
+      window.location.href = uri;
+    },
     menuList() {
       this.menu.push(SYSTEM);
       this.menu.push(PERSONNEL);
@@ -52,48 +55,6 @@ export default {
       this.menu.push(SETTLEMENT);
       this.menu.push(SEARCH);
     },
-    // menuList() {
-    //   let newMenu = [];
-    //   if (this.userRoleList) {
-    //     for (const item of this.userRoleList) {
-    //       if (item.role_code !== 'ROLE_ADMIN') {
-    //         switch (item.role_code) {
-    //           case 'ROLE_ZZ':
-    //             newMenu.push(YW);
-    //             newMenu.push(CK);
-    //             newMenu.push(TJ);
-    //             break;
-    //           case 'ROLE_CW':
-    //             newMenu.push(CW);
-    //             newMenu.push(YW);
-    //             break;
-    //           case 'ROLE_LD':
-    //             newMenu.push(TJ);
-    //             newMenu.push(CK);
-    //             break;
-    //           case 'ROLE_SC':
-    //             newMenu.push(CK);
-    //             newMenu.push(TJ);
-    //             break;
-    //           default:
-    //             break;
-    //         }
-    //       } else {
-    //         newMenu.splice(0, newMenu.length);
-    //         newMenu.push(YH);
-    //         newMenu.push(XT);
-    //         newMenu.push(YW);
-    //         newMenu.push(CK);
-    //         newMenu.push(CW);
-    //         newMenu.push(TJ);
-    //         newMenu.push(CL);
-    //         newMenu.push(DD);
-    //         break;
-    //       }
-    //     }
-    //     this.$set(this, 'menu', newMenu);
-    //   }
-    // },
     openMenuList(index) {
       if (!this.$refs.collapse[index].show) {
         this.$refs.collapse.forEach(item => {
