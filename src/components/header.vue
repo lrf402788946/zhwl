@@ -83,7 +83,7 @@ export default {
     ...mapActions(['login', 'logout']),
     //下载打印插件
     async toDownload() {
-      window.location.href = 'http://10.16.11.186:80/upload/clodop_setup.zip';
+      window.location.href = 'http://192.168.50.61:80/zhwl/upload/clodop_setup.zip';
     },
     toLogout() {
       // sessionStorage.removeItem('userInfo');
