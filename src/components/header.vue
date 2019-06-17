@@ -88,7 +88,7 @@ export default {
     toLogout() {
       // sessionStorage.removeItem('userInfo');
       this.logout();
-      window.location.href = 'zhwl/login.html';
+      window.location.href = '/login.html';
     },
     loginOrNot() {
       this.login();
@@ -116,7 +116,7 @@ export default {
       }
     },
     async initWebSocket() {
-      this.Ws = new WebSocket('ws://10.16.11.186:15674/ws');
+      this.Ws = new WebSocket('ws://192.168.50.61:15674/ws');
       this.Ws.onmessage = this.toGetMessage;
       this.Ws.onclose = this.toClose;
       this.Client = Stomp.Stomp.over(this.Ws);
