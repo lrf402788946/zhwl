@@ -8,18 +8,18 @@ Vue.use(Vuex);
 
 const api = {
   //用户
-  userList: '/zhwl/user/user_list',
-  userSave: '/zhwl/user/user_save',
-  userEdit: '/zhwl/user/user_edit',
-  userDelete: '/zhwl/user/user_delete',
+  userList: '/api/user/user_list',
+  userSave: '/api/user/user_save',
+  userEdit: '/api/user/user_edit',
+  userDelete: '/api/user/user_delete',
   //角色
-  roleList: '/zhwl/role/role_list?skip=0&limit=100',
-  roleSave: '/zhwl/role/role_save',
-  roleEdit: '/zhwl/role/role_edit',
-  roleDelete: '/zhwl/role/role_delete',
+  roleList: '/api/role/role_list?skip=0&limit=100',
+  roleSave: '/api/role/role_save',
+  roleEdit: '/api/role/role_edit',
+  roleDelete: '/api/role/role_delete',
   //权限分配
-  userRole: '/zhwl/user/user_role',
-  userRoleSelect: '/zhwl/user/user_role_sel', //query:id
+  userRole: '/api/user/user_role',
+  userRoleSelect: '/api/user/user_role_sel', //query:id
 };
 
 export const state = () => ({

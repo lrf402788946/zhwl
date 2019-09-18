@@ -662,7 +662,7 @@ export default {
     },
     //查询子表
     async searchSubForm(id) {
-      let result = await this.$axios.get(`/zhwl/car/car_list?id=${id}`);
+      let result = await this.$axios.get(`/api/car/car_list?id=${id}`);
       if (result.data.msg === '成功') {
         if (result.jobReportSubList.length > 0) {
           this.$set(this, 'subForm', result.data.jobReportSubList);
@@ -750,7 +750,7 @@ export default {
         return;
       }
       let skip = 0;
-      let result = await this.$axios.get(`/zhwl/car/car_list?skip=${skip}&limit=${this.limit}&car_no=${this.select_car_nu}&car_onwer=${this.select_car_onwer}`);
+      let result = await this.$axios.get(`/api/car/car_list?skip=${skip}&limit=${this.limit}&car_no=${this.select_car_nu}&car_onwer=${this.select_car_onwer}`);
       if (result.msg === '成功') {
         this.$set(this, 'list', result.carList);
         this.$set(this, 'totalRow', result.totalRow);
@@ -767,7 +767,7 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(`/zhwl/car/car_list?skip=${skip}&limit=${this.limit}&car_no=${this.select_car_nu}&car_onwer=${this.select_car_onwer}`);
+      let result = await this.$axios.get(`/api/car/car_list?skip=${skip}&limit=${this.limit}&car_no=${this.select_car_nu}&car_onwer=${this.select_car_onwer}`);
       if (result.msg === '成功') {
         this.$set(this, 'list', result.carList);
         this.$set(this, 'totalRow', result.totalRow);

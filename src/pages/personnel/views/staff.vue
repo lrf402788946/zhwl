@@ -390,7 +390,7 @@ export default {
     //请求各表
     async getOtherList() {
       //请求部门表
-      let result = await this.$axios.get('/zhwl/dept/dept_list?skip=0&limit=100');
+      let result = await this.$axios.get('/api/dept/dept_list?skip=0&limit=100');
       this.deptList = result.deptList.map(item => {
         let newObject = { text: item.dept_name, value: item.id };
         return newObject;
@@ -398,7 +398,7 @@ export default {
       let defalut = { text: '请选择部门', value: null, disabled: true };
       this.deptList.unshift(defalut);
       //请求岗位表
-      result = await this.$axios.get('/zhwl/post/post_list?skip=0&limit=100');
+      result = await this.$axios.get('/api/post/post_list?skip=0&limit=100');
       this.postList = result.postList.map(item => {
         let newObject = { text: item.name, value: item.id };
         return newObject;

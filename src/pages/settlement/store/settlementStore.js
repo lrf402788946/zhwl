@@ -8,21 +8,21 @@ Vue.use(Vuex);
 
 const api = {
   //查询供应商费用信息
-  gysCostList: '/zhwl/count/gys_count', //query:id
+  gysCostList: '/api/count/gys_count', //query:id
   //获取选取供应商的结算信息
-  gysList: '/zhwl/count/gys_statement', //query:ids
+  gysList: '/api/count/gys_statement', //query:ids
   //供应商打印结算
-  gysEdit: '/zhwl/count/gys_edit', //params:{data:ids}
+  gysEdit: '/api/count/gys_edit', //params:{data:ids}
   //供应商已结算列表
-  gysAlreadyList: '/zhwl/count/gys_bill', //query:c_id,skip,limit
+  gysAlreadyList: '/api/count/gys_bill', //query:c_id,skip,limit
   //供应商结算账单详情
-  gysAlreadyBillInfo: '/zhwl/count/gys_bill_info', //query:id
+  gysAlreadyBillInfo: '/api/count/gys_bill_info', //query:id
   //客户结算单列表查询
-  clientList: '/zhwl/count/client_count', //query:c_id,item_name,order_no,startTime,endTime,skip,limit
+  clientList: '/api/count/client_count', //query:c_id,item_name,order_no,startTime,endTime,skip,limit
   //获取选取客户的结算信息
-  clientSelectList: '/zhwl/count/client_count_sel', //params:{data:ids}
+  clientSelectList: '/api/count/client_count_sel', //params:{data:ids}
   //客户结算
-  clientEdit: '/zhwl/count/client_count_edit', //params:{data:ids}
+  clientEdit: '/api/count/client_count_edit', //params:{data:ids}
 };
 
 export const state = () => ({

@@ -691,7 +691,7 @@ export default {
     },
     //拆分
     async addOrderSublist() {
-      let result = await this.$axios.get(`/zhwl/order/slip_no?id=${this.orderList.id}&order_no=${this.orderList.order_no}`);
+      let result = await this.$axios.get(`/api/order/slip_no?id=${this.orderList.id}&order_no=${this.orderList.order_no}`);
       let slip_no = JSON.parse(JSON.stringify(result.slip_no));
       let newArray = JSON.parse(JSON.stringify(this.orderList));
       newArray.goods_num = 0;

@@ -90,14 +90,14 @@ export default {
   methods: {
     //获取供应商名
     async searchClient() {
-      let result = await this.$axios.get(`/zhwl/client/client_list?skip=0&limit=99999&type=1`);
+      let result = await this.$axios.get(`/api/client/client_list?skip=0&limit=99999&type=1`);
       this.$set(this, 'clientList', result.clientList);
     },
     //查询按钮
     async searchButton() {
       let result = await this.$axios.get(
-        // `/zhwl/count/gys_count?skip=0&limit=99999&c_id=${this.select_client_id}&item_name=${this.select_xm_name}&order_no=${this.select_order_no}`
-        `/zhwl/count/gys_count?skip=0&limit=99999&c_id=${this.select_client_id}`
+        // `/api/count/gys_count?skip=0&limit=99999&c_id=${this.select_client_id}&item_name=${this.select_xm_name}&order_no=${this.select_order_no}`
+        `/api/count/gys_count?skip=0&limit=99999&c_id=${this.select_client_id}`
       );
       this.$set(this, 'list', result.dataList);
       this.select_client_id = '';

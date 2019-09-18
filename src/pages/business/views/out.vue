@@ -435,6 +435,9 @@ export default {
     async openUpdateAlert(index) {
       // this.$refs.Edit.show();
       this.dialog = true;
+      this.form = {};
+      this.subForm = [];
+      this.allMoney = {};
       this.form = JSON.parse(JSON.stringify(this.list[index]));
       //使用接口请求这个订单所有的支出,赋值,判断权限是否允许更改
       //模拟假数据一条

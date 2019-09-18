@@ -106,7 +106,7 @@ export default {
             showClose: true,
             message: '请耐心等待导入',
           });
-          let result = await _this.$axios.post(`/zhwl/${routerName}/${routerName}_import`, { data: importArray });
+          let result = await _this.$axios.post(`/api/${routerName}/${routerName}_import`, { data: importArray });
           console.log(result);
           if (result.rescode === '0') {
             _this.$message.success('导入成功');

@@ -100,7 +100,7 @@
         >
         </el-pagination>
       </div>
-      <el-dialog :title="dialogTitle" :visible.sync="dialog" width="90%">
+      <el-dialog :title="dialogTitle" :visible.sync="dialog" @close="closeDialog()" width="90%">
         <div class="d-block text-center">
           <table class="table table-bordered table-striped ">
             <tr>
@@ -271,7 +271,7 @@
           </b-button>
           <b-button
             variant="secondary"
-            @click="dialog = false"
+            @click="closeDialog()"
             class="resetButton"
             style="font-size:16px !important; margin:10px 2% 20px 5% !important; background-color: #cccccc !important;  width:25% !important; padding:6px 0px !important;"
             >取&nbsp;&nbsp;消
@@ -387,6 +387,8 @@ export default {
       'orderCharge',
     ]),
     async openAlert(item, type) {
+      this.form = {};
+      this.subForm = [];
       if (type === 'add') {
         this.dialogRequest(item);
         this.dialogTitle = '添加收入';
@@ -406,6 +408,12 @@ export default {
         //打开指派弹框
         this.assignDialog = true;
       }
+    },
+    // 关闭弹窗
+    async closeDialog() {
+      this.form = {};
+      this.subForm = [];
+      this.dialog = false;
     },
     async dialogRequest(item, type, need) {
       let info = { skip: 0, limit: 10000 };
@@ -579,24 +587,27 @@ export default {
     },
     async searchDetail(order_no) {
       let { data } = await this.getInList({ skip: 0, limit: 1000, order_no: order_no });
-      let toForm = data.filter(item => item.cost_id === null)[0];
-      delete toForm.pact_no;
-      delete toForm.status;
-      this.form = JSON.parse(JSON.stringify(toForm));
-      await this.dialogRequest(toForm.pact_id, 'searchItem', 'not');
-      await this.dialogRequest(toForm.item_id, 'searchDlyway', 'not');
-      await this.dialogRequest(toForm.dly_way_id, 'searchWay', 'not');
-      await this.dialogRequest(toForm.type_id, 'way');
-      let toSubForm = data.filter(item => {
-        if (item.cost_id) return item;
-      });
-      toSubForm = toSubForm.map(item => {
-        delete item.pact_no;
-        delete item.status;
-        return item;
-      });
-      this.$set(this, `subForm`, toSubForm);
-      this.totalMoney();
+      console.log("data-->"+data);
+      if (data !== null) {
+        let toForm = data.filter(item => item.cost_id === null)[0];
+        delete toForm.pact_no;
+        delete toForm.status;
+        this.form = JSON.parse(JSON.stringify(toForm));
+        await this.dialogRequest(toForm.pact_id, 'searchItem', 'not');
+        await this.dialogRequest(toForm.item_id, 'searchDlyway', 'not');
+        await this.dialogRequest(toForm.dly_way_id, 'searchWay', 'not');
+        await this.dialogRequest(toForm.type_id, 'way');
+        let toSubForm = data.filter(item => {
+          if (item.cost_id) return item;
+        });
+        toSubForm = toSubForm.map(item => {
+          delete item.pact_no;
+          delete item.status;
+          return item;
+        });
+        this.$set(this, `subForm`, toSubForm);
+        this.totalMoney();
+      }
     },
     //分页
     toSearch(currentPage) {

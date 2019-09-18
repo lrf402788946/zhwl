@@ -6,7 +6,8 @@ import { Message } from 'element-ui';
 store.dispatch('login');
 let userInfo = store.state.publics.userInfo;
 let userRoleList = store.state.publics.userRoleList;
-process.env.NODE_ENV === 'production' ? (axios.defaults.baseURL = 'http://localhost') : '';
+process.env.NODE_ENV === 'production' ? (axios.defaults.baseURL = 'http://192.168.31.230:80') : '';
+// process.env.NODE_ENV === 'production' ? (axios.defaults.baseURL = 'http://139.210.167.203:8080') : '';
 axios.defaults.headers.post['Content-Type'] = 'multipart/form-data';
 
 axios.interceptors.request.use(

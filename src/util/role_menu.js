@@ -1,4 +1,4 @@
-const api = process.env.NODE_ENV === 'production' ? '/zhwl' : '';
+const api = process.env.NODE_ENV === 'production' ? '' : '';
 export const SYSTEM = {
   name: '系统管理',
   menu: [

@@ -195,13 +195,13 @@ export default {
   methods: {
     //获取客户名
     async searchClient() {
-      let result = await this.$axios.get(`/zhwl/client/client_list?skip=0&limit=99999&type=0`);
+      let result = await this.$axios.get(`/api/client/client_list?skip=0&limit=99999&type=0`);
       this.$set(this, 'clientList', result.clientList);
     },
     //查询按钮
     async searchButton() {
       let result = await this.$axios.get(
-        `/zhwl/count/client_count?skip=0&limit=99999&c_id=${this.select_client_id}&item_name=${this.select_xm_name}&order_no=${this.select_order_no}`
+        `/api/count/client_count?skip=0&limit=99999&c_id=${this.select_client_id}&item_name=${this.select_xm_name}&order_no=${this.select_order_no}`
       );
       this.$set(this, 'list', result.dataList);
       this.select_client_id = '';
@@ -210,7 +210,7 @@ export default {
     },
     async openAlert(index) {
       this.xiangXiList = JSON.parse(JSON.stringify(this.list[index]));
-      let result = await this.$axios.get(`/zhwl/count/out_list?transport_sub_id=${this.xiangXiList.transport_sub_id}`);
+      let result = await this.$axios.get(`/api/count/out_list?transport_sub_id=${this.xiangXiList.transport_sub_id}`);
       this.$set(this, 'xiangXiList1', result.outList);
       this.dialogUpdate = true;
     },

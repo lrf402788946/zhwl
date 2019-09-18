@@ -383,7 +383,7 @@ export default {
     this.getCostList();
     this.yunfeiList.send_type = '0';
     this.getClientList();
-    let result = await this.$axios.get(`/zhwl/dlyway/dly_way_list?skip=0&limit=9999`);
+    let result = await this.$axios.get(`/api/dlyway/dly_way_list?skip=0&limit=9999`);
     this.dlyWayList = JSON.parse(JSON.stringify(result.dlyWayList));
     await this.getUserList({ skip: 0, limit: 10000 });
   },
@@ -406,7 +406,7 @@ export default {
     },
     //获取客户
     async getClientList() {
-      let result = await this.$axios.get(`/zhwl/client/client_list?skip=0&limit=99999&type=0`);
+      let result = await this.$axios.get(`/api/client/client_list?skip=0&limit=99999&type=0`);
       this.clientList = JSON.parse(JSON.stringify(result.clientList));
     },
     //分页
@@ -455,8 +455,8 @@ export default {
       }
       this.yunfeiList.num = this.orderList[index].goods_nums;
       this.wayname = this.orderList[index].dly_way_id;
-      let result = await this.$axios.get(`/zhwl/in/in_list?skip=0&limit=1000&main_id=${main_id}&order_no=&slip_no=`);
-      let result1 = await this.$axios.get(`/zhwl/clientpact/client_pact_list?skip=0&limit=100000&cus_id=${this.orderList[index].c_id}`);
+      let result = await this.$axios.get(`/api/in/in_list?skip=0&limit=1000&main_id=${main_id}&order_no=&slip_no=`);
+      let result1 = await this.$axios.get(`/api/clientpact/client_pact_list?skip=0&limit=100000&cus_id=${this.orderList[index].c_id}`);
       if (result.rescode === '0') {
         this.radio = result.inList[0].is_lf;
         this.clientPactList = result1.clientPactList;
@@ -640,7 +640,7 @@ export default {
     },
     //获取cost费用名称字段
     async getCostList() {
-      let result = await this.$axios.get(`/zhwl/cost/cost_list?skip=0&limit=1000000`);
+      let result = await this.$axios.get(`/api/cost/cost_list?skip=0&limit=1000000`);
       if (result.rescode === '0') {
         // this.$set(this, 'yunfeiList', result.clientPactList[0]);
         let i = 0;
@@ -659,7 +659,7 @@ export default {
       this.yunfeiList.cost_id = 1;
       delete this.yunfeiList.pact_no;
       for (let index = 0; index < this.deleteList.length; index++) {
-        await this.$axios.get(`/zhwl/in/in_delete?id=${this.deleteList[index]}`);
+        await this.$axios.get(`/api/in/in_delete?id=${this.deleteList[index]}`);
       }
       if (this.addOrRevise === 1) {
         //修改方法

@@ -8,7 +8,7 @@ Vue.use(Vuex);
 
 const api = {
   //客户
-  clientList: '/zhwl/client/client_list',
+  clientList: '/api/client/client_list',
 };
 
 export const state = () => ({

@@ -8,57 +8,57 @@ Vue.use(Vuex);
 
 const api = {
   //路线
-  dly_wayList: '/zhwl/dlyway/dly_way_list',
-  dly_waySave: '/zhwl/dlyway/dly_way_save',
-  dly_wayEdit: '/zhwl/dlyway/dly_way_edit',
-  dly_wayDelete: '/zhwl/dlyway/dly_way_delete',
+  dly_wayList: '/api/dlyway/dly_way_list',
+  dly_waySave: '/api/dlyway/dly_way_save',
+  dly_wayEdit: '/api/dlyway/dly_way_edit',
+  dly_wayDelete: '/api/dlyway/dly_way_delete',
   //订单
-  orderList: '/zhwl/order/order_list', //query:skip,limit,!order_number,!cus_id,!start_time,!end_time / status=0查询的是拆分数据
-  orderSubList: '/zhwl/order/order_info?skip=0&limit=10000', //query:skip,limit=10000,order_id
-  orderNumber: '/zhwl/order/order_num', //query:cus_id
-  orderMainSave: '/zhwl/order/order_save', //params:data
-  orderSubSave: '/zhwl/order/order_sub_save', //params:subForm,id--main_id
-  orderMainEdit: '/zhwl/order/order_edit', //params:data
-  orderSubEdit: '/zhwl/order/order_sub_edit', //params:subForm,id-main_id
-  orderDelete: '/zhwl/order/order_delete', //params:id
-  orderNum: '/zhwl/order/order_no', //query:cus_id
-  orderSubSplit: '/zhwl/order/order_sub_split',
-  orderIncome: '/zhwl/in/in_save',
-  updateIncome: '/zhwl/in/in_edit',
+  orderList: '/api/order/order_list', //query:skip,limit,!order_number,!cus_id,!start_time,!end_time / status=0查询的是拆分数据
+  orderSubList: '/api/order/order_info?skip=0&limit=10000', //query:skip,limit=10000,order_id
+  orderNumber: '/api/order/order_num', //query:cus_id
+  orderMainSave: '/api/order/order_save', //params:data
+  orderSubSave: '/api/order/order_sub_save', //params:subForm,id--main_id
+  orderMainEdit: '/api/order/order_edit', //params:data
+  orderSubEdit: '/api/order/order_sub_edit', //params:subForm,id-main_id
+  orderDelete: '/api/order/order_delete', //params:id
+  orderNum: '/api/order/order_no', //query:cus_id
+  orderSubSplit: '/api/order/order_sub_split',
+  orderIncome: '/api/in/in_save',
+  updateIncome: '/api/in/in_edit',
   //货物
-  goodsList: '/zhwl/goods/goods_list',
-  goodsSave: '/zhwl/goods/goods_save',
-  goodsEdit: '/zhwl/goods/goods_edit',
-  goodsDelete: '/zhwl/goods/goods_delete',
+  goodsList: '/api/goods/goods_list',
+  goodsSave: '/api/goods/goods_save',
+  goodsEdit: '/api/goods/goods_edit',
+  goodsDelete: '/api/goods/goods_delete',
   //装车
-  transportOrderSubList: '/zhwl/transport/order_sub_list', //query:skip,limit
-  transportSelectOrder: '/zhwl/transport/order_sub_list_info', //params:ids[]
-  transportList: '/zhwl/transport/transport_list', //query:skip,limit
-  transportInfo: '/zhwl/transport/transport_info', //query:id
-  transportMainSave: '/zhwl/transport/transport_save', //params:from
-  transportSubSave: '/zhwl/transport/transport_sub_save', //params:id,subForm
-  transportMainEdit: '/zhwl/transport/transport_edit', //params:from
-  transportSubEdit: '/zhwl/transport/transport_sub_edit', //params:id,subForm
-  transportDelete: '/zhwl/transport/transport_delete', //params:id
-  transportNO: '/zhwl/transport/transport_no', //query:car_no
-  orderSign: '/zhwl/transport/transport_sub_sign', //params:拆分单id, sign_name,sign_time
+  transportOrderSubList: '/api/transport/order_sub_list', //query:skip,limit
+  transportSelectOrder: '/api/transport/order_sub_list_info', //params:ids[]
+  transportList: '/api/transport/transport_list', //query:skip,limit
+  transportInfo: '/api/transport/transport_info', //query:id
+  transportMainSave: '/api/transport/transport_save', //params:from
+  transportSubSave: '/api/transport/transport_sub_save', //params:id,subForm
+  transportMainEdit: '/api/transport/transport_edit', //params:from
+  transportSubEdit: '/api/transport/transport_sub_edit', //params:id,subForm
+  transportDelete: '/api/transport/transport_delete', //params:id
+  transportNO: '/api/transport/transport_no', //query:car_no
+  orderSign: '/api/transport/transport_sub_sign', //params:拆分单id, sign_name,sign_time
   //费用
-  costList: '/zhwl/cost/cost_list',
-  costSave: '/zhwl/cost/cost_save',
-  costEdit: '/zhwl/cost/cost_edit',
-  costDelete: '/zhwl/cost/cost_delete',
+  costList: '/api/cost/cost_list',
+  costSave: '/api/cost/cost_save',
+  costEdit: '/api/cost/cost_edit',
+  costDelete: '/api/cost/cost_delete',
   //支出单
-  outList: '/zhwl/out/out_list', //main_id
-  outSave: '/zhwl/out/out_save',
-  outEdit: '/zhwl/out/out_edit',
-  outDelete: '/zhwl/out/out_delete',
+  outList: '/api/out/out_list', //main_id
+  outSave: '/api/out/out_save',
+  outEdit: '/api/out/out_edit',
+  outDelete: '/api/out/out_delete',
   //支出单
-  inList: '/zhwl/in/in_list', //transport_main_id
-  inSave: '/zhwl/in/in_save',
-  inEdit: '/zhwl/in/in_edit',
-  inDelete: '/zhwl/in/in_delete',
+  inList: '/api/in/in_list', //transport_main_id
+  inSave: '/api/in/in_save',
+  inEdit: '/api/in/in_edit',
+  inDelete: '/api/in/in_delete',
   //指派负责人
-  orderCharge: '/zhwl/order/order_charge', //params:order_id,charge_login=>login_id
+  orderCharge: '/api/order/order_charge', //params:order_id,charge_login=>login_id
 };
 
 export const state = () => ({
@@ -131,7 +131,7 @@ export const actions = {
   //添加路线
   async adddly_wayList({ commit }, { type, data }) {
     try {
-      let result = await this.$axios.post(`/zhwl/dlyway/dly_way_save`, { data: data });
+      let result = await this.$axios.post(`/api/dlyway/dly_way_save`, { data: data });
       if (result.rescode === '0') {
         commit(types.DLY_WAY_LIST, result.dlyWayList);
         return result.totalRow;
@@ -146,9 +146,9 @@ export const actions = {
     let result;
     try {
       if (type === 'dlywayDelete') {
-        result = await this.$axios.post('/zhwl/dlyway/dly_way_delete', { data: { id: data } });
+        result = await this.$axios.post('/api/dlyway/dly_way_delete', { data: { id: data } });
       } else {
-        result = await this.$axios.post('/zhwl/dlyway/dly_way_edit', { data: data });
+        result = await this.$axios.post('/api/dlyway/dly_way_edit', { data: data });
       }
       if (result.rescode === '0') {
         Message.success('操作成功');
@@ -374,7 +374,7 @@ export const actions = {
   //添加货物
   async addGoodslist({ commit }, { type, data }) {
     try {
-      let result = await this.$axios.post(`/zhwl/goods/goods_save`, { data: data });
+      let result = await this.$axios.post(`/api/goods/goods_save`, { data: data });
       if (result.rescode === '0') {
         commit(types.GOODS_LIST, result.goodsList);
         return result.totalRow;
@@ -389,9 +389,9 @@ export const actions = {
     let result;
     try {
       if (type === 'goodsDelete') {
-        result = await this.$axios.post('/zhwl/goods/goods_delete', { data: { id: data } });
+        result = await this.$axios.post('/api/goods/goods_delete', { data: { id: data } });
       } else {
-        result = await this.$axios.post('/zhwl/goods/goods_edit', { data: data });
+        result = await this.$axios.post('/api/goods/goods_edit', { data: data });
       }
       if (result.rescode === '0') {
         Message.success('操作成功');

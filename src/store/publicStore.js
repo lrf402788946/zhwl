@@ -6,12 +6,12 @@ import { Message } from 'element-ui';
 Vue.use(Vuex);
 
 const api = {
-  login: '/zhwl/user/login',
-  updatePassword: '/zhwl/user/pwd_edit',
-  deptList: '/zhwl/dept/dept_list?skip=0&limit=100',
-  postList: '/zhwl/post/post_list?skip=0&limit=100',
+  login: '/api/user/login',
+  updatePassword: '/api/user/pwd_edit',
+  deptList: '/api/dept/dept_list?skip=0&limit=100',
+  postList: '/api/post/post_list?skip=0&limit=100',
   //行政区划
-  region: '/zhwl/district/district_list', //params:pid
+  region: '/api/district/district_list', //params:pid
 };
 
 export const state = () => ({

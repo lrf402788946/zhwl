@@ -284,7 +284,7 @@
           <!--line1-->
           <div class="col-lg-3 mb25">
             <div class="lh44">订单号：</div>
-            <b-form-input :disabled="true" v-model="updateForm.order_no" placeholder="订单号"></b-form-input>
+            <b-form-input v-model="updateForm.order_no" placeholder="订单号"></b-form-input>
           </div>
           <div class="col-lg-3 mb25">
             <div class="lh44">操作人：</div>
@@ -714,6 +714,7 @@ export default {
         delete this.updateForm.goods_nums;
         delete this.updateForm.is_in;
         delete this.updateForm.pact_id;
+        delete this.updateForm.out_price;
         await this.orderEdit({ form: this.updateForm, subForm: this.subForm });
         this.closeAlert('update');
         this.updateForm = [];

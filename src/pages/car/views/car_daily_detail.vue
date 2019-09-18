@@ -352,7 +352,7 @@ export default {
         return;
       }
       let skip = 0;
-      let result = await this.$axios.get(`/zhwl/car/car_daily_detail_list?skip=${skip}&limit=${this.limit}&car_no=${this.select_car_no}`);
+      let result = await this.$axios.get(`/api/car/car_daily_detail_list?skip=${skip}&limit=${this.limit}&car_no=${this.select_car_no}`);
       if (result.msg === '成功') {
         this.$set(this, 'list', result.carDetailList);
         this.$set(this, 'totalRow', result.totalRow);
@@ -369,7 +369,7 @@ export default {
         return;
       }
       let skip = (this.currentPage - 1) * this.limit;
-      let result = await this.$axios.get(`/zhwl/car/car_daily_detail_list?skip=${skip}&limit=${this.limit}&car_no=${this.select_car_no}`);
+      let result = await this.$axios.get(`/api/car/car_daily_detail_list?skip=${skip}&limit=${this.limit}&car_no=${this.select_car_no}`);
       if (result.msg === '成功') {
         this.$set(this, 'list', result.carDetailList);
         this.$set(this, 'totalRow', result.totalRow);

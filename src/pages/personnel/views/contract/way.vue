@@ -145,7 +145,6 @@ export default {
       pageValidator: new Validator({
         type_name: { required: true, message: '请填写方式名称' },
         price: { required: true, message: '请填写价格' },
-        cess: { required: true, message: '请填写方税率' },
         is_lf: { required: true, message: '请选择是否为量份收费' },
         dly_way_id: { required: true, message: '此处为系统bug,若出现请联系' },
       }),

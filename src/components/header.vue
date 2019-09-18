@@ -83,7 +83,7 @@ export default {
     ...mapActions(['login', 'logout']),
     //下载打印插件
     async toDownload() {
-      window.location.href = 'http://192.168.50.61:80/zhwl/upload/clodop_setup.zip';
+      window.location.href = 'http://192.168.31.230:80/api/upload/clodop_setup.zip';
     },
     toLogout() {
       // sessionStorage.removeItem('userInfo');
@@ -116,7 +116,7 @@ export default {
       }
     },
     async initWebSocket() {
-      this.Ws = new WebSocket('ws://192.168.50.61:15674/ws');
+      this.Ws = new WebSocket('ws://222.168.50.226:15674/ws');
       this.Ws.onmessage = this.toGetMessage;
       this.Ws.onclose = this.toClose;
       this.Client = Stomp.Stomp.over(this.Ws);

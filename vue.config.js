@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? '/zhwl/' : './',
+  publicPath: process.env.NODE_ENV === 'production' ? './' : './',
   pages: {
     index: 'src/pages/index/main.js',
     login: 'src/pages/login/main.js',
@@ -28,12 +28,12 @@ module.exports = {
     port: '8001',
     //api地址前缀
     proxy: {
-      '/zhwl': {
+      '/api': {
         target: 'http://10.16.11.186:80', //10.16.11.186:80  10.16.11.227:7001
         changeOrigin: true,
         ws: true,
         pathRewrite: {
-          '/zhwl': '',
+          '': '',
         },
       },
     },

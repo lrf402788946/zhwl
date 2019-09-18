@@ -346,21 +346,21 @@ export default {
     },
     //删除
     async toDelete() {
-      await this.$axios.get(`/zhwl/in/in_delete?id=${this.deleteItem}`);
+      await this.$axios.get(`/api/in/in_delete?id=${this.deleteItem}`);
       this.search();
       this.deleteItem = '';
       this.$refs.deleteAlert.hide();
     },
     //打开详情
     async openDetailsAlert(id, status) {
-      let result = await this.$axios.get(`/zhwl/in/in_info?id=${id}`);
+      let result = await this.$axios.get(`/api/in/in_info?id=${id}`);
       this.$set(this, 'inList', result.inInfo);
       this.showStatus = status;
       this.dialogUpdate = true;
     },
     //打开修改提示框
     async openUpdateAlert(id, status, slip_id) {
-      let result = await this.$axios.get(`/zhwl/in/in_info?id=${id}`);
+      let result = await this.$axios.get(`/api/in/in_info?id=${id}`);
       this.$set(this, 'inList', result.inInfo);
       this.showStatus = status;
       this.$refs.Edit.show();

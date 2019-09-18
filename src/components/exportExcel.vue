@@ -42,16 +42,16 @@ export default {
       let skip = 0;
       let result;
       if (name1 === 'gongxin') {
-        result = await this.$axios.get(`/zhwl/wages/wages_list?skip=${skip}&limit=${this.limit}&create_time=${this.$parent.$data.value1}`);
+        result = await this.$axios.get(`/api/wages/wages_list?skip=${skip}&limit=${this.limit}&create_time=${this.$parent.$data.value1}`);
         this.$set(this, 'list', result.wagesList);
       } else if (name1 === 'material') {
-        result = await this.$axios.get(`/zhwl/cl/cl_list?skip=${skip}&limit=${this.limit}`);
+        result = await this.$axios.get(`/api/cl/cl_list?skip=${skip}&limit=${this.limit}`);
         this.$set(this, 'list', result.cList);
       } else if (name1 === 'customer') {
-        result = await this.$axios.get(`/zhwl/customer/customer_list?skip=${skip}&limit=${this.limit}&name=${this.$parent.select_name}`);
+        result = await this.$axios.get(`/api/customer/customer_list?skip=${skip}&limit=${this.limit}&name=${this.$parent.select_name}`);
         this.$set(this, 'list', result.customerList);
       } else {
-        result = await this.$axios.get(`/zhwl/${name1}/${name1}_list?skip=${skip}&limit=${this.limit}`);
+        result = await this.$axios.get(`/api/${name1}/${name1}_list?skip=${skip}&limit=${this.limit}`);
         this.$set(this, 'list', _.get(result, name1 + 'List'));
       }
     },

@@ -8,26 +8,26 @@ Vue.use(Vuex);
 
 const api = {
   // car
-  carList: '/zhwl/car/car_list',
-  carSave: '/zhwl/car/car_save',
-  carEdit: '/zhwl/car/car_edit',
-  carDelete: '/zhwl/car/car_delete',
+  carList: '/api/car/car_list',
+  carSave: '/api/car/car_save',
+  carEdit: '/api/car/car_edit',
+  carDelete: '/api/car/car_delete',
   // car_detail
-  carDetailList: '/zhwl/car/car_daily_detail_list',
-  carDetailSave: '/zhwl/car/car_daily_detail_save',
-  carDetailEdit: '/zhwl/car/car_daily_detail_edit',
-  carDetailDelete: '/zhwl/car/car_daily_detail_delete',
+  carDetailList: '/api/car/car_daily_detail_list',
+  carDetailSave: '/api/car/car_daily_detail_save',
+  carDetailEdit: '/api/car/car_daily_detail_edit',
+  carDetailDelete: '/api/car/car_daily_detail_delete',
   //查询运输信息,管理车辆支出,单车核算用
-  tripPackList: '/zhwl/transport/return_trip_list',
+  tripPackList: '/api/transport/return_trip_list',
   //合并单操作
-  tripList: '/zhwl/transport/trip_list', //query:car_no,transport_no
-  tripSave: '/zhwl/transport/trip_save',
-  tripEdit: '/zhwl/transport/trip_edit', //params: id,subForm
-  tripInfo: '/zhwl/transport/trip_info', //query:id
-  tripEnd: '/zhwl/transport/trip_end', //params:id
+  tripList: '/api/transport/trip_list', //query:car_no,transport_no
+  tripSave: '/api/transport/trip_save',
+  tripEdit: '/api/transport/trip_edit', //params: id,subForm
+  tripInfo: '/api/transport/trip_info', //query:id
+  tripEnd: '/api/transport/trip_end', //params:id
   //查询单车核算
-  carCost: '/zhwl/count/car_accounting', //query:car_no,start_time,end_time
-  carCostDetail: '/zhwl/count/car_accounting_info', //query:car_no,start_time,end_time
+  carCost: '/api/count/car_accounting', //query:car_no,start_time,end_time
+  carCostDetail: '/api/count/car_accounting_info', //query:car_no,start_time,end_time
 };
 
 export const state = () => ({

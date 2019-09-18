@@ -59,7 +59,7 @@ export default {
     },
     async test() {
       // let result = await this.$axios.get('http://10.16.11.227:7001?age=19');
-      let result = await this.$axios.post('/zhwl', { age: 19 });
+      let result = await this.$axios.post('/api', { age: 19 });
       console.log(result);
     },
   },
