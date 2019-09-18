@@ -587,7 +587,7 @@ export default {
     },
     async searchDetail(order_no) {
       let { data } = await this.getInList({ skip: 0, limit: 1000, order_no: order_no });
-      console.log("data-->"+data);
+      console.log('data-->' + data);
       if (data !== null) {
         let toForm = data.filter(item => item.cost_id === null)[0];
         delete toForm.pact_no;

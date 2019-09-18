@@ -74,13 +74,13 @@
         ></el-pagination>
         <b-modal id="toAdd" size="xl" title="添加车辆信息" ref="toAdd" hide-footer>
           <div class="row" style="text-align: left;">
-            <div class="col-lg-4 mb25">
+            <!-- <div class="col-lg-4 mb25">
               <div class="lh44">汽车所属关系:</div>
               <el-select class="marginBot" style="height:40px !important" v-model="form.type" filterable placeholder="请选择汽车所属关系">
                 <el-option label="自供" value="0"></el-option>
                 <el-option label="供应商" value="1"></el-option>
               </el-select>
-            </div>
+            </div> -->
             <div class="col-lg-4 mb25">
               <div class="lh44">机动车所有人：</div>
               <b-form-input v-model="form.car_onwer" placeholder="机动车所有人"></b-form-input>
@@ -137,15 +137,15 @@
             </div>
             <div class="col-lg-4 mb20">
               <div class="lh44">机动车检验有效期：</div>
-              <!-- <el-date-picker
+              <el-date-picker
                 style="width:100%;"
                 v-model="form.cc_examine_time"
                 type="date"
                 placeholder="选择机动车检验有效期"
                 value-format="yyyy-MM-dd"
                 format="yyyy-MM-dd"
-              ></el-date-picker> -->
-              <b-form-input v-model="form.cc_examine_time" placeholder="机动车检验有效期"></b-form-input>
+              ></el-date-picker>
+              <!-- <b-form-input v-model="form.cc_examine_time" placeholder="机动车检验有效期"></b-form-input> -->
             </div>
             <div class="col-lg-4 mb20">
               <div class="lh44">道路运输证编号：</div>
@@ -153,7 +153,15 @@
             </div>
             <div class="col-lg-4 mb20">
               <div class="lh44">道路检验有效期：</div>
-              <b-form-input v-model="form.rc_examine_time" placeholder="道路检验有效期"></b-form-input>
+              <el-date-picker
+                style="width:100%;"
+                v-model="form.rc_examine_time"
+                type="date"
+                placeholder="选择道路检验有效期"
+                value-format="yyyy-MM-dd"
+                format="yyyy-MM-dd"
+              ></el-date-picker>
+              <!-- <b-form-input v-model="form.rc_examine_time" placeholder="道路检验有效期"></b-form-input> -->
             </div>
             <div class="col-lg-4 mb20">
               <div class="lh44">车辆购置税完税证明编号：</div>
@@ -310,7 +318,7 @@
         <b-modal id="updateAlert" title="车辆信息详情" ref="updateAlert" size="xl" hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
           <div class="d-block text-center">
             <div class="row" style="text-align: left;">
-              <div class="col-lg-4 mb25">
+              <!-- <div class="col-lg-4 mb25">
                 <div class="lh44">汽车所属关系:</div>
                 <el-select
                   class="marginBot"
@@ -323,7 +331,7 @@
                   <el-option label="自供" value="0"></el-option>
                   <el-option label="供应商" value="1"></el-option>
                 </el-select>
-              </div>
+              </div> -->
               <div class="col-lg-4 mb25">
                 <div class="lh44">机动车所有人：</div>
                 <b-form-input v-model="form.car_onwer" :disabled="is_update" placeholder="机动车所有人"></b-form-input>
@@ -392,7 +400,7 @@
               </div>
               <div class="col-lg-4 mb20">
                 <div class="lh44">机动车检验有效期：</div>
-                <!-- <el-date-picker
+                <el-date-picker
                   style="width:100%;"
                   v-model="form.cc_examine_time"
                   type="date"
@@ -400,8 +408,8 @@
                   placeholder="选择机动车检验有效期"
                   value-format="yyyy-MM-dd"
                   format="yyyy-MM-dd"
-                ></el-date-picker> -->
-                <b-form-input v-model="form.cc_examine_time" :disabled="is_update" placeholder="机动车检验有效期"></b-form-input>
+                ></el-date-picker>
+                <!-- <b-form-input v-model="form.cc_examine_time" :disabled="is_update" placeholder="机动车检验有效期"></b-form-input> -->
               </div>
               <div class="col-lg-4 mb20">
                 <div class="lh44">道路运输证编号：</div>
@@ -409,7 +417,16 @@
               </div>
               <div class="col-lg-4 mb20">
                 <div class="lh44">道路检验有效期：</div>
-                <b-form-input v-model="form.rc_examine_time" :disabled="is_update" placeholder="道路检验有效期"></b-form-input>
+                <el-date-picker
+                  style="width:100%;"
+                  v-model="form.rc_examine_time"
+                  type="date"
+                  :disabled="is_update"
+                  placeholder="选择道路检验有效期"
+                  value-format="yyyy-MM-dd"
+                  format="yyyy-MM-dd"
+                ></el-date-picker>
+                <!-- <b-form-input v-model="form.rc_examine_time" :disabled="is_update" placeholder="道路检验有效期"></b-form-input> -->
               </div>
               <div class="col-lg-4 mb20">
                 <div class="lh44">车辆购置税完税证明编号：</div>
@@ -660,20 +677,6 @@ export default {
       this.$refs.toAdd.hide();
       this.search();
     },
-    //查询子表
-    async searchSubForm(id) {
-      let result = await this.$axios.get(`/api/car/car_list?id=${id}`);
-      if (result.data.msg === '成功') {
-        if (result.jobReportSubList.length > 0) {
-          this.$set(this, 'subForm', result.data.jobReportSubList);
-          for (let i = 0; i < this.subForm.length; i++) {
-            this.$set(this, 'time_quantum', result.data.jobReportSubList[i].is_night);
-            this.getKindList(i);
-          }
-        }
-      }
-    },
-    //jjdjdjddhddh
     openAlert(type, id) {
       if (type === 'update') {
         this.$refs.updateAlert.show();
@@ -685,7 +688,6 @@ export default {
         this.temporaryList.splice(0, this.temporaryList.length);
         this.form.dept_id = this.userInfo.dept_id;
         this.form.login_id = this.userInfo.login_id;
-        this.addSubForm('open');
         this.$refs.addAlert.show();
       }
     },
@@ -702,16 +704,12 @@ export default {
       this.deleteItem = '';
       this.$refs.deleteAlert.hide();
     },
-    //打开修改提示框
-    openUpdateAlert(index) {
-      this.$refs.updateAlert.show();
-      this.form = JSON.parse(JSON.stringify(this.list[index]));
-    },
     //修改
     async update() {
       await this.carOperation({ type: 'carEdit', data: this.form });
       this.form = {};
       this.search();
+      this.is_update = true;
       this.$refs.updateAlert.hide();
     },
     //关闭弹框
@@ -724,7 +722,6 @@ export default {
       this.is_update = true;
       this.g_update = true;
       this.operateId = '';
-      this.subForm.splice(0, this.subForm.length);
     },
     // closeAlert() {
     //   this.$refs.updateAlert.hide();

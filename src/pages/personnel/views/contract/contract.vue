@@ -43,7 +43,7 @@
             <tr>
               <th>客户</th>
               <th>合同编号</th>
-              <th>税率</th>
+              <!-- <th>税率</th> -->
               <th>甲方</th>
               <th>乙方</th>
               <th>合同周期</th>
@@ -54,7 +54,7 @@
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ { data: clientList, searchItem: 'id', value: item.cus_id, label: 'name' } | getName }}</td>
               <td>{{ item.pact_no }}</td>
-              <td>{{ item.cess }}</td>
+              <!-- <td>{{ item.cess }}</td> -->
               <td>{{ item.jf }}</td>
               <td>{{ item.yf }}</td>
               <td>{{ item.cycle }}</td>
@@ -99,7 +99,7 @@
               <tbody>
                 <tr>
                   <td>选择客户</td>
-                  <td>税率</td>
+                  <!-- <td>税率</td> -->
                 </tr>
                 <tr>
                   <td>
@@ -107,11 +107,11 @@
                       <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
                     </el-select>
                   </td>
-                  <td>
+                  <!-- <td>
                     <el-tooltip class="item" effect="dark" content="请填写1.X,如:1/1.04" placement="top">
                       <b-form-input v-model="form.cess"></b-form-input>
                     </el-tooltip>
-                  </td>
+                  </td> -->
                 </tr>
                 <tr>
                   <td>合同编号</td>
@@ -187,7 +187,8 @@
               <tbody>
                 <tr>
                   <td>选择客户</td>
-                  <td>税率</td>
+                  <!-- <td>税率</!-->
+                  -->
                 </tr>
                 <tr>
                   <td>
@@ -195,11 +196,11 @@
                       <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
                     </el-select>
                   </td>
-                  <td>
+                  <!-- <td>
                     <el-tooltip class="item" effect="dark" content="请填写1.X,如:1/1.04" placement="top">
                       <b-form-input v-model="updateForm.cess"></b-form-input>
                     </el-tooltip>
-                  </td>
+                  </td> -->
                 </tr>
                 <tr>
                   <td>合同编号</td>

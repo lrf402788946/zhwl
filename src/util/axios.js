@@ -72,6 +72,10 @@ let isLoginFilter = url => {
     if (!url.includes('type=1')) {
       url = newUrl(url);
     }
+  } else if (url.includes('client_pact_list')) {
+    if (!url.includes('type=1')) {
+      url = newUrl(url);
+    }
   } else if (url.includes('transportorder_sub_list')) {
     url = newUrl(url);
   }

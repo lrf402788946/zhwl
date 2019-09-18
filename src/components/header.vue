@@ -77,7 +77,7 @@ export default {
   },
   created() {
     // this.isLogin();
-    this.initWebSocket();
+    // this.initWebSocket();
   },
   methods: {
     ...mapActions(['login', 'logout']),

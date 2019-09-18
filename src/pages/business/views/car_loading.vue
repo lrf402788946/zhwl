@@ -130,7 +130,7 @@
               v-model="out.c_id"
               filterable
               :disabled="out.type === 0"
-              placeholder="请选择供应商"
+              :placeholder="out.type === 0 ? '无需选择供应商' : '请选择供应商'"
               @change="changeList('client')"
             >
               <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
@@ -602,7 +602,14 @@ export default {
         //选择供应商方式后的变化=>加载供应商
         case 'type':
           this.out.c_id = this.out.type === 0 ? 1 : '';
-          if (this.out.type === 0) this.$set(this.out, `pact_id`, '');
+          if (this.out.type === 0) {
+            this.$set(this.out, `c_id`, '');
+            this.$set(this.out, `pact_id`, '');
+            this.$set(this.out, `pact_id`, '');
+          } else {
+            this.$set(this.out, `car_id`, '');
+            this.$set(this.out, `driver_id`, '');
+          }
           this.$set(this.out, `rate`, 1);
           this.changeMoney();
           break;

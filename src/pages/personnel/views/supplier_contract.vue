@@ -50,7 +50,7 @@
             <tr>
               <th>供应商</th>
               <th>合同编号</th>
-              <th>税率</th>
+              <!-- <th>税率</th> -->
               <th>甲方</th>
               <th>乙方</th>
               <th>合同周期</th>
@@ -61,7 +61,7 @@
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ { data: clientList, searchItem: 'id', value: item.cus_id, label: 'name' } | getName }}</td>
               <td>{{ item.pact_no }}</td>
-              <td>{{ item.cess }}</td>
+              <!-- <td>{{ item.cess }}</td> -->
               <td>{{ item.jf }}</td>
               <td>{{ item.yf }}</td>
               <td>{{ item.cycle }}</td>
@@ -103,10 +103,10 @@
       <el-select class="marginBot" style="height:40px !important" v-model="form.cus_id" filterable placeholder="请选择供应商">
         <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
       </el-select>
-      <div style="margin-bottom: 7px;">税率:</div>
+      <!-- <div style="margin-bottom: 7px;">税率:</div>
       <el-tooltip class="item" effect="dark" content="请填写1.X,如:1/1.04" placement="top">
         <b-form-input v-model="form.cess"></b-form-input>
-      </el-tooltip>
+      </el-tooltip> -->
       <div style="margin-bottom: 7px;">合同编号:</div>
       <b-form-input v-model="form.pact_no"></b-form-input>
       <div style="margin-bottom: 7px;">合同周期:</div>
@@ -165,12 +165,12 @@
               <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
             </el-select>
           </div>
-          <div class="col-lg-12 marginBot4">
+          <!-- <div class="col-lg-12 marginBot4">
             <p class="marginBot4">税率</p>
             <el-tooltip class="item" effect="dark" content="请填写1.X,如:1/1.04" placement="top">
               <b-form-input v-model="updateForm.cess"></b-form-input>
             </el-tooltip>
-          </div>
+          </div> -->
           <div class="col-lg-12 marginBot4">
             <p class="marginBot4">合同编号</p>
             <b-form-input v-model="updateForm.pact_no"></b-form-input>
@@ -255,8 +255,8 @@ export default {
         js_type: { type: 'string', required: true, message: '请填写结算方式' },
         js_cycle: { type: 'string', required: true, message: '请填写结算周期' },
       }),
-      th: ['合同编号', '甲方', '乙方', '合同周期', '结算方式', '结算周期', '价格', '税率'],
-      filterVal: ['pact_no', 'jf', 'yf', 'cycle', 'js_type', 'js_cycle', 'price', 'cess'],
+      th: ['合同编号', '甲方', '乙方', '合同周期', '结算方式', '结算周期', '价格'],
+      filterVal: ['pact_no', 'jf', 'yf', 'cycle', 'js_type', 'js_cycle', 'price'],
       countNum: 0,
     };
   },

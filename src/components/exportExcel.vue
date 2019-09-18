@@ -62,6 +62,8 @@ export default {
       let originData;
       if (this.sheetName === '客户结算单') {
         originData = _.get(this.$parent.$parent, this.dataName);
+      } else {
+        originData = _.get(this.$parent, this.dataName);
       }
       if (originData.length > 0) {
         const data = originData.map(v => filterVar.map(k => v[k]));
@@ -71,7 +73,7 @@ export default {
         if (this.sheetName === '客户结算单') {
           this.$emit('edit');
         }
-        this.$message.success('导入成功');
+        this.$message.success('导出成功');
       } else {
         this.$message.error('无可导出的数据');
       }

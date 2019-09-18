@@ -30,6 +30,7 @@
             <tr>
               <th>方式名称</th>
               <th>价格</th>
+              <th>税率</th>
               <th>是否量份收费</th>
               <th>发货方式</th>
               <th>计算方式</th>
@@ -39,9 +40,10 @@
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.type_name }}</td>
               <td>{{ item.price }}</td>
+              <td>{{ item.cess }}</td>
               <td>{{ item.is_lf === `0` ? '是' : '否' }}</td>
-              <td>{{ item.send_type === `0` ? '零担' : '整车' }}</td>
-              <td>{{ item.count_type === `0` ? '按体积' : '按重量' }}</td>
+              <td>{{ item.is_lf === `0` ? '' : item.send_type === `0` ? '零担' : '整车' }}</td>
+              <td>{{ item.is_lf === `0` ? '' : item.count_type === `0` ? '按体积' : '按重量' }}</td>
               <td>{{ item.create_time }}</td>
               <td>
                 <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">修&nbsp;&nbsp;改</b-button>
@@ -83,6 +85,14 @@
             <el-col><b-form-input v-model="form.price"></b-form-input></el-col>
           </el-row>
           <el-row style="margin-bottom:1%;">
+            <el-col :span="4">税率:</el-col>
+            <el-col>
+              <el-tooltip class="item" effect="dark" content="请填写1.X,如:1/1.04" placement="top">
+                <b-form-input v-model="form.cess"></b-form-input>
+              </el-tooltip>
+            </el-col>
+          </el-row>
+          <el-row style="margin-bottom:1%;">
             <el-col :span="4">是否量份收费:</el-col>
             <el-col>
               <el-radio v-model="form.is_lf" :label="`0`" border>是</el-radio>
@@ -96,7 +106,7 @@
               <el-radio v-model="form.send_type" :label="`1`" border>整车</el-radio>
             </el-col>
           </el-row>
-          <el-row style="margin-bottom:1%;" v-if="form.is_lf === `1`">
+          <el-row style="margin-bottom:1%;" v-if="form.is_lf === `1` && form.send_type === `0`">
             <el-col :span="4">计算方式:</el-col>
             <el-col>
               <el-radio v-model="form.count_type" :label="`0`" border>体积</el-radio>
@@ -150,7 +160,6 @@ export default {
       }),
       subValidator: new Validator({
         send_type: { required: true, message: '请填写发货方式' },
-        count_type: { required: true, message: '请填写计算方式' },
       }),
     };
   },
@@ -185,7 +194,6 @@ export default {
       }
     },
     toValidate() {
-      console.log('in function:');
       this.form[`dly_way_id`] = this.$route.query.id;
       this.pageValidator.validate(this.form, (errors, fields) => {
         if (errors) {
@@ -204,7 +212,6 @@ export default {
       });
     },
     async operation() {
-      console.log('in function:operation');
       let has_id = Object.keys(this.form).filter(item => item === 'id').length;
       let type;
       has_id > 0 ? (type = 'wayEdit') : (type = 'waySave');
