@@ -30,7 +30,6 @@
             <tr>
               <th>方式名称</th>
               <th>价格</th>
-              <th>税率</th>
               <th>是否量份收费</th>
               <th>发货方式</th>
               <th>计算方式</th>
@@ -40,7 +39,6 @@
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.type_name }}</td>
               <td>{{ item.price }}</td>
-              <td>{{ item.cess }}</td>
               <td>{{ item.is_lf === `0` ? '是' : '否' }}</td>
               <td>{{ item.is_lf === `0` ? '' : item.send_type === `0` ? '零担' : '整车' }}</td>
               <td>{{ item.is_lf === `0` ? '' : item.count_type === `0` ? '按体积' : '按重量' }}</td>
@@ -83,14 +81,6 @@
           <el-row style="margin-bottom:1%;">
             <el-col :span="4">价格:</el-col>
             <el-col><b-form-input v-model="form.price"></b-form-input></el-col>
-          </el-row>
-          <el-row style="margin-bottom:1%;">
-            <el-col :span="4">税率:</el-col>
-            <el-col>
-              <el-tooltip class="item" effect="dark" content="请填写1.X,如:1/1.04" placement="top">
-                <b-form-input v-model="form.cess"></b-form-input>
-              </el-tooltip>
-            </el-col>
           </el-row>
           <el-row style="margin-bottom:1%;">
             <el-col :span="4">是否量份收费:</el-col>

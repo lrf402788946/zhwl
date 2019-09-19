@@ -505,6 +505,16 @@ export const actions = {
       console.error(err);
     }
   },
+  //新查询合同列表
+  async newContract({ state }, { type, data }) {
+    let { skip, limit } = data;
+    let result;
+    if (type === 'list') {
+      let { pact_no = '', cus_id = '', type = '' } = data;
+      result = await this.$axios.get(`${api.contractList}?skip=${skip}&limit=${limit}&pact_no=${pact_no}&cus_id=${cus_id}&type=${type}`);
+    }
+    return result;
+  },
   //项目列表
   async getItemList({ commit }, { skip, limit, pact_id }) {
     try {

@@ -215,7 +215,6 @@ export default {
   async created() {
     await this.search();
     let { data } = await this.getRegion({ pid: 1 });
-    console.log(data);
     this.$set(this, 'startProvinceList', data);
     this.$set(this, 'endProvinceList', data);
   },

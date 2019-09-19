@@ -48,7 +48,7 @@
               <td>{{ item.goods_num }}</td>
               <td>{{ item.goods_weight }}</td>
               <td>{{ item.goods_volume }}</td>
-              <td><el-date-picker v-model="item.send_time_hp" :disabled="true" size="large" type="date"></el-date-picker></td>
+              <td>{{ item.send_time_hp }}</td>
               <td>
                 <b-button
                   class="btn btn-info base-margin-bottom"
@@ -96,7 +96,7 @@
             <div class="lh44">操作人：</div>
             <b-form-input v-model="form.op" :disabled="true"></b-form-input>
           </div>
-          <div class="col-lg-4 mb25">
+          <!-- <div class="col-lg-4 mb25">
             <div class="lh44">线路：</div>
             <b-form-select v-model="form.dly_way_id" @change="subDlyWay()">
               <option value="" disabled>请选择线路</option>
@@ -106,9 +106,9 @@
           <div class="col-lg-8 mb25">
             <div class="lh44">运输内容：</div>
             <b-form-input v-model="form.content"></b-form-input>
-          </div>
+          </div> -->
           <!--支出信息-->
-          <div class="col-lg-3 mb25">
+          <div class="col-lg-4 mb25">
             <div class="lh44">供应商方式</div>
             <el-select
               class="marginBot"
@@ -122,41 +122,6 @@
               <el-option :value="1" label="他运"></el-option>
             </el-select>
           </div>
-          <div class="col-lg-3 mb25">
-            <div class="lh44">供应商</div>
-            <el-select
-              class="marginBot"
-              style="height:40px !important"
-              v-model="out.c_id"
-              filterable
-              :disabled="out.type === 0"
-              :placeholder="out.type === 0 ? '无需选择供应商' : '请选择供应商'"
-              @change="changeList('client')"
-            >
-              <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-3 mb25">
-            <div class="lh44">合同</div>
-            <el-select
-              class="marginBot"
-              style="height:40px !important"
-              v-model="out.pact_id"
-              filterable
-              :placeholder="out.type === 0 ? '无需选择合同' : '请选择合同'"
-              :disabled="out.type === 0"
-              @change="changeList('contract')"
-            >
-              <el-option v-for="(contract, index) in contractList" :key="index" :label="contract.pact_no" :value="contract.id"></el-option>
-            </el-select>
-          </div>
-          <div class="col-lg-3 mb25">
-            <div class="lh44">税率</div>
-            <el-select class="marginBot" style="height:40px !important" v-model="out.rate" filterable placeholder="请选择税率" @change="changeMoney()">
-              <el-option v-for="(item, index) in rateList" :key="index" :value="item" :label="item"></el-option>
-            </el-select>
-            <!-- <b-form-input v-model="out.rate" type="number" :disabled="true"></b-form-input> -->
-          </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">车号</div>
             <el-select
@@ -164,7 +129,7 @@
               style="height:40px !important"
               v-model="out.car_id"
               filterable
-              :placeholder="out.type !== 0 ? '无需选择车辆' : '请选择车辆'"
+              :placeholder="!out.type ? '请选择供应方式' : out.type !== 0 ? '无需选择车辆' : '请选择车辆'"
               :disabled="out.type !== 0"
             >
               <el-option v-for="(car, index) in carList" :key="index" :label="car.car_no" :value="car.id"></el-option>
@@ -177,11 +142,73 @@
               style="height:40px !important"
               v-model="out.driver_id"
               filterable
-              :placeholder="out.type !== 0 ? '无需选择司机' : '请选择司机'"
+              :placeholder="!out.type ? '请选择供应方式' : out.type !== 0 ? '无需选择司机' : '请选择司机'"
               :disabled="out.type !== 0"
             >
               <el-option v-for="(driver, index) in driverList" :key="index" :label="driver.name" :value="driver.id"></el-option>
             </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">供应商</div>
+            <el-select
+              class="marginBot"
+              style="height:40px !important"
+              v-model="out.c_id"
+              filterable
+              :disabled="!out.type || out.type === 0"
+              :placeholder="!out.type ? '请选择供应方式' : out.type === 0 ? '无需选择供应商' : '请选择供应商'"
+              @change="changeList('client')"
+            >
+              <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">合同</div>
+            <el-select
+              class="marginBot"
+              style="height:40px !important"
+              v-model="out.pact_id"
+              filterable
+              :placeholder="!out.type ? '请选择供应方式' : out.type === 0 ? '无需选择合同' : '请选择合同'"
+              :disabled="!out.type || out.type === 0"
+              @change="changeList('contract')"
+            >
+              <el-option v-for="(contract, index) in contractList" :key="index" :label="contract.pact_no" :value="contract.id"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">项目</div>
+            <el-select
+              class="marginBot"
+              style="height:40px !important"
+              v-model="out.item_id"
+              filterable
+              :placeholder="!out.type ? '请选择供应方式' : out.type === 0 ? '无需选择项目' : '请选择项目'"
+              :disabled="!out.type || out.type === 0"
+              @change="changeList('project')"
+            >
+              <el-option v-for="(item, index) in projectList" :key="index" :label="item.item_name" :value="item.id"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">线路</div>
+            <el-select
+              class="marginBot"
+              style="height:40px !important"
+              v-model="out.dly_way_id"
+              filterable
+              :placeholder="!out.type ? '请选择供应方式' : out.type === 0 ? '无需选择线路' : '请选择线路'"
+              :disabled="!out.type || out.type === 0"
+            >
+              <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+          </div>
+          <div class="col-lg-3 mb25">
+            <div class="lh44">税率</div>
+            <el-select class="marginBot" style="height:40px !important" v-model="out.rate" filterable placeholder="请选择税率" @change="changeMoney()">
+              <el-option v-for="(item, index) in rateList" :key="index" :value="item" :label="item"></el-option>
+            </el-select>
+            <!-- <b-form-input v-model="out.rate" type="number" :disabled="true"></b-form-input> -->
           </div>
           <div class="col-lg-4 mb25">
             <div class="lh44">支出项</div>
@@ -189,6 +216,7 @@
               <el-option v-for="(cost, index) in costList" :key="index" :label="cost.cost_name" :value="cost.id"></el-option>
             </el-select>
           </div>
+          <div class="col-lg-4 mb25"></div>
           <div class="col-lg-3 mb25">
             <div class="lh44">税前应付金额</div>
             {{ out.sq_ys ? out.sq_ys : 0 }}
@@ -236,11 +264,6 @@
                       <td>{{ item.goods_weight }}</td>
                       <td>{{ item.goods_volume }}</td>
                       <td><el-input v-model="item.price" type="number" @input="changeMoney()"></el-input></td>
-                      <!-- <td>
-                        <el-select v-model="item.dly_way_id" placeholder="请选择线路">
-                          <el-option v-for="(item, index) in dlyWayList" :key="index" :label="item.name" :value="item.id"> </el-option>
-                        </el-select>
-                      </td> -->
                     </tr>
                   </tbody>
                 </table>
@@ -402,7 +425,9 @@ export default {
       subForm: [],
       costForm: [],
       costList: [],
-      newDlyList: [],
+      contractList: [],
+      projectList: [],
+      dlyWayList: [],
       out: {},
       is_update: true,
       operateId: '',
@@ -413,7 +438,7 @@ export default {
       mainValidator: new Validator({
         op: [{ required: true, message: '请填写操作人' }],
         send_time: [{ required: true, message: '请选择发货日期' }],
-        dly_way_id: [{ required: true, message: '请选择线路' }],
+        // dly_way_id: [{ required: true, message: '请选择线路' }],
       }),
       th: ['订单号', '订单人', '订单日期', '备注'],
       filterVal: ['order_no', 'user_name', 'in_date', 'remark'],
@@ -431,16 +456,13 @@ export default {
       limit: state => state.publics.limit,
       userInfo: state => state.publics.userInfo,
       orderSubList: state => state.self.orderSubList,
-      dlyWayList: state => state.self.dlyWayList,
       carList: state => state.car.carList,
       driverList: state => state.personnel.driverList,
-      contractList: state => state.personnel.contractList,
       clientList: state => state.personnel.clientList,
     }),
   },
   async created() {
     await this.getCarList({ skip: 0, limit: 10000 });
-    await this.getdly_wayList({ skip: 0, limit: 10000 });
     await this.getDriverList({ skip: 0, limit: 10000 });
     await this.getClientList({ skip: 0, limit: 10000, type: 1 });
     let { data } = await this.getCostList({ skip: 0, limit: 10000 });
@@ -452,14 +474,6 @@ export default {
     });
     this.$set(this, 'costList', data);
     this.search();
-    this.newDlyList = this.dlyWayList.map(item => {
-      let newObject = {
-        id: item.id,
-        name: item.name,
-        content: item.start_province + '-' + item.start_city + '-' + item.start_site + '至' + item.end_province + '-' + item.end_city + '-' + item.end_site,
-      };
-      return newObject;
-    });
     this.$set(this.form, `op`, this.userInfo.login_id);
   },
   methods: {
@@ -469,12 +483,13 @@ export default {
       'getCarList',
       'transporSelectOrder',
       'transportSave',
-      'getdly_wayList',
       'getTransportNo',
       'getCostList',
-      'getContractList',
       'getClientList',
       'orderSubSplit',
+      'getItemList',
+      'item_getDlyList',
+      'newContract',
     ]),
     //分页
     toSearch(currentPage) {
@@ -518,7 +533,7 @@ export default {
       let transportMain = JSON.parse(JSON.stringify(this.form));
       transportMain.c_id = this.out.c_id;
       this.out.car_id ? (transportMain.car_id = this.out.car_id) : '';
-      delete transportMain.dly_way_id;
+      transportMain.item_id = this.out.item_id;
       //运输子表整理
       let transportSub = [];
       this.subForm.map(item => {
@@ -551,7 +566,11 @@ export default {
       // console.log(transportMain);
       // console.log(transportSub);
       // console.log(outForm);
-      await this.transportSave({ form: transportMain, subForm: transportSub, outForm: outForm });
+      await this.transportSave({
+        form: JSON.parse(JSON.stringify(transportMain)),
+        subForm: JSON.parse(JSON.stringify(transportSub)),
+        outForm: JSON.parse(JSON.stringify(outForm)),
+      });
       this.$refs.addAlert.hide();
       this.form = {};
       this.subForm = [];
@@ -598,33 +617,46 @@ export default {
     },
     //是否选择供应商
     async changeList(type) {
-      switch (type) {
+      if (type === 'type') {
         //选择供应商方式后的变化=>加载供应商
-        case 'type':
-          this.out.c_id = this.out.type === 0 ? 1 : '';
-          if (this.out.type === 0) {
-            this.$set(this.out, `c_id`, '');
-            this.$set(this.out, `pact_id`, '');
-            this.$set(this.out, `pact_id`, '');
-          } else {
-            this.$set(this.out, `car_id`, '');
-            this.$set(this.out, `driver_id`, '');
-          }
-          this.$set(this.out, `rate`, 1);
-          this.changeMoney();
-          break;
+        this.out.c_id = this.out.type === 0 ? 1 : '';
+        if (this.out.type === 0) {
+          this.$set(this.out, `c_id`, '');
+          this.$set(this.out, `pact_id`, '');
+          this.$set(this.out, `item_id`, '');
+          this.$set(this.out, `dly_way_id`, '');
+        } else {
+          this.$set(this.out, `car_id`, '');
+          this.$set(this.out, `driver_id`, '');
+        }
+        this.$set(this.out, `rate`, 1);
+        this.changeMoney();
+      } else if (type === 'client') {
         //选择供应商后的变化=>查合同
-        case 'client':
-          await this.getContractList({ skip: 0, limit: 10000, pact_no: '', cus_id: this.out.c_id });
-          break;
-        //选择合同后的变化=>改税率
-        case 'contract':
-          this.$set(this.out, 'rate', this.contractList.filter(item => item.id === this.out.pact_id)[0].cess * 1);
-          this.changeMoney();
-          break;
-        default:
-          break;
+        let result = await this.newContract({ type: 'list', data: { cus_id: this.out.c_id, skip: 0, limit: 10000 } });
+        if (`${result.rescode}` === '0') {
+          this.$set(this, `contractList`, result.clientPactList);
+        }
+      } else if (type === 'contract') {
+        //选合同=>查项目
+        let { result, data } = await this.getItemList({ pact_id: this.out.pact_id, skip: 0, limit: 10000 });
+        if (`${data.rescode}` === '0') {
+          this.$set(this, `projectList`, data.dataList);
+        }
+      } else if (type === 'project') {
+        //选项目=>1)取税率;2)查线路
+        let res = this.projectList.filter(item => `${item.id}` === `${this.out.item_id}`);
+        console.log(res);
+        this.$set(this.out, `rate`, res[0] === undefined && res[0].cess === undefined ? 1 : res[0].cess);
+        let { result, data } = await this.item_getDlyList({ item_id: this.out.item_id, skip: 0, limit: 10000 });
+        if (`${data.rescode}` === '0') {
+          this.$set(this, `dlyWayList`, data.dlyWayList);
+        }
       }
+      //选择合同后的变化=>改税率
+      // case 'contract':
+      //   this.$set(this.out, 'rate', this.contractList.filter(item => item.id === this.out.pact_id)[0].cess * 1);
+      //   this.changeMoney();
     },
     //计算价钱
     changeMoney(type) {

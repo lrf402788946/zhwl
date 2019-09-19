@@ -29,10 +29,12 @@
           <tbody v-if="list.length > 0">
             <tr>
               <th>项目名称</th>
+              <th>税率</th>
               <th>操作</th>
             </tr>
             <tr v-for="(item, index) in list" :key="index">
               <td>{{ item.item_name }}</td>
+              <td>{{ item.cess }}</td>
               <td>
                 <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">修&nbsp;&nbsp;改</b-button>
                 <b-button style="color:white; margin-right:5px;" @click="$router.push({ path: '/dly_way', query: { id: item.id, name: item.item_name } })">
@@ -67,9 +69,15 @@
             <tbody>
               <tr>
                 <th>项目名称</th>
+                <th>税率</th>
               </tr>
               <tr>
                 <td><b-form-input v-model="form.item_name"></b-form-input></td>
+                <td>
+                  <el-tooltip class="item" effect="dark" content="请填写1.X,如:1/1.04" placement="top">
+                    <b-form-input v-model="form.cess"></b-form-input>
+                  </el-tooltip>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -114,6 +122,7 @@ export default {
       form: {},
       pageValidator: new Validator({
         item_name: { required: true, message: '请填写项目名称' },
+        cess: { required: true, message: '请填写税率' },
         pact_id: { required: true, message: '此处为系统bug,若出现请联系' },
       }),
     };

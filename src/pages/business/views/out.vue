@@ -256,7 +256,7 @@ export default {
   components: {},
   data() {
     return {
-      list: [{ what_no: 'what_no-1', order_no: 'order_no-1', slip_no: 'slip_no-1', c_id: 21, dly_way_id: 3, out_price: '1000', status: 1 }],
+      list: [{ what_no: 'what_no-1', order_no: 'order_no-1', slip_no: 'slip_no-1', c_id: 21, dly_way_id: 3, out_price: '1000' }],
       form: {},
       costList: [],
       subForm: [],
@@ -460,8 +460,10 @@ export default {
     },
     //修改
     async update() {
-      let newSubForm = this.subForm.map(item => {
+      let newList = JSON.parse(JSON.stringify(this.subForm));
+      let newSubForm = newList.map(item => {
         delete item.contractList;
+        delete item.status;
         item.order_no = this.form.order_no;
         return item;
       });
