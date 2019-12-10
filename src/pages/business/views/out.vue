@@ -275,7 +275,7 @@ export default {
         // out_price: { required: true, message: '请填写支出金额' },
       }),
       dialog: false,
-      rateList: [1, 1.03, 1.06, 1.1, 1.13],
+      rateList: [1, 1.03, 1.06, 1.09, 1.1, 1.13],
     };
   },
   computed: {

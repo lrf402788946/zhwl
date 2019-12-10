@@ -445,7 +445,7 @@ export default {
       skip: 0,
       order_loading_list: [],
       tabs: '0',
-      rateList: [1, 1.03, 1.06, 1.1, 1.13],
+      rateList: [1, 1.03, 1.06, 1.09, 1.1, 1.13],
       orderList: {},
       splitForm: [],
       printDialog: false,
