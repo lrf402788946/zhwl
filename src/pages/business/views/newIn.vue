@@ -458,9 +458,9 @@ export default {
           let way = JSON.parse(JSON.stringify(selected[0]));
           this.$set(this.form, `price`, way.price);
           this.form.is_lf = way.is_lf;
-          if (way.is_if === '0') this.form.num = this.orderInfo.item_nums;
-          else if (way.send_type === `1`) this.form.num = 1;
-          else if (way.count_type === '0') this.form.num = this.orderInfo.goods_volumes;
+          if (`${way.is_lf}` === '0') this.form.num = this.orderInfo.item_nums;
+          else if (`${way.send_type}` === `1`) this.form.num = 1;
+          else if (`${way.count_type}` === '0') this.form.num = this.orderInfo.goods_volumes;
           else this.form.num = this.orderInfo.goods_weights;
           this.formMoney();
         }
