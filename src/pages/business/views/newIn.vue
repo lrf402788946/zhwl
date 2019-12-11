@@ -439,7 +439,7 @@ export default {
         if (result) {
           let list = data.dataList.map(item => {
             if (`${item.is_lf}` === '0') item.type_name = '量份收费';
-            else if (`${item.send_type}` !== '0') item.type_name = '整车';
+            else if (`${item.send_type}` !== '0') item.type_name = `整车-${item.price}`;
             else item.type_name = `零担-${`${item.count_type}` === '0' ? '按体积' : '按重量'}-${item.price}`;
             return item;
           });

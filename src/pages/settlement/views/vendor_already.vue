@@ -37,7 +37,6 @@
             <th>卡号</th>
             <th>支付单位</th>
             <th>实收合计</th>
-            <th>支付类型</th>
             <th>操作</th>
           </tr>
           <tr v-for="(item, index) in list" :key="index">
@@ -46,7 +45,6 @@
             <td>{{ item.c_account }}</td>
             <td>{{ item.pay_unit }}</td>
             <td>{{ item.count_price }}</td>
-            <td>{{ item.pay_type === '0' ? '现金' : '银行汇款' }}</td>
             <td><bill :id="item.id"></bill></td>
           </tr>
         </tbody>

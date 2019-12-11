@@ -284,7 +284,7 @@ export default {
       LODOP.SET_PRINT_STYLE('FontSize', 18);
       LODOP.SET_PRINT_STYLE('Bold', 1);
 
-      LODOP.ADD_PRINT_HTM(10, 100, 800, 1000, document.getElementById('printDiv').innerHTML);
+      LODOP.ADD_PRINT_HTM(30, 55, 800, 1000, document.getElementById('printDiv').innerHTML);
       //        LODOP.PRINT();
       LODOP.PREVIEW();
       if (!this.routerName.includes('already')) {
