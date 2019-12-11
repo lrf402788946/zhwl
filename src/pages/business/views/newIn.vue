@@ -116,7 +116,7 @@
             <tbody>
               <tr>
                 <th style="width:10%">客户</th>
-                <th style="width:15%">运输线路</th>
+                <!-- <th style="width:15%">运输线路</th> -->
                 <th style="width:15%">合同</th>
                 <th style="width:15%">项目</th>
                 <th style="width:20%">项目线路</th>
@@ -124,7 +124,7 @@
               </tr>
               <tr>
                 <td>{{ { data: clientList, searchItem: `id`, value: orderInfo.c_id, label: `name` } | getName }}</td>
-                <td>{{ { data: dlyWayList, searchItem: `id`, value: orderInfo.dly_way_id, label: `name` } | getName }}</td>
+                <!-- <td>{{ { data: dlyWayList, searchItem: `id`, value: orderInfo.dly_way_id, label: `name` } | getName }}</td> -->
                 <td>
                   <el-select
                     class="marginBot"
@@ -338,6 +338,7 @@ export default {
         { value: '1', name: '1' },
         { value: '1.03', name: '1.03' },
         { value: '1.06', name: '1.06' },
+        { value: '1.09', name: '1.09' },
         { value: '1.1', name: '1.1' },
         { value: '1.13', name: '1.13' },
       ],
@@ -395,7 +396,6 @@ export default {
         this.dialog = true;
         this.form.main_id = item.id;
         this.form.order_no = item.order_no;
-        this.form.num = item.goods_nums;
         this.subForm.push({ rate: `1` });
       } else if (type === 'edit') {
         this.dialogRequest(item);
@@ -438,14 +438,30 @@ export default {
       } else if (type === 'searchWay') {
         let { result, data } = await this.getWayList({ ...info, dly_way_id: item });
         if (result) {
-          this.$set(this, `wayList`, data.dataList);
+          let list = data.dataList.map(item => {
+            if (`${item.is_lf}` === '0') item.type_name = '量份收费';
+            else if (`${item.send_type}` !== '0') item.type_name = '整车';
+            else item.type_name = `零担-${`${item.count_type}` === '0' ? '按体积' : '按重量'}-${item.price}`;
+            return item;
+          });
+          this.$set(this, `wayList`, list);
         }
         if (!need) this.formReset(1);
       } else if (type === 'way') {
         let selected = this.wayList.filter(items => items.id === item);
+        console.log(selected);
+        console.log(this.orderInfo.item_nums);
+        console.log(this.orderInfo.goods_volumes);
+        console.log(this.orderInfo.goods_weights);
+
         if (selected.length > 0) {
-          this.$set(this.form, `price`, selected[0].price);
-          this.form.is_lf = selected[0].is_lf;
+          let way = JSON.parse(JSON.stringify(selected[0]));
+          this.$set(this.form, `price`, way.price);
+          this.form.is_lf = way.is_lf;
+          if (way.is_if === '0') this.form.num = this.orderInfo.item_nums;
+          else if (way.send_type === `1`) this.form.num = 1;
+          else if (way.count_type === '0') this.form.num = this.orderInfo.goods_volumes;
+          else this.form.num = this.orderInfo.goods_weights;
           this.formMoney();
         }
       } else {

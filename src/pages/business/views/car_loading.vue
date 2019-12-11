@@ -474,7 +474,6 @@ export default {
     });
     this.$set(this, 'costList', data);
     this.search();
-    this.$set(this.form, `op`, this.userInfo.login_id);
   },
   methods: {
     ...mapActions([
@@ -594,6 +593,7 @@ export default {
         this.$message.error('请选择要装车的货物');
         return false;
       }
+      this.$set(this.form, `op`, this.userInfo.login_id);
       let newList = this.order_loading_list.map(item => `${item}`);
       let result = await this.transporSelectOrder({ ids: newList });
       let transportOrderSubList = result.orderSubList.map(item => {
@@ -672,6 +672,7 @@ export default {
       this.$set(this.out, 'sq_ss', price);
       this.$set(this.out, 'sh_ys', price * rate);
       this.$set(this.out, 'sh_ss', price * rate);
+      this.$forceUpdate();
     },
     //关闭弹框
     closeAlert(type) {

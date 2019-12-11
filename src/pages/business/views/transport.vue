@@ -57,7 +57,9 @@
             <td>{{ item.status | getStatus }}</td>
             <td>
               <b-button variant="primary" style="color:white; margin-right:5px;" @click="openAlert('update', index)">详&nbsp;&nbsp;情</b-button>
-              <b-button variant="success" style="color:white; margin-right:5px;" @click="openAlert('sign', item.id)">签&nbsp;&nbsp;收</b-button>
+              <b-button variant="success" style="color:white; margin-right:5px;" @click="openAlert('sign', item.id)" v-if="item.status !== 2"
+                >签&nbsp;&nbsp;收</b-button
+              >
               <b-button v-if="!(item.status === 2)" variant="danger" style="color:white;" @click="openAlert('delete', item.id)">删&nbsp;&nbsp;除</b-button>
             </td>
           </tr>
@@ -104,10 +106,10 @@
             >
             </el-date-picker>
           </div>
-          <div class="col-lg-4 mb25">
+          <!-- <div class="col-lg-4 mb25">
             <div class="lh44">线路：</div>
             <b-form-input v-model="updateForm.content" :disabled="true" filterable placeholder="请输入运输线路" />
-          </div>
+          </div> -->
           <br />
           <table class="table table-btransported table-striped ">
             <tbody>

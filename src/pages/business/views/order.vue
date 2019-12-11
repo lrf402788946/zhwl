@@ -171,13 +171,13 @@
             >
             </el-date-picker>
           </div>
-          <div class="col-lg-3 mb25">
+          <!-- <div class="col-lg-3 mb25">
             <div class="lh44">线路:</div>
             <b-form-select v-model="form.dly_way_id" class="marginBot" style="height:40px !important">
               <option :value="undefined" disabled>请选择线路</option>
               <option v-for="(item, index) in dlyWayList" :key="index" :value="item.id">{{ item.name }}</option>
             </b-form-select>
-          </div>
+          </div> -->
           <!-- <div class="col-lg-3 mb25">
             <div class="lh44">发货方式:</div>
             <el-select class="marginBot" style="height:40px !important" v-model="form.send_type" filterable placeholder="请选择发货方式">
@@ -347,13 +347,13 @@
             >
             </el-date-picker>
           </div>
-          <div class="col-lg-3 mb25">
+          <!-- <div class="col-lg-3 mb25">
             <div class="lh44">线路:</div>
             <b-form-select v-model="updateForm.dly_way_id" :disabled="is_update" class="marginBot" style="height:40px !important">
               <option :value="undefined" disabled>请选择线路</option>
               <option v-for="(item, index) in dlyWayList" :key="index" :value="item.id">{{ item.name }}</option>
             </b-form-select>
-          </div>
+          </div> -->
           <div class="col-lg-4 mb25">
             <div class="lh44">签收人：</div>
             <b-form-input v-model="updateForm.sign_name" :disabled="true" placeholder="请填写签收人"></b-form-input>
@@ -372,7 +372,7 @@
                 <!--new-->
                 <div class="col-lg-3 mb25">
                   <div class="lh44">件数:</div>
-                  <b-form-input v-model="item.goods_num" :disabled="is_update" type="number"></b-form-input>
+                  <b-form-input v-model="item.item_num" :disabled="is_update" type="number"></b-form-input>
                 </div>
                 <div class="col-lg-3 mb25">
                   <div class="lh44">发货件数:</div>
@@ -715,6 +715,9 @@ export default {
         delete this.updateForm.is_in;
         delete this.updateForm.pact_id;
         delete this.updateForm.out_price;
+        delete this.updateForm.goods_weights;
+        delete this.updateForm.goods_volumes;
+        delete this.updateForm.item_nums;
         await this.orderEdit({ form: this.updateForm, subForm: this.subForm });
         this.closeAlert('update');
         this.updateForm = [];

@@ -132,7 +132,7 @@
                     placeholder="请选择供应商"
                     @change="getContract(index)"
                   >
-                    <el-option v-for="(client, index) in clientList" :key="index" :label="client.name" :value="client.id"></el-option>
+                    <el-option v-for="(client, index) in newClientList" :key="index" :label="client.name" :value="client.id"></el-option>
                   </el-select>
                 </td>
                 <td>
@@ -288,6 +288,11 @@ export default {
       contractList: state => state.personnel.contractList,
       orderList: state => state.self.orderList,
     }),
+    newClientList() {
+      let arr = JSON.parse(JSON.stringify(this.clientList));
+      arr.unshift({ name: '自运', id: null });
+      return arr;
+    },
   },
   async created() {
     await this.search();

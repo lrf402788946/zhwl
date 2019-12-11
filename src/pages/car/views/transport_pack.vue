@@ -220,19 +220,19 @@ export default {
     },
     //打开与关闭修改和删除的弹框
     async openAlert(type, id) {
-      // if (this.loading_list.length <= 0) {
-      //   this.$message.error('请选择要合并的运输单');
-      //   return false;
-      // }
-      // let transport_ids;
-      // let transport_nos;
-      // this.loading_list.map(item => {
-      //   transport_ids = transport_ids === undefined ? `${item.id}` : `${transport_ids},${item.id}`;
-      //   transport_nos = transport_nos === undefined ? `${item.transport_no}` : `${transport_nos},${item.transport_no}`;
-      // });
-      // this.$set(this.form, `transport_ids`, transport_ids);
-      // this.$set(this.form, `transport_nos`, transport_nos);
-      // this.subForm.length > 0 ? '' : this.addSubForm();
+      if (this.loading_list.length <= 0) {
+        this.$message.error('请选择要合并的运输单');
+        return false;
+      }
+      let transport_ids;
+      let transport_nos;
+      this.loading_list.map(item => {
+        transport_ids = transport_ids === undefined ? `${item.id}` : `${transport_ids},${item.id}`;
+        transport_nos = transport_nos === undefined ? `${item.transport_no}` : `${transport_nos},${item.transport_no}`;
+      });
+      this.$set(this.form, `transport_ids`, transport_ids);
+      this.$set(this.form, `transport_nos`, transport_nos);
+      this.subForm.length > 0 ? '' : this.addSubForm();
       this.$refs.pack.show();
     },
     addSubForm() {

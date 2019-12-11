@@ -90,11 +90,11 @@ a {
 }
 .base-footer {
   font-size: 14px;
-  padding: 30px 0;
+  padding: 15px 0;
   color: #46687f;
   background-color: #1c2b36;
   width: 240px;
-  height: 100px;
+  height: 80px;
   line-height: 16px;
   text-align: center;
   position: fixed;
