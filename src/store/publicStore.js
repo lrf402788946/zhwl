@@ -20,6 +20,7 @@ export const state = () => ({
   userRoleList: [],
   deptList: [],
   postList: [],
+  menuList: [],
 });
 
 export const mutations = {
@@ -27,7 +28,7 @@ export const mutations = {
   login(state) {
     if (sessionStorage.getItem('userInfo')) {
       state.userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
-      state.userRoleList = JSON.parse(sessionStorage.getItem('userRoleList'));
+      state.menuList = JSON.parse(sessionStorage.getItem('menuList'));
       return true;
     } else {
       return false;
@@ -36,9 +37,9 @@ export const mutations = {
   // 登出
   logout(state) {
     state.userInfo = '';
-    state.userRoleList = [];
+    state.menuList = [];
     sessionStorage.removeItem('userInfo');
-    sessionStorage.removeItem('userRoleList');
+    sessionStorage.removeItem('menuList');
   },
   //存列表数据
   setList(state, { type, data }) {
@@ -63,7 +64,7 @@ export const actions = {
         });
         if (result.rescode === '0') {
           sessionStorage.setItem('userInfo', JSON.stringify(result.user));
-          sessionStorage.setItem('userRoleList', JSON.stringify(result.userRoleList));
+          sessionStorage.setItem('menuList', JSON.stringify(result.menuList));
           Message.success(result.msg);
           return true;
         } else {

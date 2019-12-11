@@ -26,7 +26,9 @@
 
 <script>
 import { SYSTEM, PERSONNEL, CAR, BUSINESS, SETTLEMENT, SEARCH } from '@/util/role_menu.js';
+import * as menus from '@/util/role_menu.js';
 import { mapState } from 'vuex';
+import _ from 'lodash';
 export default {
   name: 'sideMenu',
   components: {},
@@ -37,23 +39,27 @@ export default {
   },
   computed: {
     ...mapState({
-      userRoleList: state => state.userRoleList,
+      menuList: state => state.publics.menuList,
     }),
   },
   created() {
-    this.menuList();
+    if (this.menu.length === 0) this.getMenuList();
   },
   methods: {
     turnTo(uri) {
       window.location.href = uri;
     },
-    menuList() {
-      this.menu.push(SYSTEM);
-      this.menu.push(PERSONNEL);
-      this.menu.push(CAR);
-      this.menu.push(BUSINESS);
-      this.menu.push(SETTLEMENT);
-      this.menu.push(SEARCH);
+    getMenuList() {
+      let res = _.uniqBy(this.menuList, 'menu_id');
+      for (const item of res) {
+        this.menu.push(_.get(menus, item.code));
+      }
+      // this.menu.push(SYSTEM);
+      // this.menu.push(PERSONNEL);
+      // this.menu.push(CAR);
+      // this.menu.push(BUSINESS);
+      // this.menu.push(SETTLEMENT);
+      // this.menu.push(SEARCH);
     },
     openMenuList(index) {
       if (!this.$refs.collapse[index].show) {

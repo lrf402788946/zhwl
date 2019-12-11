@@ -33,6 +33,7 @@
               <td>{{ item.role_name }}</td>
               <td>
                 <b-button variant="primary" style="color:white;" @click="openUpdateAlert(index)">修&nbsp;&nbsp;改</b-button>
+                <b-button style="color:white;" @click="toUserRole(item)">角色权限</b-button>
                 <b-button variant="danger" @click="openDeleteAlert(item.id)">删&nbsp;&nbsp;除</b-button>
               </td>
             </tr>
@@ -104,12 +105,16 @@
             返&nbsp;&nbsp;回
           </b-button>
         </b-modal>
+        <el-dialog :title="urTitle" :visible.sync="dialog" width="60%">
+          <role-menu :data="menuList" :role="users" @save="toSetMenu" @cancel="dialog = false"></role-menu>
+        </el-dialog>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import roleMenu from '@/components/role-menu.vue';
 import { mapActions, mapState } from 'vuex';
 import Validator from 'async-validator';
 export default {
@@ -117,7 +122,9 @@ export default {
   metaInfo: {
     title: '角色管理',
   },
-  components: {},
+  components: {
+    roleMenu,
+  },
   data() {
     return {
       list: [],
@@ -129,6 +136,11 @@ export default {
         role_code: [{ type: 'string', required: true, message: '请填写角色代码' }],
         role_name: { type: 'string', required: true, message: '请填写角色名称' },
       }),
+      urTitle: '',
+      dialog: false,
+      menuList: [],
+      users: [],
+      users_id: '',
     };
   },
   computed: {
@@ -141,7 +153,7 @@ export default {
     await this.search();
   },
   methods: {
-    ...mapActions(['getRoleList', 'roleOperation']),
+    ...mapActions(['getRoleList', 'roleOperation', 'getMenu', 'getRoleMenu', 'setMenu']),
     async search() {
       //查询方法
       await this.getRoleList({ type: 'list' });
@@ -207,6 +219,35 @@ export default {
       }, {});
       // eslint-disable-next-line no-console
       console.debug(errors, fields);
+    },
+    //角色权限
+    async toUserRole(item) {
+      this.urTitle = `${item.role_name}管理`;
+      this.$set(this, `users_id`, item.id);
+      this.dialog = true;
+      let result = await this.getMenu();
+      if (result.rescode === '0') {
+        let arr = result.dataList.map(item => {
+          let object = {};
+          object.key = item.id;
+          object.label = item.name;
+          return object;
+        });
+        this.$set(this, `menuList`, arr);
+      }
+      this.toGetRoleMenu(item.id);
+    },
+    async toGetRoleMenu(id) {
+      let result = await this.getRoleMenu(id);
+      if (result.rescode === '0') {
+        let arr = result.dataList.map(item => item.menu_id);
+        this.$set(this, `users`, arr);
+      }
+    },
+    //赋值角色菜单
+    async toSetMenu(data) {
+      let result = await this.setMenu({ id: this.users_id, menu_id: data });
+      if (result.rescode === '0') this.$message.success('操作成功');
     },
   },
 };

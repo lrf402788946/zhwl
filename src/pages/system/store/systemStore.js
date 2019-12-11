@@ -17,6 +17,11 @@ const api = {
   roleSave: '/api/role/role_save',
   roleEdit: '/api/role/role_edit',
   roleDelete: '/api/role/role_delete',
+  roleSetMenu: `/api/user/role_menu`,
+  //查询角色的可控制菜单
+  roleMenu: `/api/user/role_menu_sel`,
+  //菜单列表
+  menuList: `/api/user/menu_list`,
   //权限分配
   userRole: '/api/user/user_role',
   userRoleSelect: '/api/user/user_role_sel', //query:id
@@ -154,5 +159,20 @@ export const actions = {
       Message.error('操作失败');
       console.error(error);
     }
+  },
+  //获取菜单
+  async getMenu({ commit }) {
+    let result = await this.$axios.get(`${api.menuList}`);
+    return result;
+  },
+  //获取角色的菜单
+  async getRoleMenu({ commit }, payload) {
+    let result = await this.$axios.get(`${api.roleMenu}?id=${payload}`);
+    return result;
+  },
+  //设置角色的菜单
+  async setMenu({ commit }, payload) {
+    let result = this.$axios.post(`${api.roleSetMenu}`, { data: payload });
+    return result;
   },
 };
