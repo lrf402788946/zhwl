@@ -23,6 +23,8 @@ const api = {
   clientSelectList: '/api/count/client_count_sel', //params:{data:ids}
   //客户结算
   clientEdit: '/api/count/client_count_edit', //params:{data:ids}
+  //查询客户已结算单
+  clientBill: `/api/count/client_count_bill`,
 };
 
 export const state = () => ({
@@ -208,7 +210,7 @@ export const actions = {
   async clientAlreadyList({ commit }, { c_id, item_name, order_no, startTime, endTime, skip, limit }) {
     try {
       let result = await this.$axios.get(
-        `${api.clientList}?c_id=${c_id}&item_name=${item_name}&order_no=${order_no}&startTime=${startTime}&endTime=${endTime}&skip=${skip}&limit=${limit}`
+        `${api.clientBill}?c_id=${c_id}&item_name=${item_name}&order_no=${order_no}&startTime=${startTime}&endTime=${endTime}&skip=${skip}&limit=${limit}`
       );
       if (result.rescode === '0') {
         return { result: true, data: result };
