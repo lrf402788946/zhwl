@@ -396,7 +396,6 @@ export default {
         this.dialog = true;
         this.form.main_id = item.id;
         this.form.order_no = item.order_no;
-        this.subForm.push({ rate: `1` });
       } else if (type === 'edit') {
         this.dialogRequest(item);
         this.searchDetail(item.order_no);
@@ -449,11 +448,6 @@ export default {
         if (!need) this.formReset(1);
       } else if (type === 'way') {
         let selected = this.wayList.filter(items => items.id === item);
-        console.log(selected);
-        console.log(this.orderInfo.item_nums);
-        console.log(this.orderInfo.goods_volumes);
-        console.log(this.orderInfo.goods_weights);
-
         if (selected.length > 0) {
           let way = JSON.parse(JSON.stringify(selected[0]));
           this.$set(this.form, `price`, way.price);
@@ -576,6 +570,7 @@ export default {
       let main_id = this.form.main_id;
       let newForm = JSON.parse(JSON.stringify(this.form));
       delete newForm.main_id;
+      newForm.cost_id = 1;
       let data = [...this.subForm, { ...newForm }];
       let result = await this.toInCome({ data: data, main_id: main_id, type: type });
       this.dialog = false;
@@ -603,9 +598,8 @@ export default {
     },
     async searchDetail(order_no) {
       let { data } = await this.getInList({ skip: 0, limit: 1000, order_no: order_no });
-      console.log('data-->' + data);
       if (data !== null) {
-        let toForm = data.filter(item => item.cost_id === null)[0];
+        let toForm = data.filter(item => item.cost_id === 1)[0];
         delete toForm.pact_no;
         delete toForm.status;
         this.form = JSON.parse(JSON.stringify(toForm));
@@ -621,6 +615,7 @@ export default {
           delete item.status;
           return item;
         });
+        toSubForm = toSubForm.filter(fil => !fil.pact_id);
         this.$set(this, `subForm`, toSubForm);
         this.totalMoney();
       }

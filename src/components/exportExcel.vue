@@ -23,6 +23,7 @@ export default {
     dataName: { type: String, defalut: '' }, //获取父组件那个数据集作为数据源
     fileName: { type: String, default: `exportFileName${Date.parse(new Date())}` }, //文件名
     sheetName: { type: String, default: 'sheet1' }, //excel表格名,也用来判断如何取数据
+    data: null,
   },
   components: {},
   data() {
@@ -63,7 +64,8 @@ export default {
       if (this.sheetName === '客户结算单') {
         originData = _.get(this.$parent.$parent, this.dataName);
       } else {
-        originData = _.get(this.$parent, this.dataName);
+        if (this.data === null) originData = _.get(this.$parent, this.dataName);
+        else originData = this.data;
       }
       if (originData.length > 0) {
         const data = originData.map(v => filterVar.map(k => v[k]));

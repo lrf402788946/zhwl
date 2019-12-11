@@ -126,6 +126,11 @@
               <div class="col-lg-4 mb25">合计:{{ form.inPrice * 1 - form.outPrice * 1 }}</div>
             </div>
           </div>
+          <el-row type="flex" justify="center" align="middle">
+            <el-col :span="2">
+              <exportExcel :exportTitle="th" :db_nameList="filterVal" :data="exportList" :fileName="fileName"></exportExcel>
+            </el-col>
+          </el-row>
         </el-dialog>
 
         <!-- <el-pagination
@@ -145,11 +150,14 @@
 </template>
 
 <script>
+import exportExcel from '@/components/exportExcel.vue';
 import { mapActions, mapState } from 'vuex';
 import _ from 'lodash';
 export default {
   name: 'car_cost',
-  components: {},
+  components: {
+    exportExcel,
+  },
   data() {
     return {
       carCostList: [],
@@ -160,6 +168,10 @@ export default {
       dialog: false,
       outList: [],
       tipOutList: [],
+      th: ['费用类型', '项目', '金额', '订单号'],
+      filterVal: ['type', 'item', 'money', 'order_no'],
+      fileName: '',
+      exportList: [],
     };
   },
   computed: {
@@ -197,6 +209,41 @@ export default {
       this.$set(this, `outList`, outList);
       this.$set(this, `form`, item);
       this.dialog = true;
+      this.preForExport();
+    },
+    preForExport() {
+      // console.log(this.tipOutList);
+      // console.log(this.outList);
+      // console.log(this.form);
+      //文件名
+      this.fileName = this.form.car_no;
+      //整理出合计
+      let last = [];
+      last.push({ type: '总收入', money: this.form.inPrice });
+      last.push({ type: '总支出', money: this.form.outPrice });
+      last.push({ type: '合计', money: this.form.profit });
+      //整理收入
+      let inList = [];
+      inList = this.outList.map(item => {
+        let object = {};
+        object.type = `收入`;
+        object.item = item.cost_name;
+        object.money = item.sq_ys;
+        object.order_no = item.order_no;
+        return object;
+      });
+      //整理支出
+      let outList = [];
+      outList = this.tipOutList.map(item => {
+        let object = {};
+        object.type = `支出`;
+        object.money = item.price;
+        object.item = this.costList.filter(fil => fil.id === item.cost_id)[0].cost_name;
+        return object;
+      });
+      //整合以上列表
+      let arr = inList.concat(outList, last);
+      this.$set(this, `exportList`, arr);
     },
   },
 };
