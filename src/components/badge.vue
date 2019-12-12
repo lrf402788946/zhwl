@@ -24,19 +24,11 @@ export default {
   components: {},
   data: () => ({}),
   created() {},
-  mounted() {
-    this.$nextTick(() => {
-      this.toUpdate();
-    });
-  },
+  mounted() {},
   computed: {},
   methods: {
     toIndex() {
       window.location.href = '/index.html#/';
-    },
-    toUpdate() {
-      this.$refs.toop.$forceUpdate();
-      this.$refs.badge.$forceUpdate();
     },
   },
 };

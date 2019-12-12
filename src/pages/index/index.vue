@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="base-wrapper">
-      <Header></Header>
+      <headers></headers>
       <div class="base-main" id="base-main">
         <sideMenu style="float:left;"></sideMenu>
         <div id="base-main-right" class="base-main-right">
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import Header from '@/components/header.vue';
+import headers from '@/components/header.vue';
 import sideMenu from '@/components/side_menu.vue';
 export default {
   data() {
@@ -23,7 +23,7 @@ export default {
     };
   },
   components: {
-    Header,
+    headers,
     sideMenu,
   },
   mounted() {

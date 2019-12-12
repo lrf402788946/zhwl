@@ -41,6 +41,7 @@ export default {
     // this.test();
     this.toGetMsg();
   },
+  mounted() {},
   methods: {
     ...mapActions(['getMsg', 'editMsg', 'deleteMsg']),
     async toGetMsg() {

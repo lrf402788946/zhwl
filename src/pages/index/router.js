@@ -13,7 +13,7 @@ const router = new Router({
       component: index,
       children: [
         {
-          path: '/',
+          path: '',
           name: 'index_contant',
           component: index_contant,
         },

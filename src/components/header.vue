@@ -18,7 +18,7 @@
             <badge :info="info" :total="total" v-if="!loading"></badge>
           </div>
           <div class="col-lg-3 newHeaderDiv">
-            <el-dropdown v-if="loginOrNot()">
+            <el-dropdown v-if="isLogin">
               <span class="el-dropdown-link" style="margin: 50px;">{{ getName() }}<span class="button-down fa fa-caret-down"></span></span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>
@@ -58,6 +58,7 @@ export default {
       mqObj: { username: 'wy', pwd: '1' },
       loading: true,
       info: '',
+      isLogin: false,
     };
   },
   computed: {
@@ -72,7 +73,8 @@ export default {
     });
   },
   async created() {
-    // this.isLogin();
+    this.login();
+    this.loginOrNot();
     await this.toGetMsg();
   },
   methods: {
@@ -87,10 +89,11 @@ export default {
       window.location.href = '/login.html';
     },
     loginOrNot() {
-      this.login();
       if (this.userInfo.user_name) {
+        this.$set(this, `isLogin`, true);
         return true;
       } else {
+        this.$set(this, `isLogin`, false);
         return false;
       }
     },
