@@ -1,12 +1,35 @@
 <template>
   <div>
-    <div class="ind">
-      欢迎使用智慧物流管理平台
+    <div>
+      <el-card>
+        <template #header>
+          <el-row>
+            <el-col :span="24" style="text-align:left">
+              待办事项
+            </el-col>
+          </el-row>
+        </template>
+        <el-table :data="data" border stripe :show-header="false" height="500">
+          <el-table-column>
+            <template slot-scope="scoped">
+              <el-row>
+                <el-col :span="18">
+                  {{ scoped.row.content }}
+                </el-col>
+                <el-col :span="6" style="text-align:right">
+                  <el-button type="text" @click="toDeleteMsg(scoped.row)">[不再提示]</el-button>
+                </el-col>
+              </el-row>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
 export default {
   data() {
     return {
@@ -16,81 +39,23 @@ export default {
   },
   created() {
     // this.test();
+    this.toGetMsg();
   },
-  methods: {},
+  methods: {
+    ...mapActions(['getMsg', 'editMsg', 'deleteMsg']),
+    async toGetMsg() {
+      let result = await this.getMsg();
+      if (`${result.rescode}` === '0') this.$set(this, `data`, result.dataList);
+    },
+    async toDeleteMsg(item) {
+      let result = await this.deleteMsg({ id: item.id });
+      if (`${result.rescode}` === '0') {
+        this.$message.success('操作成功');
+        this.toGetMsg();
+      }
+    },
+  },
 };
 </script>
-<style>
-.ind {
-  text-align: center;
-  font-size: 60px;
-  margin-top: 200px;
-  line-height: 50px;
-  color: #17a2b8;
-}
-body {
-  padding: 0;
-  margin: 0;
-  font-family: '微软雅黑';
-  font-size: 14px;
-  overflow: hidden;
-  height: 100vh;
-}
-.dengBtn {
-  padding: 10px 16px;
-  font-size: 18px;
-  line-height: 1.3333333;
-  border-radius: 6px;
-  background-color: #5bc0de;
-  border: none;
-  color: #fff;
-  display: block;
-  width: 100%;
-  text-align: center;
-}
-.dengBtn:hover {
-  cursor: pointer;
-}
-h1 .h1 {
-  font-size: 36px !important;
-}
-.form-group {
-  margin-bottom: 15px !important;
-}
-label {
-  display: inline-block;
-  max-width: 100%;
-  margin-bottom: 5px !important;
-  font-weight: bold;
-  font-size: 14px;
-}
-.btn-info {
-  background-color: #5bc0de !important;
-  border-color: #46b8da !important;
-}
-.btn-lg .btn-group-lg > .btn {
-  padding: 10px 16px !important;
-  font-size: 18px !important;
-  line-height: 1.3333333 !important;
-  border-radius: 6px !important;
-}
-.form-control {
-  height: 34px !important;
-  padding: 6px 12px !important;
-  font-size: 14px !important;
-  line-height: 1.42857143 !important;
-  color: #555 !important;
-  border: 1px solid #ccc !important;
-  border-radius: 4px !important;
-}
-.form-container {
-  height: auto !important;
-  padding-bottom: 30px;
-}
-</style>
 
-<style scoped>
-/* @import '../icon/Font-Awesome-master/css/font-awesome.css';
-@import '../layout/base-Layout-bootstrap.css';
-@import '../style/base-style-bootstrap.css'; */
-</style>
+<style scoped></style>

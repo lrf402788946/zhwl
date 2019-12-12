@@ -15,17 +15,7 @@
           <div class="col-lg-2" style="padding-top: 1%;"><el-button type="primary" size="mini" @click="toDownload()">点击下载打印组件</el-button></div>
           <div class="col-lg-3"></div>
           <div class="col-lg-1 newHeaderDiv">
-            <el-dropdown>
-              <el-badge :value="infoList.length" v-if="infoList.length <= 0" class="item" type="primary">
-                <el-button type="info" icon="el-icon-message" circle></el-button>
-              </el-badge>
-              <el-badge v-else :value="infoList.length" class="item">
-                <el-button type="danger" icon="el-icon-message" circle></el-button>
-              </el-badge>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-for="(item, index) in infoList" :key="index">{{ item.message }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <badge :info="info" :total="total" v-if="!loading"></badge>
           </div>
           <div class="col-lg-3 newHeaderDiv">
             <el-dropdown v-if="loginOrNot()">
@@ -50,18 +40,24 @@
 </template>
 
 <script>
+import badge from '@/components/badge.vue';
 import { mapActions, mapState } from 'vuex';
+import _ from 'lodash';
 var Stomp = require('@stomp/stompjs');
 export default {
   name: 'Header',
-  components: {},
+  components: {
+    badge,
+  },
   data() {
     return {
       avatar: require('@/assets/img/8082.jpg'),
-      infoList: [{ message: 'test Infomation 1' }, { message: 'test Infomation 2' }, { message: 'test Infomation 3' }],
+      total: 0,
       Ws: '',
       Client: '',
       mqObj: { username: 'wy', pwd: '1' },
+      loading: true,
+      info: '',
     };
   },
   computed: {
@@ -75,12 +71,12 @@ export default {
       $('#base-nav').width($(window).width() - 241);
     });
   },
-  created() {
+  async created() {
     // this.isLogin();
-    // this.initWebSocket();
+    await this.toGetMsg();
   },
   methods: {
-    ...mapActions(['login', 'logout']),
+    ...mapActions(['login', 'logout', 'getMsg']),
     //下载打印插件
     async toDownload() {
       window.location.href = 'http://192.168.31.230:80/api/upload/clodop_setup.zip';
@@ -105,47 +101,18 @@ export default {
         return '您未登录';
       }
     },
-    test() {
-      console.log('in');
-      this.Client.send('/exchange/my/MarketMQ', {}, 'test send');
-    },
-    async refreshInfo(data) {
-      if (this.Ws.readyState === 1) {
-        console.log('can use');
-        this.toSendMessage(data);
+    async toGetMsg() {
+      let result = await this.getMsg();
+      let total = 0;
+      if (`${result.rescode}` === '0') {
+        if (_.get(result, `dataList`)) total = result.dataList.length;
       }
-    },
-    async initWebSocket() {
-      this.Ws = new WebSocket('ws://222.168.50.226:15674/ws');
-      this.Ws.onmessage = this.toGetMessage;
-      this.Ws.onclose = this.toClose;
-      this.Client = Stomp.Stomp.over(this.Ws);
-      let on_connect = info => {
-        this.Client.subscribe('/exchange/my/MarketMQ', data => {
-          var msg = data.body;
-          this.toGetMessage(msg);
-        });
-      };
-      let on_error = () => {
-        console.log('error');
-      };
-      this.Client.connect(this.mqObj.username, this.mqObj.pwd, on_connect, on_error, '/');
-    },
-    toGetMessage(data) {
-      var info;
-      if (typeof json == 'object') {
-        info = data;
-      } else {
-        info = JSON.parse(data);
-      }
-      // var _instrID = _jObj.instrumentID;
-      // _jObj.upsDownsRate = _jObj.upsDownsRate + '%';
-      // var _fuArr = [_jObj.lastPrice, _jObj.upsDowns, _jObj.upsDownsRate];
-      console.warn(info);
-    },
-    toClose() {
-      // 关闭 websocket
-      console.log('连接已关闭...');
+      let msg;
+      if (total > 0) msg = `有 ${total} 提醒信息需要查看`;
+      else msg = `无提醒信息`;
+      this.$set(this, `info`, msg);
+      this.$set(this, `total`, total);
+      this.$set(this, `loading`, false);
     },
   },
 };

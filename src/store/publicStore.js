@@ -12,6 +12,10 @@ const api = {
   postList: '/api/post/post_list?skip=0&limit=100',
   //行政区划
   region: '/api/district/district_list', //params:pid
+  //待办消息提醒
+  msg: `/api/user/msg_list`,
+  msgEdit: `/api/user/msg_edit`,
+  msgDelete: `/api/user/msg_delete`,
 };
 
 export const state = () => ({
@@ -134,7 +138,9 @@ export const actions = {
    */
   async updatePassword({ commit }, { form }) {
     try {
-      let result = await this.$axios.post(api.updatePassword, { data: form });
+      let result = await this.$axios.post(api.updatePassword, {
+        data: form,
+      });
       if (result.rescode === '0') {
         Message.success('修改成功');
         return true;
@@ -145,5 +151,22 @@ export const actions = {
     } catch (error) {
       console.error(error);
     }
+  },
+  //消息
+  async getMsg({ commit }) {
+    let result = await this.$axios.get(`${api.msg}`);
+    return result;
+  },
+  async editMsg({ commit }, payload) {
+    let result = await this.$axios.post(`${api.msgEdit}`, {
+      data: payload,
+    });
+    return result;
+  },
+  async deleteMsg({ commit }, payload) {
+    let result = await this.$axios.post(`${api.msgDelete}`, {
+      data: payload,
+    });
+    return result;
   },
 };
