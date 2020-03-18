@@ -287,6 +287,7 @@ export default {
       clientList: state => state.personnel.clientList,
       contractList: state => state.personnel.contractList,
       orderList: state => state.self.orderList,
+      user: state => state.publics.userInfo,
     }),
     newClientList() {
       let arr = JSON.parse(JSON.stringify(this.clientList));
@@ -473,6 +474,7 @@ export default {
         item.order_no = this.form.order_no;
         return item;
       });
+      console.log(newSubForm);
       await this.outOperation({ type: 'outEdit', data: newSubForm, main_id: this.form.id });
       this.form = {};
       this.$refs.Edit.hide();

@@ -459,6 +459,7 @@ export default {
       carList: state => state.car.carList,
       driverList: state => state.personnel.driverList,
       clientList: state => state.personnel.clientList,
+      user: state => state.publics.userInfo,
     }),
   },
   async created() {
@@ -565,6 +566,7 @@ export default {
       // console.log(transportMain);
       // console.log(transportSub);
       // console.log(outForm);
+      transportMain.login_id = this.user.login_id;
       await this.transportSave({
         form: JSON.parse(JSON.stringify(transportMain)),
         subForm: JSON.parse(JSON.stringify(transportSub)),
