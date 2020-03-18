@@ -57,7 +57,7 @@
             </tr>
             <tr v-for="(item, index) in orderList" :key="index">
               <td>{{ item.order_no }}</td>
-              <td>{{ { data: clientList, searchItem: `id`, value: item.c_id, label: `name` } | getName }}</td>
+              <td>{{ item.c_name }}</td>
               <td>{{ item.send_time_hp }}</td>
               <td>{{ item.status | getStatus }}</td>
               <td>
@@ -123,10 +123,10 @@
                 <th style="width:20%">线路方式</th>
               </tr>
               <tr>
-                <td>{{ { data: clientList, searchItem: `id`, value: orderInfo.c_id, label: `name` } | getName }}</td>
-                <!-- <td>{{ { data: dlyWayList, searchItem: `id`, value: orderInfo.dly_way_id, label: `name` } | getName }}</td> -->
+                <td>{{ orderInfo.c_name }}</td>
                 <td>
                   <el-select
+                    v-if="contractList.length > 0"
                     class="marginBot"
                     style="height:40px !important"
                     v-model="form.pact_id"
@@ -136,6 +136,7 @@
                   >
                     <el-option v-for="(item, index) in contractList" :key="index" :label="item.pact_no" :value="item.id"></el-option>
                   </el-select>
+                  <template v-else>{{ form.pact_no }}</template>
                 </td>
                 <td>
                   <el-select
@@ -252,6 +253,7 @@
           </table>
           <!--按钮区-->
           <b-button
+            v-if="orderInfo.login_id == user.login_id"
             variant="primary"
             @click="
               () => {
@@ -263,6 +265,7 @@
             >添加收入项
           </b-button>
           <b-button
+            v-if="orderInfo.login_id == user.login_id"
             variant="primary"
             @click="toOperation()"
             class="resetButton"
@@ -361,6 +364,7 @@ export default {
       clientList: state => state.personnel.clientList,
       contractList: state => state.personnel.contractList,
       dlyWayList: state => state.self.dlyWayList,
+      user: state => state.publics.userInfo,
     }),
   },
   async created() {
@@ -569,9 +573,15 @@ export default {
       has_id > 0 ? (type = 'updateIncome') : (type = 'orderIncome');
       let main_id = this.form.main_id;
       let newForm = JSON.parse(JSON.stringify(this.form));
+      delete newForm.pact_no;
       delete newForm.main_id;
       newForm.cost_id = 1;
-      let data = [...this.subForm, { ...newForm }];
+      let sf = this.subForm.map(i => {
+        console.log(i);
+        delete i.pact_no;
+        return i;
+      });
+      let data = [...sf, { ...newForm }];
       let result = await this.toInCome({ data: data, main_id: main_id, type: type });
       this.dialog = false;
       this.form = {};
@@ -598,27 +608,25 @@ export default {
     },
     async searchDetail(order_no) {
       let { data } = await this.getInList({ skip: 0, limit: 1000, order_no: order_no });
-      if (data !== null) {
-        let toForm = data.filter(item => item.cost_id === 1)[0];
-        delete toForm.pact_no;
-        delete toForm.status;
-        this.form = JSON.parse(JSON.stringify(toForm));
-        await this.dialogRequest(toForm.pact_id, 'searchItem', 'not');
-        await this.dialogRequest(toForm.item_id, 'searchDlyway', 'not');
-        await this.dialogRequest(toForm.dly_way_id, 'searchWay', 'not');
-        await this.dialogRequest(toForm.type_id, 'way');
-        let toSubForm = data.filter(item => {
-          if (item.cost_id) return item;
-        });
-        toSubForm = toSubForm.map(item => {
-          delete item.pact_no;
-          delete item.status;
-          return item;
-        });
-        toSubForm = toSubForm.filter(fil => !fil.pact_id);
-        this.$set(this, `subForm`, toSubForm);
-        this.totalMoney();
-      }
+      // if (data !== null) {
+      let toForm = data.filter(item => item.cost_id === 1)[0];
+      delete toForm.status;
+      this.form = JSON.parse(JSON.stringify(toForm));
+      await this.dialogRequest(toForm.pact_id, 'searchItem', 'not');
+      await this.dialogRequest(toForm.item_id, 'searchDlyway', 'not');
+      await this.dialogRequest(toForm.dly_way_id, 'searchWay', 'not');
+      await this.dialogRequest(toForm.type_id, 'way');
+      let toSubForm = data.filter(item => {
+        if (item.cost_id) return item;
+      });
+      toSubForm = toSubForm.map(item => {
+        delete item.status;
+        return item;
+      });
+      toSubForm = toSubForm.filter(fil => !fil.pact_id);
+      this.$set(this, `subForm`, toSubForm);
+      this.totalMoney();
+      // }
     },
     //分页
     toSearch(currentPage) {

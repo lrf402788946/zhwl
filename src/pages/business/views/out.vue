@@ -452,6 +452,7 @@ export default {
         main_id: this.form.id,
         order_no: this.form.order_no,
       });
+      console.log(data);
       if (totalRow > 0) {
         this.subForm = data;
         for (let i = 0; i < this.subForm.length; i++) {
