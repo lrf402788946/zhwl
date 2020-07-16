@@ -15,7 +15,7 @@
     "bootstrap-vue-helper-json": "^1.1.1",
     "element-ui": "^2.8.2",
     "file-saver": "^2.0.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "script-loader": "^0.7.2",
     "vue": "^2.6.6",
     "vue-meta": "^1.6.0",
